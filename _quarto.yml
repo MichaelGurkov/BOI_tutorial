@@ -1,10 +1,12 @@
 project:
+  output-dir: docs
   type: website
   
 execute:
     message: false
     warning: false
 
+  
 website:
   title: "Tutorials for DS course materials"
   navbar:
