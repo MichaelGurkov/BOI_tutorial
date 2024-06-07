@@ -1,0 +1,17 @@
+---
+title: "Welcome to BOI DS course tutorials"
+format: html
+---
+
+
+This website contains tutorials and exercise sets on various topics to help you
+learn and apply concepts introduced in the course.
+
+## Topics
+
+- **[Data Wrangling with dplyr](dplyr/dplyr.qmd)**
+  - [Exercises for "Data Wrangling with dplyr"](dplyr/dplyr_exercises.qmd)
+
+
+Explore the topics and start learning!
+

@@ -1,0 +1,121 @@
+```{r}
+# load libraries
+
+library(tidyverse)
+```
+
+Sample Data Frame for Exercises
+
+```{r data}
+# Make data for exercises
+
+data = tibble(
+  id = 1:10,
+  name = c(
+    "Alice",
+    "Bob",
+    "Charlie",
+    "David",
+    "Eva",
+    "Frank",
+    "Grace",
+    "Hannah",
+    "Ian",
+    "Jack"
+  ),
+  age = c(23, 45, 34, 27, 19, 31, 29, 41, 36, 24),
+  score = c(85, 92, 88, 91, 76, 83, 77, 89, 94, 78)
+)
+```
+
+### Exercises
+
+1. Select the columns `name` and `age`.
+
+```{r ex1_solution}
+selected_data = data %>%
+  select(name, age)
+
+selected_data
+```
+
+2. Select the columns `id`, `name`, and `score`.
+
+```{r ex2_solution}
+selected_data = data %>%
+  select(id, name, score)
+
+selected_data
+```
+
+3. Filter the rows where `age` is greater than 30.
+
+```{r ex3_solution}
+filtered_data = data %>%
+  filter(age > 30)
+
+filtered_data
+```
+
+4. Filter the rows where `score` is less than 80.
+
+```{r ex4_solution}
+filtered_data = data %>%
+  filter(score < 80)
+
+filtered_data
+```
+
+5. Create a new column `age_in_months` which is `age` multiplied by 12.
+
+```{r ex5_solution}
+mutated_data = data %>%
+  mutate(age_in_months = age * 12)
+
+mutated_data
+```
+
+6. Create a new column `score_category` which is "high" if `score` is greater than 90 and "low" otherwise.
+
+```{r ex6_solution}
+mutated_data = data %>%
+  mutate(score_category = ifelse(score > 90, "high", "low"))
+
+mutated_data
+```
+
+7. Calculate the average `score` for the entire dataset.
+
+```{r ex7_solution}
+summary_data = data %>%
+  summarize(avg_score = mean(score))
+
+summary_data
+```
+
+8. Calculate the average `age` and the maximum `score`.
+
+```{r ex8_solution}
+summary_data = data %>%
+  summarize(avg_age = mean(age), max_score = max(score))
+
+summary_data
+```
+
+9. Arrange the dataset by `age` in ascending order.
+
+```{r ex9_solution}
+arranged_data = data %>%
+  arrange(age)
+
+arranged_data
+```
+
+10. Arrange the dataset by `score` in descending order.
+
+```{r ex10_solution}
+arranged_data = data %>%
+  arrange(desc(score))
+
+arranged_data
+```

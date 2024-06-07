@@ -1,0 +1,98 @@
+# Wrangling Data with `dplyr`
+
+In this tutorial, we'll explore some of the most useful verbs in the `dplyr` package for data manipulation: `select`, `filter`, `mutate`, `summarize`, and `arrange`. We'll use the Palmer penguins dataset to demonstrate each of these functions. The `palmerpenguins` package provides data on three penguin species from the Palmer Archipelago, Antarctica.
+
+## Loading the Necessary Libraries
+
+First, we'll load the required libraries and the Palmer penguins dataset.
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+
+# Take a look at the data
+glimpse(penguins)
+```
+
+## `select()`: Choose Specific Columns
+
+The `select` function allows us to choose specific columns from the dataset. For instance, we might only be interested in the species, island, and bill length columns.
+
+```{r}
+# Select specific columns
+penguins_selected = penguins %>%
+  select(species, island, bill_length_mm)
+
+# View the first few rows of the selected columns
+head(penguins_selected)
+```
+
+## `filter()`: Subset Rows Based on Conditions
+
+The `filter` function helps us subset rows based on specific conditions. Let's filter the data to only include observations where the bill length is greater than 40 mm.
+
+```{r}
+# Filter rows where bill length is greater than 40 mm
+penguins_filtered = penguins %>%
+  filter(bill_length_mm > 40)
+
+# View the first few rows of the filtered data
+head(penguins_filtered)
+```
+
+## `mutate()`: Create or Transform Columns
+
+With `mutate`, we can create new columns or transform existing ones. Suppose we want to calculate the bill length in centimeters.
+
+```{r}
+# Create a new column for bill length in cm
+penguins_mutated = penguins %>%
+  mutate(bill_length_cm = bill_length_mm / 10)
+
+# View the first few rows to see the new column
+head(penguins_mutated)
+```
+
+## `summarize()`: Aggregate Data
+
+The `summarize` function allows us to compute summary statistics. To get a summary of the average bill length by species, we can use `group_by` in combination with `summarize`.
+
+```{r}
+# Summarize average bill length by species
+penguins_summary = penguins %>%
+  group_by(species) %>%
+  summarize(avg_bill_length = mean(bill_length_mm, na.rm = TRUE))
+
+# View the summary
+penguins_summary
+```
+
+## `arrange()`: Sort Data
+
+Finally, `arrange` allows us to sort the data. Let's sort the penguins dataset by bill length in descending order.
+
+```{r}
+# Sort the data by bill length in descending order
+penguins_arranged = penguins %>%
+  arrange(desc(bill_length_mm))
+
+# View the first few rows of the sorted data
+head(penguins_arranged)
+```
+
+## Putting It All Together
+
+We can combine these verbs to perform more complex data manipulations. For example, let's select the species, island, and bill length columns, filter for bill lengths greater than 40 mm, and then sort by bill length.
+
+```{r}
+# Combine select, filter, and arrange
+penguins_combined = penguins %>%
+  select(species, island, bill_length_mm) %>%
+  filter(bill_length_mm > 40) %>%
+  arrange(desc(bill_length_mm))
+
+# View the result
+head(penguins_combined)
+```
+
+These `dplyr` functions provide a powerful and intuitive way to manipulate and analyze your data. With practice, you'll find them indispensable for your data wrangling tasks.

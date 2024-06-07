@@ -1,0 +1,22 @@
+project:
+  type: website
+  
+execute:
+    message: false
+    warning: false
+
+website:
+  title: "Tutorials for DS course materials"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+
+
