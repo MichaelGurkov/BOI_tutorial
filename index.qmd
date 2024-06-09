@@ -22,9 +22,9 @@ learn and apply concepts introduced in the course.
 
 - **[Bayes classifier simulation](bayes_classifier_simulation/bayes_classifier_simulation.qmd)**
 
-- **[Tree regression ](tree_regression/tree_regression.qmd)**
+- **[Tree regression](tree_regression/tree_regression.qmd)**
 
-- **[Tree classification ](tree_classification/tree_classification.qmd)**
+- **[Tree classification](tree_classification/tree_classification.qmd)**
 
 
 

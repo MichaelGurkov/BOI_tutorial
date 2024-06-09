@@ -263,7 +263,7 @@
     "href": "tree_classification/tree_classification.html#loading-the-data",
     "title": "Introduction to Tree Classification with R",
     "section": "Loading the Data",
-    "text": "Loading the Data\nWe load and prepare the penguin_data dataset, filtering out the Chinstrap species and converting the species column to a factor.\n\npenguin_data = penguins %&gt;% \n  filter(!species == \"Chinstrap\") %&gt;% \n  mutate(species = as.factor(species))"
+    "text": "Loading the Data\nWe load and prepare the penguin_data dataset, filtering out the Chinstrap species and converting the species column to a factor.\n\npenguin_data = penguins %&gt;% \n  filter(!species == \"Chinstrap\") %&gt;% \n  mutate(species = factor(species))"
   },
   {
     "objectID": "tree_classification/tree_classification.html#visualizing-the-data",
