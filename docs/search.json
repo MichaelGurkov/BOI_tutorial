@@ -88,7 +88,7 @@
     "href": "index.html#topics",
     "title": "Welcome to BOI DS course tutorials",
     "section": "Topics",
-    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression\nMultiple linear regression\nKNN regression\nKNN classification\nBayes classifier simulation\nTree regression\nTree classification\n\nExplore the topics and start learning!"
+    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression\nMultiple linear regression\nKNN regression\nKNN classification\nBayes classifier simulation\nTree regression\nTree classification\n[Cross validation]\n\nExplore the topics and start learning!"
   },
   {
     "objectID": "dplyr/dplyr.html",

@@ -26,6 +26,8 @@ learn and apply concepts introduced in the course.
 
 - **[Tree classification](tree_classification/tree_classification.qmd)**
 
+- **[Cross validation]**
+
 
 
 Explore the topics and start learning!
