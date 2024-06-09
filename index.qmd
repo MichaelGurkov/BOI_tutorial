@@ -20,6 +20,12 @@ learn and apply concepts introduced in the course.
 
 - **[KNN classification](knn_classification/knn_classification.qmd)**
 
+- **[Bayes classifier simulation](bayes_classifier_simulation/bayes_classifier_simulation.qmd)**
+
+- **[Tree regression ](tree_regression/tree_regression.qmd)**
+
+- **[Tree classification ](tree_classification/tree_classification.qmd)**
+
 
 
 Explore the topics and start learning!

@@ -1,5 +1,68 @@
 [
   {
+    "objectID": "tree_regression/tree_regression.html",
+    "href": "tree_regression/tree_regression.html",
+    "title": "Introduction to Tree Regression with R",
+    "section": "",
+    "text": "Welcome to this comprehensive tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields."
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#what-is-tree-regression",
+    "href": "tree_regression/tree_regression.html#what-is-tree-regression",
+    "title": "Introduction to Tree Regression with R",
+    "section": "What is Tree Regression?",
+    "text": "What is Tree Regression?\nTree regression is a type of decision tree that is used for predicting continuous values. Unlike classification trees that predict discrete class labels, regression trees predict a continuous target variable. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to minimize the variance within each subset."
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#loading-necessary-libraries",
+    "href": "tree_regression/tree_regression.html#loading-necessary-libraries",
+    "title": "Introduction to Tree Regression with R",
+    "section": "Loading Necessary Libraries",
+    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, and palmerpenguins for accessing the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\nlibrary(rpart.plot)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#load-the-data",
+    "href": "tree_regression/tree_regression.html#load-the-data",
+    "title": "Introduction to Tree Regression with R",
+    "section": "Load the Data",
+    "text": "Load the Data\nNext, we’ll select the relevant columns from the Palmer Penguins dataset.\n\npenguin_data = penguins %&gt;%\n  select(species, body_mass_g, bill_depth_mm)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#visualizing-the-data",
+    "href": "tree_regression/tree_regression.html#visualizing-the-data",
+    "title": "Introduction to Tree Regression with R",
+    "section": "Visualizing the Data",
+    "text": "Visualizing the Data\nWe start by visualizing the relationship between the predictor variable body_mass_g and the target variable bill_depth_mm from the penguin_data dataset.\n\npenguin_data %&gt;% \n  ggplot(aes(body_mass_g, bill_depth_mm)) + \n  geom_point(aes(color = species))"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#fitting-the-tree-regression-model",
+    "href": "tree_regression/tree_regression.html#fitting-the-tree-regression-model",
+    "title": "Introduction to Tree Regression with R",
+    "section": "Fitting the Tree Regression Model",
+    "text": "Fitting the Tree Regression Model\nNext, we fit a tree regression model to predict bill_depth_mm using body_mass_g as the predictor. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.\n\ntree_model_fit = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 2,\n  mode = \"regression\",\n  engine = \"rpart\",\n  min_n = 5\n) %&gt;%\n  fit(bill_depth_mm ~ body_mass_g, data = penguin_data)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#making-predictions",
+    "href": "tree_regression/tree_regression.html#making-predictions",
+    "title": "Introduction to Tree Regression with R",
+    "section": "Making Predictions",
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the penguin_data. We then visualize the predicted values along with the actual values.\n\npredictions = tree_model_fit %&gt;% \n  predict(penguin_data)\n\npenguin_data %&gt;% \n  bind_cols(predictions) %&gt;% \n  ggplot(aes(body_mass_g, bill_depth_mm)) + \n  geom_point(aes(color = species)) + \n  geom_point(aes(y = .pred), color = \"red\") +\n  geom_vline(xintercept = 4563)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#visualizing-the-tree",
+    "href": "tree_regression/tree_regression.html#visualizing-the-tree",
+    "title": "Introduction to Tree Regression with R",
+    "section": "Visualizing the Tree",
+    "text": "Visualizing the Tree\nFinally, we visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated.\n\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#conclusion",
+    "href": "tree_regression/tree_regression.html#conclusion",
+    "title": "Introduction to Tree Regression with R",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis tutorial has provided an in-depth look at tree regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree regression analysis. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
+  },
+  {
     "objectID": "simple_regression/simple_regression.html",
     "href": "simple_regression/simple_regression.html",
     "title": "Simple Linear Regression with Palmer Penguins Data",
@@ -25,7 +88,7 @@
     "href": "index.html#topics",
     "title": "Welcome to BOI DS course tutorials",
     "section": "Topics",
-    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression\nMultiple linear regression\nKNN regression\nKNN classification\n\nExplore the topics and start learning!"
+    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression\nMultiple linear regression\nKNN regression\nKNN classification\nBayes classifier simulation\nTree regression\nTree classification\n\nExplore the topics and start learning!"
   },
   {
     "objectID": "dplyr/dplyr.html",
@@ -84,6 +147,76 @@
     "text": "We can combine these verbs to perform more complex data manipulations. For example, let’s select the species, island, and bill length columns, filter for bill lengths greater than 40 mm, and then sort by bill length.\n\n# Combine select, filter, and arrange\npenguins_combined = penguins %&gt;%\n  select(species, island, bill_length_mm) %&gt;%\n  filter(bill_length_mm &gt; 40) %&gt;%\n  arrange(desc(bill_length_mm))\n\n# View the result\nhead(penguins_combined)\n\n# A tibble: 6 × 3\n  species   island bill_length_mm\n  &lt;fct&gt;     &lt;fct&gt;           &lt;dbl&gt;\n1 Gentoo    Biscoe           59.6\n2 Chinstrap Dream            58  \n3 Gentoo    Biscoe           55.9\n4 Chinstrap Dream            55.8\n5 Gentoo    Biscoe           55.1\n6 Gentoo    Biscoe           54.3\n\n\nThese dplyr functions provide a powerful and intuitive way to manipulate and analyze your data. With practice, you’ll find them indispensable for your data wrangling tasks."
   },
   {
+    "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html",
+    "href": "bayes_classifier_simulation/bayes_classifier_simulation.html",
+    "title": "Introduction to Bayes Classifier with R: A Simulation",
+    "section": "",
+    "text": "Welcome to this tutorial on the Bayes classifier. This tutorial aims to introduce the concept of the Bayes classifier, provide a detailed explanation of the code involved, and demonstrate its implementation using R. We will also compare the Bayes classifier with the K-Nearest Neighbors (KNN) classifier to give you a broader perspective on classification methods."
+  },
+  {
+    "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html#what-is-the-bayes-classifier",
+    "href": "bayes_classifier_simulation/bayes_classifier_simulation.html#what-is-the-bayes-classifier",
+    "title": "Introduction to Bayes Classifier with R: A Simulation",
+    "section": "What is the Bayes Classifier?",
+    "text": "What is the Bayes Classifier?\nThe Bayes classifier is a probabilistic model that uses Bayes’ Theorem to predict the class of a given data point based on prior knowledge of conditions related to the class. It is particularly useful for scenarios where the probability distribution of the features is known. The classifier assigns a data point to the class with the highest posterior probability."
+  },
+  {
+    "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html#loading-necessary-libraries",
+    "href": "bayes_classifier_simulation/bayes_classifier_simulation.html#loading-necessary-libraries",
+    "title": "Introduction to Bayes Classifier with R: A Simulation",
+    "section": "Loading Necessary Libraries",
+    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, mvtnorm for generating multivariate normal distributions, and tidymodels for model fitting.\n\nlibrary(tidyverse)\nlibrary(mvtnorm)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html#setting-parameters",
+    "href": "bayes_classifier_simulation/bayes_classifier_simulation.html#setting-parameters",
+    "title": "Introduction to Bayes Classifier with R: A Simulation",
+    "section": "Setting Parameters",
+    "text": "Setting Parameters\nNext, we define the parameters for our simulation. These include the means of the distributions for two classes (A and B), the covariance matrix, and the number of observations.\n\nparams = list()\nparams$class_a_means = list(c(4, 2), c(4, 8), c(6, 10))\nparams$class_b_means = c(6, 2)\nparams$sigma = diag(2)\nparams$obs_num = 200\n\n\nclass_a_means: List of mean vectors for class A.\nclass_b_means: Mean vector for class B.\nsigma: Covariance matrix (assumed to be the same for both classes).\nobs_num: Number of observations to be generated for each class."
+  },
+  {
+    "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html#defining-the-bayes-classifier-function",
+    "href": "bayes_classifier_simulation/bayes_classifier_simulation.html#defining-the-bayes-classifier-function",
+    "title": "Introduction to Bayes Classifier with R: A Simulation",
+    "section": "Defining the Bayes Classifier Function",
+    "text": "Defining the Bayes Classifier Function\nWe define a function to classify data points based on the Bayes theorem. This function calculates the probability of a data point belonging to each class and assigns the class with the highest probability.\n\nget_bayes_classification = function(x, y) {\n  obs_value = c(x, y)\n  \n  class_a_prob = map_dbl(params$class_a_means,\n                         ~ dmvnorm(x = obs_value, mean = ., sigma = params$sigma)) %&gt;% \n    mean()\n  \n  class_b_prob = dmvnorm(x = obs_value, mean = params$class_b_means, sigma = params$sigma)\n  \n  class = if_else(class_a_prob &gt;= class_b_prob, \"A\", \"B\")\n  \n  return(class)\n}\n\n\nobs_value: The observation vector.\nclass_a_prob: The average probability of the observation belonging to class A.\nclass_b_prob: The probability of the observation belonging to class B.\nclass: The assigned class based on the higher probability."
+  },
+  {
+    "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html#simulating-data-for-two-groups",
+    "href": "bayes_classifier_simulation/bayes_classifier_simulation.html#simulating-data-for-two-groups",
+    "title": "Introduction to Bayes Classifier with R: A Simulation",
+    "section": "Simulating Data for Two Groups",
+    "text": "Simulating Data for Two Groups\nWe simulate data points for classes A and B. Class A data points are sampled from a mixture of three different normal distributions, while class B data points are sampled from a single normal distribution.\n\nsampled_means = sample(\n  params$class_a_means,\n  size = params$obs_num,\n  replace = TRUE,\n  prob = rep(1 / length(params$class_a_means), length(params$class_a_means))\n)\n\ntrain_data = map(sampled_means, ~ as.data.frame(rmvnorm(\n  n = 1,\n  mean = .,\n  sigma = params$sigma\n))) %&gt;%\n  list_rbind() %&gt;%\n  mutate(class = \"A\") %&gt;%\n  bind_rows(\n    rmvnorm(n = params$obs_num, params$class_b_means, params$sigma) %&gt;%\n      as.data.frame() %&gt;%\n      mutate(class = \"B\")\n  ) %&gt;%\n  set_names(c(\"x\", \"y\", \"class\"))\n\nrm(sampled_means)\n\ntest_data = tibble(x = seq(min(train_data$x), max(train_data$x), length.out = 50),\n                   y = seq(min(train_data$y), max(train_data$y), length.out = 50)) %&gt;% \n  expand.grid()\n\n\nsampled_means: Randomly sampled mean vectors for class A.\ntrain_data: Combined data frame for classes A and B.\ntest_data: Grid of points for testing the classifier."
+  },
+  {
+    "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html#visualizing-the-training-data",
+    "href": "bayes_classifier_simulation/bayes_classifier_simulation.html#visualizing-the-training-data",
+    "title": "Introduction to Bayes Classifier with R: A Simulation",
+    "section": "Visualizing the Training Data",
+    "text": "Visualizing the Training Data\nWe visualize the training data to understand the distribution of the two classes.\n\ntrain_data %&gt;% \n  ggplot(aes(x, y, color = class)) + \n  geom_point() + \n  theme(legend.title = element_blank())"
+  },
+  {
+    "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html#applying-the-bayes-classifier",
+    "href": "bayes_classifier_simulation/bayes_classifier_simulation.html#applying-the-bayes-classifier",
+    "title": "Introduction to Bayes Classifier with R: A Simulation",
+    "section": "Applying the Bayes Classifier",
+    "text": "Applying the Bayes Classifier\nWe apply the Bayes classifier to the test data and visualize the classification results.\n\nbayes_class = test_data %&gt;% \n  mutate(class = map2_chr(x, y, get_bayes_classification))\n\nggplot() + \n  geom_point(data = train_data, aes(x = x, y = y, color = class)) +\n  geom_point(data = bayes_class, aes(x = x, y = y, color = class), alpha = 0.5)"
+  },
+  {
+    "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html#k-nearest-neighbors-knn-classifier",
+    "href": "bayes_classifier_simulation/bayes_classifier_simulation.html#k-nearest-neighbors-knn-classifier",
+    "title": "Introduction to Bayes Classifier with R: A Simulation",
+    "section": "K-Nearest Neighbors (KNN) Classifier",
+    "text": "K-Nearest Neighbors (KNN) Classifier\nTo provide a comparison, we implement the KNN classifier and visualize its results.\n\npreproc = recipe(class ~ x + y, data = train_data) \n\nknn_class = map(c(1, 10, 100), function(temp_k) {\n  knn_spec = nearest_neighbor(neighbors = temp_k,\n                              mode = \"classification\", engine = \"kknn\")\n\n  knn_wf = workflow() %&gt;%\n    add_recipe(preproc) %&gt;%\n    add_model(knn_spec) %&gt;%\n    fit(train_data)\n  \n  pred = knn_wf %&gt;% \n    predict(test_data) %&gt;% \n    rename(!!sym(as.character(temp_k)) := 1)\n  \n  return(pred)\n}) %&gt;% \n  list_cbind()\n\nknn_class = test_data %&gt;% \n  bind_cols(knn_class)\n\nggplot() + \n  geom_point(data = knn_class %&gt;% \n               pivot_longer(-c(x, y),\n                            names_to = \"k\",\n                            values_to = \"class\"),\n             aes(x = x, y = y, color = class), alpha = 0.5) + \n  geom_point(data = train_data, aes(x = x, y = y, color = class)) +\n  facet_wrap(~k)\n\n\n\n\n\n\n\n\nIn this code: - preproc: Preprocessing recipe for the data. - knn_spec: Specification of the KNN model with different values of k. - knn_wf: Workflow for fitting the KNN model. - knn_class: Predictions of the KNN model for the test data."
+  },
+  {
+    "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html#conclusion",
+    "href": "bayes_classifier_simulation/bayes_classifier_simulation.html#conclusion",
+    "title": "Introduction to Bayes Classifier with R: A Simulation",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis tutorial has provided an in-depth look at the Bayes classifier, from concept to implementation in R. By comparing it with the KNN classifier, we have demonstrated different approaches to classification problems. Understanding these methods and their applications will enhance your ability to analyze and interpret data effectively."
+  },
+  {
     "objectID": "dplyr/dplyr_exercises.html",
     "href": "dplyr/dplyr_exercises.html",
     "title": "Tutorials for DS course materials",
@@ -103,5 +236,68 @@
     "title": "Multiple Linear Regression with Palmer Penguins Data",
     "section": "",
     "text": "Introduction\nIn this tutorial, we’ll explore how to perform a multiple linear regression using the Palmer Penguins dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we’ll investigate how bill depth is influenced by both body mass and species.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the palmerpenguins package which contains the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Palmer Penguins dataset.\n\npenguin_data = penguins %&gt;%\n  select(species, body_mass_g, bill_depth_mm)\n\n\n\nFit the Multiple Linear Regression Model\nNow, we’ll fit a multiple linear regression model. Our goal is to predict bill_depth_mm using body_mass_g and species. We will create a preprocessing recipe to handle categorical variables and interactions.\nThe recipe package, part of the tidymodels ecosystem, provides a way to preprocess data before modeling. We define the transformations to apply to our data in a consistent and reusable manner using “steps”.\n\nstep_dummy(): Converts categorical variables into dummy/indicator variables (one-hot encoding).\nstep_interact(): Creates interaction terms between variables.\n\nThe starts_with() function from the tidyselect package is used to select columns that start with a specific string, making it easier to apply transformations to multiple columns at once.\n\npreprocess_recipe = recipe(bill_depth_mm ~ ., data = penguin_data) %&gt;% \n  step_dummy(species) %&gt;% \n  step_interact(terms = ~starts_with(\"species\"):body_mass_g)\n\nWe then define our model specification using linear_reg().\n\nmodel_spec = linear_reg()\n\nNext, we use a workflow, a concept from the tidymodels package that helps streamline the modeling process by bundling together the preprocessing and modeling steps. This makes the workflow easier to manage and ensures that all steps are consistently applied.\n\nadd_recipe(): Adds the preprocessing recipe to the workflow.\nadd_model(): Adds the model specification to the workflow.\n\nFinally, we fit the workflow to the data.\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec) %&gt;% \n  fit(penguin_data)\n\nAlternatively, we can use one-hot encoding for the categorical variables and specify a model without an intercept.\n\npreprocess_recipe = recipe(bill_depth_mm ~ ., data = penguin_data) %&gt;% \n  step_dummy(species, one_hot = TRUE) %&gt;% \n  step_interact(terms = ~starts_with(\"species\"):body_mass_g)\n\nmodel_spec = linear_reg() %&gt;% \n  set_engine(\"lm\")\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec, formula = bill_depth_mm ~ 0 + . -body_mass_g) %&gt;% \n  fit(penguin_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_workflow %&gt;% \n  tidy()\n\n# A tibble: 6 × 5\n  term                             estimate std.error statistic  p.value\n  &lt;chr&gt;                               &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept)                     12.7       0.584       21.7   5.06e-66\n2 body_mass_g                      0.00153   0.000157     9.76  5.56e-20\n3 species_Chinstrap               -0.936     1.20        -0.779 4.36e- 1\n4 species_Gentoo                  -4.81      0.995       -4.84  2.02e- 6\n5 species_Chinstrap_x_body_mass_g  0.000257  0.000320     0.803 4.23e- 1\n6 species_Gentoo_x_body_mass_g    -0.000129  0.000222    -0.580 5.62e- 1\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_workflow %&gt;% \n  predict(penguin_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a multiple linear regression using the Palmer Penguins dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html",
+    "href": "tree_classification/tree_classification.html",
+    "title": "Introduction to Tree Classification with R",
+    "section": "",
+    "text": "Welcome to this tutorial on tree classification. This tutorial aims to introduce the concept of tree classification, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree classification is a powerful tool for predicting categorical outcomes based on input features, and it is widely used in various fields."
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html#what-is-tree-classification",
+    "href": "tree_classification/tree_classification.html#what-is-tree-classification",
+    "title": "Introduction to Tree Classification with R",
+    "section": "What is Tree Classification?",
+    "text": "What is Tree Classification?\nTree classification is a type of decision tree that is used for predicting categorical class labels. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to maximize the homogeneity of the target variable within each subset."
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html#loading-necessary-libraries",
+    "href": "tree_classification/tree_classification.html#loading-necessary-libraries",
+    "title": "Introduction to Tree Classification with R",
+    "section": "Loading Necessary Libraries",
+    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, and palmerpenguins for accessing the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\nlibrary(rpart.plot)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html#loading-the-data",
+    "href": "tree_classification/tree_classification.html#loading-the-data",
+    "title": "Introduction to Tree Classification with R",
+    "section": "Loading the Data",
+    "text": "Loading the Data\nWe load and prepare the penguin_data dataset, filtering out the Chinstrap species and converting the species column to a factor.\n\npenguin_data = penguins %&gt;% \n  filter(!species == \"Chinstrap\") %&gt;% \n  mutate(species = as.factor(species))"
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html#visualizing-the-data",
+    "href": "tree_classification/tree_classification.html#visualizing-the-data",
+    "title": "Introduction to Tree Classification with R",
+    "section": "Visualizing the Data",
+    "text": "Visualizing the Data\nWe start by visualizing the relationship between the predictor variables body_mass_g and bill_depth_mm from the penguin_data dataset.\n\npenguin_data %&gt;% \n  ggplot(aes(body_mass_g, bill_depth_mm, color = species)) + \n  geom_point()"
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html#fitting-the-tree-classification-model",
+    "href": "tree_classification/tree_classification.html#fitting-the-tree-classification-model",
+    "title": "Introduction to Tree Classification with R",
+    "section": "Fitting the Tree Classification Model",
+    "text": "Fitting the Tree Classification Model\nNext, we fit a tree classification model to predict species using bill_depth_mm and body_mass_g as predictors. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.\n\ntree_model_fit = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 1,\n  mode = \"classification\",\n  engine = \"rpart\",\n  min_n = 5\n) %&gt;%\n  fit(species ~ bill_depth_mm + body_mass_g, data = penguin_data)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html#making-predictions",
+    "href": "tree_classification/tree_classification.html#making-predictions",
+    "title": "Introduction to Tree Classification with R",
+    "section": "Making Predictions",
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the penguin_data.\n\npredictions = tree_model_fit %&gt;% \n  predict(penguin_data)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html#visualizing-the-tree",
+    "href": "tree_classification/tree_classification.html#visualizing-the-tree",
+    "title": "Introduction to Tree Classification with R",
+    "section": "Visualizing the Tree",
+    "text": "Visualizing the Tree\nFinally, we visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated.\n\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html#conclusion",
+    "href": "tree_classification/tree_classification.html#conclusion",
+    "title": "Introduction to Tree Classification with R",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis tutorial has provided an in-depth look at tree classification, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree classification analysis. Understanding these methods and their applications will enhance your ability to analyze and interpret categorical data effectively."
   }
 ]
