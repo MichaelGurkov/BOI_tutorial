@@ -1,0 +1,79 @@
+---
+title: "Introduction to Tree Classification with R"
+format: html
+---
+
+Welcome to this tutorial on tree classification. This tutorial aims to introduce the concept of tree classification, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree classification is a powerful tool for predicting categorical outcomes based on input features, and it is widely used in various fields.
+
+## What is Tree Classification?
+
+Tree classification is a type of decision tree that is used for predicting categorical class labels. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to maximize the homogeneity of the target variable within each subset.
+
+## Loading Necessary Libraries
+
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, and `palmerpenguins` for accessing the dataset.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(rpart.plot)
+```
+
+## Loading the Data
+
+We load and prepare the `penguin_data` dataset, filtering out the `Chinstrap` species and converting the `species` column to a factor.
+
+```{r load_data}
+penguin_data = penguins %>% 
+  filter(!species == "Chinstrap") %>% 
+  mutate(species = as.factor(species))
+```
+
+## Visualizing the Data
+
+We start by visualizing the relationship between the predictor variables `body_mass_g` and `bill_depth_mm` from the `penguin_data` dataset.
+
+```{r}
+penguin_data %>% 
+  ggplot(aes(body_mass_g, bill_depth_mm, color = species)) + 
+  geom_point()
+```
+
+## Fitting the Tree Classification Model
+
+Next, we fit a tree classification model to predict `species` using `bill_depth_mm` and `body_mass_g` as predictors. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.
+
+```{r}
+tree_model_fit = decision_tree(
+  cost_complexity = 0,
+  tree_depth = 1,
+  mode = "classification",
+  engine = "rpart",
+  min_n = 5
+) %>%
+  fit(species ~ bill_depth_mm + body_mass_g, data = penguin_data)
+```
+
+## Making Predictions
+
+Once the model is fitted, we use it to make predictions on the `penguin_data`.
+
+```{r}
+predictions = tree_model_fit %>% 
+  predict(penguin_data)
+```
+
+## Visualizing the Tree
+
+Finally, we visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated.
+
+```{r}
+tree_model_fit %>% 
+  extract_fit_engine() %>% 
+  rpart.plot(roundint = FALSE)
+```
+
+## Conclusion
+
+This tutorial has provided an in-depth look at tree classification, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree classification analysis. Understanding these methods and their applications will enhance your ability to analyze and interpret categorical data effectively.

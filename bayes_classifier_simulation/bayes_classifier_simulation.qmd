@@ -1,0 +1,170 @@
+---
+title: "Introduction to Bayes Classifier with R: A Simulation"
+format: html
+---
+
+Welcome to this tutorial on the Bayes classifier. This tutorial aims to introduce the concept of the Bayes classifier, provide a detailed explanation of the code involved, and demonstrate its implementation using R. We will also compare the Bayes classifier with the K-Nearest Neighbors (KNN) classifier to give you a broader perspective on classification methods.
+
+## What is the Bayes Classifier?
+
+The Bayes classifier is a probabilistic model that uses Bayes' Theorem to predict the class of a given data point based on prior knowledge of conditions related to the class. It is particularly useful for scenarios where the probability distribution of the features is known. The classifier assigns a data point to the class with the highest posterior probability.
+
+## Loading Necessary Libraries
+
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `mvtnorm` for generating multivariate normal distributions, and `tidymodels` for model fitting.
+
+```{r}
+library(tidyverse)
+library(mvtnorm)
+library(tidymodels)
+```
+
+## Setting Parameters
+
+Next, we define the parameters for our simulation. These include the means of the distributions for two classes (A and B), the covariance matrix, and the number of observations.
+
+```{r}
+params = list()
+params$class_a_means = list(c(4, 2), c(4, 8), c(6, 10))
+params$class_b_means = c(6, 2)
+params$sigma = diag(2)
+params$obs_num = 200
+```
+
+- `class_a_means`: List of mean vectors for class A.
+- `class_b_means`: Mean vector for class B.
+- `sigma`: Covariance matrix (assumed to be the same for both classes).
+- `obs_num`: Number of observations to be generated for each class.
+
+## Defining the Bayes Classifier Function
+
+We define a function to classify data points based on the Bayes theorem. This function calculates the probability of a data point belonging to each class and assigns the class with the highest probability.
+
+```{r}
+get_bayes_classification = function(x, y) {
+  obs_value = c(x, y)
+  
+  class_a_prob = map_dbl(params$class_a_means,
+                         ~ dmvnorm(x = obs_value, mean = ., sigma = params$sigma)) %>% 
+    mean()
+  
+  class_b_prob = dmvnorm(x = obs_value, mean = params$class_b_means, sigma = params$sigma)
+  
+  class = if_else(class_a_prob >= class_b_prob, "A", "B")
+  
+  return(class)
+}
+```
+
+- `obs_value`: The observation vector.
+- `class_a_prob`: The average probability of the observation belonging to class A.
+- `class_b_prob`: The probability of the observation belonging to class B.
+- `class`: The assigned class based on the higher probability.
+
+## Simulating Data for Two Groups
+
+We simulate data points for classes A and B. Class A data points are sampled from a mixture of three different normal distributions, while class B data points are sampled from a single normal distribution.
+
+```{r}
+sampled_means = sample(
+  params$class_a_means,
+  size = params$obs_num,
+  replace = TRUE,
+  prob = rep(1 / length(params$class_a_means), length(params$class_a_means))
+)
+
+train_data = map(sampled_means, ~ as.data.frame(rmvnorm(
+  n = 1,
+  mean = .,
+  sigma = params$sigma
+))) %>%
+  list_rbind() %>%
+  mutate(class = "A") %>%
+  bind_rows(
+    rmvnorm(n = params$obs_num, params$class_b_means, params$sigma) %>%
+      as.data.frame() %>%
+      mutate(class = "B")
+  ) %>%
+  set_names(c("x", "y", "class"))
+
+rm(sampled_means)
+
+test_data = tibble(x = seq(min(train_data$x), max(train_data$x), length.out = 50),
+                   y = seq(min(train_data$y), max(train_data$y), length.out = 50)) %>% 
+  expand.grid()
+```
+
+- `sampled_means`: Randomly sampled mean vectors for class A.
+- `train_data`: Combined data frame for classes A and B.
+- `test_data`: Grid of points for testing the classifier.
+
+## Visualizing the Training Data
+
+We visualize the training data to understand the distribution of the two classes.
+
+```{r}
+train_data %>% 
+  ggplot(aes(x, y, color = class)) + 
+  geom_point() + 
+  theme(legend.title = element_blank())
+```
+
+## Applying the Bayes Classifier
+
+We apply the Bayes classifier to the test data and visualize the classification results.
+
+```{r}
+bayes_class = test_data %>% 
+  mutate(class = map2_chr(x, y, get_bayes_classification))
+
+ggplot() + 
+  geom_point(data = train_data, aes(x = x, y = y, color = class)) +
+  geom_point(data = bayes_class, aes(x = x, y = y, color = class), alpha = 0.5)
+```
+
+## K-Nearest Neighbors (KNN) Classifier
+
+To provide a comparison, we implement the KNN classifier and visualize its results.
+
+```{r}
+preproc = recipe(class ~ x + y, data = train_data) 
+
+knn_class = map(c(1, 10, 100), function(temp_k) {
+  knn_spec = nearest_neighbor(neighbors = temp_k,
+                              mode = "classification", engine = "kknn")
+
+  knn_wf = workflow() %>%
+    add_recipe(preproc) %>%
+    add_model(knn_spec) %>%
+    fit(train_data)
+  
+  pred = knn_wf %>% 
+    predict(test_data) %>% 
+    rename(!!sym(as.character(temp_k)) := 1)
+  
+  return(pred)
+}) %>% 
+  list_cbind()
+
+knn_class = test_data %>% 
+  bind_cols(knn_class)
+
+ggplot() + 
+  geom_point(data = knn_class %>% 
+               pivot_longer(-c(x, y),
+                            names_to = "k",
+                            values_to = "class"),
+             aes(x = x, y = y, color = class), alpha = 0.5) + 
+  geom_point(data = train_data, aes(x = x, y = y, color = class)) +
+  facet_wrap(~k)
+```
+
+In this code:
+- `preproc`: Preprocessing recipe for the data.
+- `knn_spec`: Specification of the KNN model with different values of k.
+- `knn_wf`: Workflow for fitting the KNN model.
+- `knn_class`: Predictions of the KNN model for the test data.
+
+## Conclusion
+
+This tutorial has provided an in-depth look at the Bayes classifier, from concept to implementation in R. By comparing it with the KNN classifier, we have demonstrated different approaches to classification problems. Understanding these methods and their applications will enhance your ability to analyze and interpret data effectively.
