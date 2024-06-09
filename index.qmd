@@ -12,6 +12,15 @@ learn and apply concepts introduced in the course.
 - **[Data Wrangling with dplyr](dplyr/dplyr.qmd)**
   - [Exercises for "Data Wrangling with dplyr"](dplyr/dplyr_exercises.qmd)
 
+- **[Simple linear regression](simple_regression/simple_regression.qmd)**
+
+- **[Multiple linear regression](multiple_regression/multiple_regression.qmd)**
+
+- **[KNN regression](knn_regression/knn_regression.qmd)**
+
+- **[KNN classification](knn_classification/knn_classification.qmd)**
+
+
 
 Explore the topics and start learning!
 

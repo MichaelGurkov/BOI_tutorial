@@ -1,0 +1,62 @@
+---
+title: "Simple Linear Regression with Palmer Penguins Data"
+format: html
+---
+
+# Introduction
+
+In this tutorial, we'll explore how to perform a simple linear regression using the Palmer Penguins dataset. Linear regression is a foundational statistical method that allows us to model the relationship between a dependent variable and one or more independent variables. Here, we'll investigate the relationship between the body mass and the bill depth of penguins.
+
+We'll be using the `tidyverse` and `tidymodels` libraries in R for data manipulation and modeling. Let's get started!
+
+# Load Necessary Libraries
+
+First, we'll load the required libraries. The `tidyverse` package provides tools for data manipulation and visualization, while `tidymodels` is a suite of packages for modeling. We will also load the `palmerpenguins` package which contains the dataset.
+
+```{r load_libraries}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+```
+
+# Load the Data
+
+Next, we'll select the relevant columns from the Palmer Penguins dataset.
+
+```{r load_data}
+penguin_data = penguins %>%
+  select(species, body_mass_g, bill_depth_mm)
+```
+
+# Fit the Linear Regression Model
+
+Now, we'll fit a simple linear regression model. Our goal is to predict `bill_depth_mm` using `body_mass_g`.
+
+```{r fit_linear_regression}
+linear_model_fit = linear_reg() %>% 
+  fit(bill_depth_mm ~ body_mass_g, data = penguin_data)
+```
+
+# Inspect the Model Coefficients
+
+After fitting the model, it's essential to inspect the coefficients to understand the relationship between the variables.
+
+```{r coefficients}
+linear_model_fit %>% 
+  tidy()
+```
+
+# Make Predictions
+
+Finally, we'll use our model to make predictions.
+
+```{r predict}
+predictions = linear_model_fit %>% 
+  predict(penguin_data)
+```
+
+# Conclusion
+
+In this tutorial, we demonstrated how to perform a simple linear regression using the Palmer Penguins dataset. We went through loading the data, fitting a model, inspecting the coefficients, and making predictions. This foundational technique can be applied to various datasets and provides a basis for more complex modeling.
+
+Feel free to explore further by adding more variables or trying different types of models. Happy coding!

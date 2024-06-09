@@ -1,0 +1,106 @@
+---
+title: "Multiple Linear Regression with Palmer Penguins Data"
+format: html
+---
+
+# Introduction
+
+In this tutorial, we'll explore how to perform a multiple linear regression using the Palmer Penguins dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we'll investigate how bill depth is influenced by both body mass and species.
+
+We'll be using the `tidyverse` and `tidymodels` libraries in R for data manipulation and modeling. Let's get started!
+
+# Load Necessary Libraries
+
+First, we'll load the required libraries. The `tidyverse` package provides tools for data manipulation and visualization, while `tidymodels` is a suite of packages for modeling. We will also load the `palmerpenguins` package which contains the dataset.
+
+```{r load_libraries}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+```
+
+# Load the Data
+
+Next, we'll select the relevant columns from the Palmer Penguins dataset.
+
+```{r load_data}
+penguin_data = penguins %>%
+  select(species, body_mass_g, bill_depth_mm)
+```
+
+# Fit the Multiple Linear Regression Model
+
+Now, we'll fit a multiple linear regression model. Our goal is to predict `bill_depth_mm` using `body_mass_g` and `species`. We will create a preprocessing recipe to handle categorical variables and interactions.
+
+The `recipe` package, part of the `tidymodels` ecosystem, provides a way to preprocess data before modeling. We define the transformations to apply to our data in a consistent and reusable manner using "steps".
+
+- `step_dummy()`: Converts categorical variables into dummy/indicator variables (one-hot encoding).
+- `step_interact()`: Creates interaction terms between variables.
+
+The `starts_with()` function from the `tidyselect` package is used to select columns that start with a specific string, making it easier to apply transformations to multiple columns at once.
+
+```{r fit_linear_reg}
+preprocess_recipe = recipe(bill_depth_mm ~ ., data = penguin_data) %>% 
+  step_dummy(species) %>% 
+  step_interact(terms = ~starts_with("species"):body_mass_g)
+```
+
+We then define our model specification using `linear_reg()`.
+
+```{r model_spec}
+model_spec = linear_reg()
+```
+
+Next, we use a `workflow`, a concept from the `tidymodels` package that helps streamline the modeling process by bundling together the preprocessing and modeling steps. This makes the workflow easier to manage and ensures that all steps are consistently applied.
+
+- `add_recipe()`: Adds the preprocessing recipe to the workflow.
+- `add_model()`: Adds the model specification to the workflow.
+
+Finally, we fit the workflow to the data.
+
+```{r linear_model_workflow}
+linear_model_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(model_spec) %>% 
+  fit(penguin_data)
+```
+
+Alternatively, we can use one-hot encoding for the categorical variables and specify a model without an intercept.
+
+```{r fit_linear_reg_one_hot, eval=FALSE}
+preprocess_recipe = recipe(bill_depth_mm ~ ., data = penguin_data) %>% 
+  step_dummy(species, one_hot = TRUE) %>% 
+  step_interact(terms = ~starts_with("species"):body_mass_g)
+
+model_spec = linear_reg() %>% 
+  set_engine("lm")
+
+linear_model_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(model_spec, formula = bill_depth_mm ~ 0 + . -body_mass_g) %>% 
+  fit(penguin_data)
+```
+
+# Inspect the Model Coefficients
+
+After fitting the model, it's essential to inspect the coefficients to understand the relationship between the variables.
+
+```{r coefficients}
+linear_model_workflow %>% 
+  tidy()
+```
+
+# Make Predictions
+
+Finally, we'll use our model to make predictions.
+
+```{r predict}
+predictions = linear_model_workflow %>% 
+  predict(penguin_data)
+```
+
+# Conclusion
+
+In this tutorial, we demonstrated how to perform a multiple linear regression using the Palmer Penguins dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.
+
+Feel free to explore further by adding more variables or trying different types of models. Happy coding!
