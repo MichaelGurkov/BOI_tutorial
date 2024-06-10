@@ -1,9 +1,9 @@
 ---
-title: "Introduction to Tree Regression with R"
+title: "Tree Regression with Boston Housing Data"
 format: html
 ---
 
-Welcome to this comprehensive tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields.
+Welcome to this comprehensive tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using the Boston Housing dataset. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields.
 
 ## What is Tree Regression?
 
@@ -11,37 +11,36 @@ Tree regression is a type of decision tree that is used for predicting continuou
 
 ## Loading Necessary Libraries
 
-First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, and `palmerpenguins` for accessing the dataset.
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization and `tidymodels` for model fitting.
 
 ```{r}
 library(tidyverse)
 library(tidymodels)
-library(palmerpenguins)
 library(rpart.plot)
 ```
 
 ## Load the Data
 
-Next, we'll select the relevant columns from the Palmer Penguins dataset.
+Next, we'll select the relevant columns from the Boston housing dataset.
 
 ```{r load_data}
-penguin_data = penguins %>%
-  select(species, body_mass_g, bill_depth_mm)
+boston_data = MASS::Boston %>%
+  select(medv, lstat)
 ```
 
 ## Visualizing the Data
 
-We start by visualizing the relationship between the predictor variable `body_mass_g` and the target variable `bill_depth_mm` from the `penguin_data` dataset.
+We start by visualizing the relationship between the predictor variable `lstat` and the target variable `medv` from the `boston_data` dataset.
 
 ```{r}
-penguin_data %>% 
-  ggplot(aes(body_mass_g, bill_depth_mm)) + 
-  geom_point(aes(color = species))
+boston_data %>% 
+  ggplot(aes(lstat, medv)) + 
+  geom_point()
 ```
 
 ## Fitting the Tree Regression Model
 
-Next, we fit a tree regression model to predict `bill_depth_mm` using `body_mass_g` as the predictor. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.
+Next, we fit a tree regression model to predict `medv` using `lstat` as the predictor. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.
 
 ```{r}
 tree_model_fit = decision_tree(
@@ -51,23 +50,16 @@ tree_model_fit = decision_tree(
   engine = "rpart",
   min_n = 5
 ) %>%
-  fit(bill_depth_mm ~ body_mass_g, data = penguin_data)
+  fit(medv ~ lstat, data = boston_data)
 ```
 
 ## Making Predictions
 
-Once the model is fitted, we use it to make predictions on the `penguin_data`. We then visualize the predicted values along with the actual values.
+Once the model is fitted, we use it to make predictions on the `boston_data`.
 
 ```{r}
 predictions = tree_model_fit %>% 
-  predict(penguin_data)
-
-penguin_data %>% 
-  bind_cols(predictions) %>% 
-  ggplot(aes(body_mass_g, bill_depth_mm)) + 
-  geom_point(aes(color = species)) + 
-  geom_point(aes(y = .pred), color = "red") +
-  geom_vline(xintercept = 4563)
+  predict(boston_data)
 ```
 
 ## Visualizing the Tree

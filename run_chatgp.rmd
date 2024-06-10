@@ -1,0 +1,17 @@
+
+```{r}
+
+library(tidyverse)
+
+library(openai)
+
+```
+
+```{r}
+
+file_path = file.choose()
+
+temp = read_lines(file_path)
+
+```
+
