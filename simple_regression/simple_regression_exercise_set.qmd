@@ -39,7 +39,7 @@ knn_model_fit = nearest_neighbor(
   mode = "regression",
   neighbors = 100
 ) %>% 
-fit(medv ~ rm, data = boston_data)
+  fit(medv ~ rm, data = boston_data)
 ```
 
 ## Task 4: Make Predictions

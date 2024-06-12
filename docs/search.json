@@ -1,73 +1,108 @@
 [
   {
-    "objectID": "tree_regression/tree_regression.html",
-    "href": "tree_regression/tree_regression.html",
-    "title": "Tree Regression with Boston Housing Data",
+    "objectID": "tree_regression/tree_regression_exercise_set.html",
+    "href": "tree_regression/tree_regression_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
     "section": "",
-    "text": "Welcome to this comprehensive tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using the Boston Housing dataset. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields."
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nSelect the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nFit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nUse the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
   },
   {
-    "objectID": "tree_regression/tree_regression.html#what-is-tree-regression",
-    "href": "tree_regression/tree_regression.html#what-is-tree-regression",
-    "title": "Tree Regression with Boston Housing Data",
-    "section": "What is Tree Regression?",
-    "text": "What is Tree Regression?\nTree regression is a type of decision tree that is used for predicting continuous values. Unlike classification trees that predict discrete class labels, regression trees predict a continuous target variable. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to minimize the variance within each subset."
-  },
-  {
-    "objectID": "tree_regression/tree_regression.html#loading-necessary-libraries",
-    "href": "tree_regression/tree_regression.html#loading-necessary-libraries",
-    "title": "Tree Regression with Boston Housing Data",
-    "section": "Loading Necessary Libraries",
-    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization and tidymodels for model fitting.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(rpart.plot)"
-  },
-  {
-    "objectID": "tree_regression/tree_regression.html#load-the-data",
-    "href": "tree_regression/tree_regression.html#load-the-data",
-    "title": "Tree Regression with Boston Housing Data",
-    "section": "Load the Data",
-    "text": "Load the Data\nNext, we’ll select the relevant columns from the Boston housing dataset.\n\nboston_data = MASS::Boston %&gt;%\n  select(medv, lstat)"
-  },
-  {
-    "objectID": "tree_regression/tree_regression.html#visualizing-the-data",
-    "href": "tree_regression/tree_regression.html#visualizing-the-data",
-    "title": "Tree Regression with Boston Housing Data",
-    "section": "Visualizing the Data",
-    "text": "Visualizing the Data\nWe start by visualizing the relationship between the predictor variable lstat and the target variable medv from the boston_data dataset.\n\nboston_data %&gt;% \n  ggplot(aes(lstat, medv)) + \n  geom_point()"
-  },
-  {
-    "objectID": "tree_regression/tree_regression.html#fitting-the-tree-regression-model",
-    "href": "tree_regression/tree_regression.html#fitting-the-tree-regression-model",
-    "title": "Tree Regression with Boston Housing Data",
-    "section": "Fitting the Tree Regression Model",
-    "text": "Fitting the Tree Regression Model\nNext, we fit a tree regression model to predict medv using lstat as the predictor. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.\n\ntree_model_fit = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 2,\n  mode = \"regression\",\n  engine = \"rpart\",\n  min_n = 5\n) %&gt;%\n  fit(medv ~ lstat, data = boston_data)"
-  },
-  {
-    "objectID": "tree_regression/tree_regression.html#making-predictions",
-    "href": "tree_regression/tree_regression.html#making-predictions",
-    "title": "Tree Regression with Boston Housing Data",
-    "section": "Making Predictions",
-    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the boston_data.\n\npredictions = tree_model_fit %&gt;% \n  predict(boston_data)"
-  },
-  {
-    "objectID": "tree_regression/tree_regression.html#visualizing-the-tree",
-    "href": "tree_regression/tree_regression.html#visualizing-the-tree",
-    "title": "Tree Regression with Boston Housing Data",
-    "section": "Visualizing the Tree",
-    "text": "Visualizing the Tree\nFinally, we visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated.\n\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
-  },
-  {
-    "objectID": "tree_regression/tree_regression.html#conclusion",
-    "href": "tree_regression/tree_regression.html#conclusion",
-    "title": "Tree Regression with Boston Housing Data",
-    "section": "Conclusion",
-    "text": "Conclusion\nThis tutorial has provided an in-depth look at tree regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree regression analysis. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
-  },
-  {
-    "objectID": "simple_regression/simple_regression.html",
-    "href": "simple_regression/simple_regression.html",
-    "title": "Simple Linear Regression with Boston Housing Data",
+    "objectID": "tree_regression/tree_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "tree_regression/tree_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
     "section": "",
-    "text": "Introduction\nIn this tutorial, we’ll explore how to perform a simple linear regression using the Boston Housing dataset. Linear regression is a foundational statistical method that allows us to model the relationship between a dependent variable and one or more independent variables. Here, we’ll investigate the relationship between the median value of owner-occupied homes (medv) and the average number of rooms per dwelling (rm).\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll load the Boston Housing dataset and select the relevant columns.\n\nboston_data = MASS::Boston %&gt;%\n  select(rm, medv)\n\n\n\nFit the Linear Regression Model\nNow, we’ll fit a simple linear regression model. Our goal is to predict medv using rm.\n\nlinear_model_fit = linear_reg() %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_fit %&gt;% \n  tidy()\n\n# A tibble: 2 × 5\n  term        estimate std.error statistic  p.value\n  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept)   -34.7      2.65      -13.1 6.95e-34\n2 rm              9.10     0.419      21.7 2.49e-74\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_fit %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a simple linear regression using the Boston Housing dataset. We went through loading the data, fitting a model, inspecting the coefficients, and making predictions. This foundational technique can be applied to various datasets and provides a basis for more complex modeling.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_exercise_set.html#task-2-load-the-data",
+    "href": "tree_regression/tree_regression_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Select the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "tree_regression/tree_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_exercise_set.html#task-4-make-predictions",
+    "href": "tree_regression/tree_regression_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Use the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_exercise_set.html",
+    "href": "tree_classification/tree_classification_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nSelect the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nFit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nUse the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "tree_classification/tree_classification_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_exercise_set.html#task-2-load-the-data",
+    "href": "tree_classification/tree_classification_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Select the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "tree_classification/tree_classification_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_exercise_set.html#task-4-make-predictions",
+    "href": "tree_classification/tree_classification_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Use the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_exercise_set.html",
+    "href": "simple_regression/simple_regression_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nSelect the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nFit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nUse the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "simple_regression/simple_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_exercise_set.html#task-2-load-the-data",
+    "href": "simple_regression/simple_regression_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Select the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "simple_regression/simple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_exercise_set.html#task-4-make-predictions",
+    "href": "simple_regression/simple_regression_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Use the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
   },
   {
     "objectID": "multiple_regression/multiple_regression.html",
@@ -77,46 +112,46 @@
     "text": "Introduction\nIn this tutorial, we’ll explore how to perform a multiple linear regression using the Boston Housing dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) and the proportion of owner-occupied units built before 1940 (age).\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll load the Boston Housing dataset and select the relevant columns.\n\nboston_data = MASS::Boston %&gt;%\n  select(rm, age, medv)\n\n\n\nFit the Multiple Linear Regression Model\nNow, we’ll fit a multiple linear regression model. Our goal is to predict medv using rm and age. We will create a preprocessing recipe to handle interactions.\nThe recipe package, part of the tidymodels ecosystem, provides a way to preprocess data before modeling. We define the transformations to apply to our data in a consistent and reusable manner using “steps”.\n\nstep_interact(): Creates interaction terms between variables.\n\n\npreprocess_recipe = recipe(medv ~ ., data = boston_data) %&gt;% \n  step_interact(terms = ~rm:age)\n\nWe then define our model specification using linear_reg().\n\nmodel_spec = linear_reg()\n\nNext, we use a workflow, a concept from the tidymodels package that helps streamline the modeling process by bundling together the preprocessing and modeling steps. This makes the workflow easier to manage and ensures that all steps are consistently applied.\n\nadd_recipe(): Adds the preprocessing recipe to the workflow.\nadd_model(): Adds the model specification to the workflow.\n\nFinally, we fit the workflow to the data.\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec) %&gt;% \n  fit(boston_data)\n\nAlternatively, we can specify a model without an intercept.\n\npreprocess_recipe = recipe(medv ~ ., data = boston_data) %&gt;% \n  step_interact(terms = ~rm:age)\n\nmodel_spec = linear_reg() %&gt;% \n  set_engine(\"lm\")\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec, formula = medv ~ 0 + . -rm) %&gt;% \n  fit(boston_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_workflow %&gt;% \n  tidy()\n\n# A tibble: 4 × 5\n  term        estimate std.error statistic  p.value\n  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept) -59.6       7.79       -7.65 1.01e-13\n2 rm           13.7       1.20       11.4  4.39e-27\n3 age           0.382     0.0967      3.94 9.15e- 5\n4 rm_x_age     -0.0714    0.0151     -4.72 3.03e- 6\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_workflow %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a multiple linear regression using the Boston Housing dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
   },
   {
+    "objectID": "knn_regression/knn_regression.html",
+    "href": "knn_regression/knn_regression.html",
+    "title": "KNN Regression with Boston Housing Data",
+    "section": "",
+    "text": "Introduction\nIn this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) regression using the Boston Housing dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) using KNN regression.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the MASS package which contains the Boston dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Boston Housing dataset. We’ll ensure there are no duplicate rows.\n\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\nFit the KNN Regression Model\nNow, we’ll fit a K-Nearest Neighbors (KNN) regression model. Our goal is to predict medv using rm. We set the number of neighbors to 100.\nThe nearest_neighbor() function from parsnip is used to specify the KNN model. Here, we set the mode to “regression” and specify the number of neighbors. We then fit the model to our data.\n\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n  ) %&gt;%\n  fit(medv ~ rm, data = boston_data)\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform KNN regression using the Boston Housing dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.\nFeel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!"
+  },
+  {
     "objectID": "knn_classification/knn_classification_exercise_set.html",
     "href": "knn_classification/knn_classification_exercise_set.html",
-    "title": "KNN Classification with Palmer Penguins Data: Exercise Set",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
     "section": "",
-    "text": "Load the required libraries: tidyverse, tidymodels, and palmerpenguins.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\n\n\n\n\n\nSelect the relevant columns from the Palmer Penguins dataset, filter out the Adelie species, remove any rows with missing values in body_mass_g, and ensure the species column is treated as a factor.\n\n\nShow the code\npenguin_data = penguins %&gt;% \n  filter(!species == \"Adelie\") %&gt;% \n  select(body_mass_g, species) %&gt;% \n  filter(!is.na(body_mass_g)) %&gt;% \n  mutate(species = factor(species))\n\n\n\n\n\nFit a K-Nearest Neighbors (KNN) classification model to classify penguin species using body_mass_g.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(mode = \"classification\") %&gt;% \n  fit(species ~ body_mass_g, data = penguin_data)\n\n\n\n\n\nUse the fitted model to make predictions on the penguin data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(penguin_data)\n\n\n\n\n\nCreate a confusion matrix to evaluate the performance of the KNN classification model.\n\n\nShow the code\npenguin_data %&gt;% \n  select(species) %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = species, estimate = .pred_class)"
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nSelect the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nFit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \nfit(medv ~ rm, data = boston_data)\n\n\n\n\n\nUse the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
   },
   {
     "objectID": "knn_classification/knn_classification_exercise_set.html#task-1-load-necessary-libraries",
     "href": "knn_classification/knn_classification_exercise_set.html#task-1-load-necessary-libraries",
-    "title": "KNN Classification with Palmer Penguins Data: Exercise Set",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
     "section": "",
-    "text": "Load the required libraries: tidyverse, tidymodels, and palmerpenguins.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)"
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
   },
   {
     "objectID": "knn_classification/knn_classification_exercise_set.html#task-2-load-the-data",
     "href": "knn_classification/knn_classification_exercise_set.html#task-2-load-the-data",
-    "title": "KNN Classification with Palmer Penguins Data: Exercise Set",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
     "section": "",
-    "text": "Select the relevant columns from the Palmer Penguins dataset, filter out the Adelie species, remove any rows with missing values in body_mass_g, and ensure the species column is treated as a factor.\n\n\nShow the code\npenguin_data = penguins %&gt;% \n  filter(!species == \"Adelie\") %&gt;% \n  select(body_mass_g, species) %&gt;% \n  filter(!is.na(body_mass_g)) %&gt;% \n  mutate(species = factor(species))"
+    "text": "Select the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
   },
   {
-    "objectID": "knn_classification/knn_classification_exercise_set.html#task-3-fit-the-knn-classification-model",
-    "href": "knn_classification/knn_classification_exercise_set.html#task-3-fit-the-knn-classification-model",
-    "title": "KNN Classification with Palmer Penguins Data: Exercise Set",
+    "objectID": "knn_classification/knn_classification_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "knn_classification/knn_classification_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
     "section": "",
-    "text": "Fit a K-Nearest Neighbors (KNN) classification model to classify penguin species using body_mass_g.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(mode = \"classification\") %&gt;% \n  fit(species ~ body_mass_g, data = penguin_data)"
+    "text": "Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \nfit(medv ~ rm, data = boston_data)"
   },
   {
     "objectID": "knn_classification/knn_classification_exercise_set.html#task-4-make-predictions",
     "href": "knn_classification/knn_classification_exercise_set.html#task-4-make-predictions",
-    "title": "KNN Classification with Palmer Penguins Data: Exercise Set",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
     "section": "",
-    "text": "Use the fitted model to make predictions on the penguin data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(penguin_data)"
-  },
-  {
-    "objectID": "knn_classification/knn_classification_exercise_set.html#task-5-evaluate-the-model",
-    "href": "knn_classification/knn_classification_exercise_set.html#task-5-evaluate-the-model",
-    "title": "KNN Classification with Palmer Penguins Data: Exercise Set",
-    "section": "",
-    "text": "Create a confusion matrix to evaluate the performance of the KNN classification model.\n\n\nShow the code\npenguin_data %&gt;% \n  select(species) %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = species, estimate = .pred_class)"
+    "text": "Use the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
   },
   {
     "objectID": "index.html",
@@ -130,7 +165,7 @@
     "href": "index.html#topics",
     "title": "Welcome to BOI DS course tutorials",
     "section": "Topics",
-    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression\nMultiple linear regression\nKNN regression\nKNN classification\n\nExercises for “KNN classification”\n\nBayes classifier simulation\nTree regression\nTree classification\n[Cross validation]\n\nExplore the topics and start learning!"
+    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression\n\nExercises for “Simple linear regression”\n\nMultiple linear regression\n\nExercises for “Multiple linear regression”\n\nKNN regression\n\nExercises for “KNN regression”\n\nKNN classification\n\nExercises for “KNN classification”\n\nBayes classifier simulation\nTree regression\n\nExercises for “Tree regression”\n\nTree classification\n\nExercises for “Tree classification”\n\nCross validation\n\nExplore the topics and start learning!"
   },
   {
     "objectID": "dplyr/dplyr.html",
@@ -273,11 +308,116 @@
     "text": "Introduction\nIn this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) classification using the Palmer Penguins dataset. KNN classification is a non-parametric method that classifies data points based on the k-nearest neighbors to a data point. This method is particularly useful for classification tasks when the relationship between features and the target variable is complex and nonlinear. Here, we’ll investigate how to classify penguin species based on body mass using KNN classification.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the palmerpenguins package which contains the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Palmer Penguins dataset. We’ll filter out the Adelie species to simplify our classification task, remove any rows with missing values in body_mass_g, and ensure the species column is treated as a factor.\n\npenguin_data = penguins %&gt;% \n  filter(!species == \"Adelie\") %&gt;% \n  select(body_mass_g, species) %&gt;% \n  filter(!is.na(body_mass_g)) %&gt;% \n  mutate(species = factor(species))\n\n\n\nFit the KNN Classification Model\nNow, we’ll fit a K-Nearest Neighbors (KNN) classification model. Our goal is to classify penguin species using body_mass_g.\nThe nearest_neighbor() function from parsnip is used to specify the KNN model. Here, we set the mode to “classification”. We then fit the model to our data.\n\nknn_model_fit = nearest_neighbor(mode = \"classification\") %&gt;% \n  fit(species ~ body_mass_g, data = penguin_data)\n\n\n\nMake Predictions\nNext, we’ll use our model to make predictions.\n\npredictions = knn_model_fit %&gt;% \n  predict(penguin_data)\n\n\n\nEvaluate the Model\nTo evaluate the performance of our KNN classification model, we’ll create a confusion matrix.\nA confusion matrix is a table used to describe the performance of a classification model. It compares the actual values with the values predicted by the model. The confusion matrix provides the following metrics:\n\nTrue Positives (TP): The number of positive class predictions that are actually positive.\nTrue Negatives (TN): The number of negative class predictions that are actually negative.\nFalse Positives (FP): The number of negative class predictions that are actually positive.\nFalse Negatives (FN): The number of positive class predictions that are actually negative.\n\nThese metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.\n\npenguin_data %&gt;% \n  select(species) %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = species, estimate = .pred_class)\n\n           Truth\nPrediction  Chinstrap Gentoo\n  Chinstrap        59      2\n  Gentoo            9    121\n\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform KNN classification using the Palmer Penguins dataset. We went through loading the data, fitting a KNN classification model, making predictions, and evaluating the model using a confusion matrix. KNN classification is a versatile technique that can capture complex relationships in data and is useful for various classification tasks.\nFeel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!"
   },
   {
-    "objectID": "knn_regression/knn_regression.html",
-    "href": "knn_regression/knn_regression.html",
-    "title": "KNN Regression with Boston Housing Data",
+    "objectID": "knn_classification/knn_classification_exercise_set_exercise_set.html",
+    "href": "knn_classification/knn_classification_exercise_set_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
     "section": "",
-    "text": "Introduction\nIn this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) regression using the Boston Housing dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) using KNN regression.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the MASS package which contains the Boston dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Boston Housing dataset. We’ll ensure there are no duplicate rows.\n\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\nFit the KNN Regression Model\nNow, we’ll fit a K-Nearest Neighbors (KNN) regression model. Our goal is to predict medv using rm. We set the number of neighbors to 100.\nThe nearest_neighbor() function from parsnip is used to specify the KNN model. Here, we set the mode to “regression” and specify the number of neighbors. We then fit the model to our data.\n\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n  ) %&gt;%\n  fit(medv ~ rm, data = boston_data)\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform KNN regression using the Boston Housing dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.\nFeel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!"
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nSelect the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nFit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nUse the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "knn_classification/knn_classification_exercise_set_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "knn_classification/knn_classification_exercise_set_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "knn_classification/knn_classification_exercise_set_exercise_set.html#task-2-load-the-data",
+    "href": "knn_classification/knn_classification_exercise_set_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Select the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "knn_classification/knn_classification_exercise_set_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "knn_classification/knn_classification_exercise_set_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "knn_classification/knn_classification_exercise_set_exercise_set.html#task-4-make-predictions",
+    "href": "knn_classification/knn_classification_exercise_set_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Use the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "knn_regression/knn_regression_exercise_set.html",
+    "href": "knn_regression/knn_regression_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nSelect the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nFit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nUse the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "knn_regression/knn_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "knn_regression/knn_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "knn_regression/knn_regression_exercise_set.html#task-2-load-the-data",
+    "href": "knn_regression/knn_regression_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Select the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "knn_regression/knn_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "knn_regression/knn_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "knn_regression/knn_regression_exercise_set.html#task-4-make-predictions",
+    "href": "knn_regression/knn_regression_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Use the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html",
+    "href": "multiple_regression/multiple_regression_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nSelect the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nFit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \nfit(medv ~ rm, data = boston_data)\n\n\n\n\n\nUse the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Load the required libraries: tidyverse and tidymodels.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-2-load-the-data",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Select the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \nfit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-4-make-predictions",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data: Exercise Set",
+    "section": "",
+    "text": "Use the fitted model to make predictions on the Boston Housing data.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "simple_regression/simple_regression.html",
+    "href": "simple_regression/simple_regression.html",
+    "title": "Simple Linear Regression with Boston Housing Data",
+    "section": "",
+    "text": "Introduction\nIn this tutorial, we’ll explore how to perform a simple linear regression using the Boston Housing dataset. Linear regression is a foundational statistical method that allows us to model the relationship between a dependent variable and one or more independent variables. Here, we’ll investigate the relationship between the median value of owner-occupied homes (medv) and the average number of rooms per dwelling (rm).\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll load the Boston Housing dataset and select the relevant columns.\n\nboston_data = MASS::Boston %&gt;%\n  select(rm, medv)\n\n\n\nFit the Linear Regression Model\nNow, we’ll fit a simple linear regression model. Our goal is to predict medv using rm.\n\nlinear_model_fit = linear_reg() %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_fit %&gt;% \n  tidy()\n\n# A tibble: 2 × 5\n  term        estimate std.error statistic  p.value\n  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept)   -34.7      2.65      -13.1 6.95e-34\n2 rm              9.10     0.419      21.7 2.49e-74\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_fit %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a simple linear regression using the Boston Housing dataset. We went through loading the data, fitting a model, inspecting the coefficients, and making predictions. This foundational technique can be applied to various datasets and provides a basis for more complex modeling.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
   },
   {
     "objectID": "tree_classification/tree_classification.html",
@@ -341,5 +481,68 @@
     "title": "Introduction to Tree Classification with R",
     "section": "Conclusion",
     "text": "Conclusion\nThis tutorial has provided an in-depth look at tree classification, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree classification analysis. Understanding these methods and their applications will enhance your ability to analyze and interpret categorical data effectively."
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html",
+    "href": "tree_regression/tree_regression.html",
+    "title": "Tree Regression with Boston Housing Data",
+    "section": "",
+    "text": "Welcome to this comprehensive tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using the Boston Housing dataset. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields."
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#what-is-tree-regression",
+    "href": "tree_regression/tree_regression.html#what-is-tree-regression",
+    "title": "Tree Regression with Boston Housing Data",
+    "section": "What is Tree Regression?",
+    "text": "What is Tree Regression?\nTree regression is a type of decision tree that is used for predicting continuous values. Unlike classification trees that predict discrete class labels, regression trees predict a continuous target variable. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to minimize the variance within each subset."
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#loading-necessary-libraries",
+    "href": "tree_regression/tree_regression.html#loading-necessary-libraries",
+    "title": "Tree Regression with Boston Housing Data",
+    "section": "Loading Necessary Libraries",
+    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization and tidymodels for model fitting.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(rpart.plot)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#load-the-data",
+    "href": "tree_regression/tree_regression.html#load-the-data",
+    "title": "Tree Regression with Boston Housing Data",
+    "section": "Load the Data",
+    "text": "Load the Data\nNext, we’ll select the relevant columns from the Boston housing dataset.\n\nboston_data = MASS::Boston %&gt;%\n  select(medv, lstat)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#visualizing-the-data",
+    "href": "tree_regression/tree_regression.html#visualizing-the-data",
+    "title": "Tree Regression with Boston Housing Data",
+    "section": "Visualizing the Data",
+    "text": "Visualizing the Data\nWe start by visualizing the relationship between the predictor variable lstat and the target variable medv from the boston_data dataset.\n\nboston_data %&gt;% \n  ggplot(aes(lstat, medv)) + \n  geom_point()"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#fitting-the-tree-regression-model",
+    "href": "tree_regression/tree_regression.html#fitting-the-tree-regression-model",
+    "title": "Tree Regression with Boston Housing Data",
+    "section": "Fitting the Tree Regression Model",
+    "text": "Fitting the Tree Regression Model\nNext, we fit a tree regression model to predict medv using lstat as the predictor. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.\n\ntree_model_fit = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 2,\n  mode = \"regression\",\n  engine = \"rpart\",\n  min_n = 5\n) %&gt;%\n  fit(medv ~ lstat, data = boston_data)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#making-predictions",
+    "href": "tree_regression/tree_regression.html#making-predictions",
+    "title": "Tree Regression with Boston Housing Data",
+    "section": "Making Predictions",
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the boston_data.\n\npredictions = tree_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#visualizing-the-tree",
+    "href": "tree_regression/tree_regression.html#visualizing-the-tree",
+    "title": "Tree Regression with Boston Housing Data",
+    "section": "Visualizing the Tree",
+    "text": "Visualizing the Tree\nFinally, we visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated.\n\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#conclusion",
+    "href": "tree_regression/tree_regression.html#conclusion",
+    "title": "Tree Regression with Boston Housing Data",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis tutorial has provided an in-depth look at tree regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree regression analysis. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
   }
 ]

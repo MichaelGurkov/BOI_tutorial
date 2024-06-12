@@ -112,18 +112,81 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<!-- ```{r} -->
+<!-- ```{r load_libraries} -->
 <!-- library(tidyverse) -->
+<!-- library(glue) -->
 <!-- library(openai) -->
 <!-- ``` -->
-<!-- ```{r} -->
+<!-- ```{r list_qmd_files} -->
 <!-- files_list = list.files("C:\\Users\\Home\\Documents\\BOI_tutorial", -->
 <!--                         pattern = "*.qmd",full.names = TRUE, -->
-<!--                         recursive = TRUE) %>%  -->
-<!--   str_remove_all(pattern = ".*dplyr.*") %>%  -->
-<!--   str_remove_all(pattern = ".*index.*") %>%  -->
+<!--                         recursive = TRUE) %>% -->
+<!--   str_remove_all(pattern = ".*dplyr.*") %>% -->
+<!--   str_remove_all(pattern = ".*index.*") %>% -->
 <!--   str_remove_all(pattern = ".*bayes.*") -->
 <!-- files_list = files_list[nzchar(files_list)] -->
+<!-- ``` -->
+<!-- ```{r run_chatgpt} -->
+<!-- Sys.setenv( -->
+<!--   OPENAI_API_KEY = Sys.getenv("mg_openai_key") -->
+<!-- ) -->
+<!-- get_exercise_set = function(current_tutorial, -->
+<!--                             example_tutorial, -->
+<!--                             example_exercise){ -->
+<!--   current_tutorial = paste(current_tutorial, collapse = "") -->
+<!--   example_tutorial = paste(example_tutorial, collapse = "") -->
+<!--   example_exercise = paste(example_exercise, collapse = "") -->
+<!--   system_prompt = paste0( -->
+<!--     "You are a professional assistant that ", -->
+<!--     "creates content explaining Machine Learning ", -->
+<!--     "and R Tidyverse programming." -->
+<!--   ) -->
+<!--   user_prompt = glue( -->
+<!--     "I'll give you a text of a quarto document (.qmd), ", -->
+<!--     "the document is a tutorial that combines explanations ", -->
+<!--     "with code. Based on this tutorial prepare a document ", -->
+<!--     "that will be used as an exercise set to practice the ", -->
+<!--     "tutorial code. The document should have only tasks ", -->
+<!--     "followed by a chunk of code that presents the solution for the task.", -->
+<!--     "I'll also provide an example of a tutorial and a corresponding exercise set", -->
+<!--     "The example tutorial is: {example_tutorial}", -->
+<!--     "The corresponding example exercise is: {example_exercise}", -->
+<!--     "The tutorial that need to be converted to exercise set is: {current_tutorial}", -->
+<!--     "You need to return the document without pretext,", -->
+<!--     " the document should start with an appropriate YAML (nothing precedes ---)", -->
+<!--     " and without concluding remarks" -->
+<!--   ) -->
+<!--   answer = create_chat_completion( -->
+<!--   model = "gpt-4o", -->
+<!--   temperature = 0, -->
+<!--   messages = list( -->
+<!--     list("role" = "system", -->
+<!--          "content" = system_prompt), -->
+<!--     list("role" = "user", -->
+<!--          "content" = user_prompt) -->
+<!--   ) -->
+<!-- ) -->
+<!--   return(answer$choices$message.content) -->
+<!-- } -->
+<!-- ex_tutorial = read_lines(paste0("C:\\Users\\Home\\Documents\\", -->
+<!--                                 "BOI_tutorial\\knn_classification", -->
+<!--                                 "\\knn_classification.qmd")) -->
+<!-- ex_exercise = read_lines(paste0("C:\\Users\\Home\\Documents\\", -->
+<!--                                 "BOI_tutorial\\knn_classification", -->
+<!--                                 "\\knn_classification_exercise_set.qmd")) -->
+<!-- cur_tutorial = read_lines(paste0("C:\\Users\\Home\\Documents\\", -->
+<!--                                  "BOI_tutorial\\knn_regression", -->
+<!--                                  "\\knn_regression.qmd")) -->
+<!-- walk(files_list, function(temp_file_path){ -->
+<!--   target_file_name = str_replace(temp_file_path, -->
+<!--                                  "\\.qmd", -->
+<!--                                  "_exercise_set.qmd") -->
+<!--   temp_res = get_exercise_set(current_tutorial = cur_tutorial, -->
+<!--                         example_tutorial = ex_tutorial, -->
+<!--                         example_exercise = ex_exercise) -->
+<!--   print(temp_file_path) -->
+<!--   write_lines(temp_res, target_file_name) -->
+<!-- }) -->
 <!-- ``` -->
 
 
