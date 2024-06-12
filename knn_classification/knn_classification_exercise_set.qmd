@@ -1,0 +1,79 @@
+---
+title: "KNN Classification with Palmer Penguins Data: Exercise Set"
+format: html
+---
+  
+# Exercise Set
+
+## Task 1: Load Necessary Libraries
+  
+  Load the required libraries: `tidyverse`, `tidymodels`, and `palmerpenguins`.
+
+```{r load_libraries}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+```
+
+## Task 2: Load the Data
+
+Select the relevant columns from the Palmer Penguins dataset, filter out the `Adelie` species, remove any rows with missing values in `body_mass_g`, and ensure the `species` column is treated as a factor.
+
+```{r load_data}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+
+penguin_data = penguins %>% 
+  filter(!species == "Adelie") %>% 
+  select(body_mass_g, species) %>% 
+  filter(!is.na(body_mass_g)) %>% 
+  mutate(species = factor(species))
+```
+
+## Task 3: Fit the KNN Classification Model
+
+Fit a K-Nearest Neighbors (KNN) classification model to classify penguin species using `body_mass_g`.
+
+```{r fit_classification}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+knn_model_fit = nearest_neighbor(mode = "classification") %>% 
+  fit(species ~ body_mass_g, data = penguin_data)
+```
+
+## Task 4: Make Predictions
+
+Use the fitted model to make predictions on the penguin data.
+
+```{r predict}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+predictions = knn_model_fit %>% 
+  predict(penguin_data)
+```
+
+## Task 5: Evaluate the Model
+
+Create a confusion matrix to evaluate the performance of the KNN classification model.
+
+```{r confusion_matrix}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+penguin_data %>% 
+  select(species) %>% 
+  bind_cols(predictions) %>% 
+  conf_mat(truth = species, estimate = .pred_class)
+```

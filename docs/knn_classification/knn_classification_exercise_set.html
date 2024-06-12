@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Tutorials for DS course materials - Multiple Linear Regression with Boston Housing Data</title>
+<title>Tutorials for DS course materials - KNN Classification with Palmer Penguins Data: Exercise Set</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -142,13 +142,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#load-necessary-libraries" id="toc-load-necessary-libraries" class="nav-link" data-scroll-target="#load-necessary-libraries">Load Necessary Libraries</a></li>
-  <li><a href="#load-the-data" id="toc-load-the-data" class="nav-link" data-scroll-target="#load-the-data">Load the Data</a></li>
-  <li><a href="#fit-the-multiple-linear-regression-model" id="toc-fit-the-multiple-linear-regression-model" class="nav-link" data-scroll-target="#fit-the-multiple-linear-regression-model">Fit the Multiple Linear Regression Model</a></li>
-  <li><a href="#inspect-the-model-coefficients" id="toc-inspect-the-model-coefficients" class="nav-link" data-scroll-target="#inspect-the-model-coefficients">Inspect the Model Coefficients</a></li>
-  <li><a href="#make-predictions" id="toc-make-predictions" class="nav-link" data-scroll-target="#make-predictions">Make Predictions</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#exercise-set" id="toc-exercise-set" class="nav-link active" data-scroll-target="#exercise-set">Exercise Set</a>
+  <ul class="collapse">
+  <li><a href="#task-1-load-necessary-libraries" id="toc-task-1-load-necessary-libraries" class="nav-link" data-scroll-target="#task-1-load-necessary-libraries">Task 1: Load Necessary Libraries</a></li>
+  <li><a href="#task-2-load-the-data" id="toc-task-2-load-the-data" class="nav-link" data-scroll-target="#task-2-load-the-data">Task 2: Load the Data</a></li>
+  <li><a href="#task-3-fit-the-knn-classification-model" id="toc-task-3-fit-the-knn-classification-model" class="nav-link" data-scroll-target="#task-3-fit-the-knn-classification-model">Task 3: Fit the KNN Classification Model</a></li>
+  <li><a href="#task-4-make-predictions" id="toc-task-4-make-predictions" class="nav-link" data-scroll-target="#task-4-make-predictions">Task 4: Make Predictions</a></li>
+  <li><a href="#task-5-evaluate-the-model" id="toc-task-5-evaluate-the-model" class="nav-link" data-scroll-target="#task-5-evaluate-the-model">Task 5: Evaluate the Model</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -157,7 +158,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Multiple Linear Regression with Boston Housing Data</h1>
+<h1 class="title">KNN Classification with Palmer Penguins Data: Exercise Set</h1>
 </div>
 
 
@@ -174,99 +175,71 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="introduction" class="level1">
-<h1>Introduction</h1>
-<p>In this tutorial, we’ll explore how to perform a multiple linear regression using the Boston Housing dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) and the proportion of owner-occupied units built before 1940 (age).</p>
-<p>We’ll be using the <code>tidyverse</code> and <code>tidymodels</code> libraries in R for data manipulation and modeling. Let’s get started!</p>
-</section>
-<section id="load-necessary-libraries" class="level1">
-<h1>Load Necessary Libraries</h1>
-<p>First, we’ll load the required libraries. The <code>tidyverse</code> package provides tools for data manipulation and visualization, while <code>tidymodels</code> is a suite of packages for modeling.</p>
+<section id="exercise-set" class="level1">
+<h1>Exercise Set</h1>
+<section id="task-1-load-necessary-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="task-1-load-necessary-libraries">Task 1: Load Necessary Libraries</h2>
+<p>Load the required libraries: <code>tidyverse</code>, <code>tidymodels</code>, and <code>palmerpenguins</code>.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(palmerpenguins)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
-<section id="load-the-data" class="level1">
-<h1>Load the Data</h1>
-<p>Next, we’ll load the Boston Housing dataset and select the relevant columns.</p>
+<section id="task-2-load-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="task-2-load-the-data">Task 2: Load the Data</h2>
+<p>Select the relevant columns from the Palmer Penguins dataset, filter out the <code>Adelie</code> species, remove any rows with missing values in <code>body_mass_g</code>, and ensure the <code>species</code> column is treated as a factor.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>boston_data <span class="ot">=</span> MASS<span class="sc">::</span>Boston <span class="sc">%&gt;%</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(rm, age, medv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>penguin_data <span class="ot">=</span> penguins <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>species <span class="sc">==</span> <span class="st">"Adelie"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(body_mass_g, species) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(body_mass_g)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">species =</span> <span class="fu">factor</span>(species))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
-<section id="fit-the-multiple-linear-regression-model" class="level1">
-<h1>Fit the Multiple Linear Regression Model</h1>
-<p>Now, we’ll fit a multiple linear regression model. Our goal is to predict <code>medv</code> using <code>rm</code> and <code>age</code>. We will create a preprocessing recipe to handle interactions.</p>
-<p>The <code>recipe</code> package, part of the <code>tidymodels</code> ecosystem, provides a way to preprocess data before modeling. We define the transformations to apply to our data in a consistent and reusable manner using “steps”.</p>
-<ul>
-<li><code>step_interact()</code>: Creates interaction terms between variables.</li>
-</ul>
+<section id="task-3-fit-the-knn-classification-model" class="level2">
+<h2 class="anchored" data-anchor-id="task-3-fit-the-knn-classification-model">Task 3: Fit the KNN Classification Model</h2>
+<p>Fit a K-Nearest Neighbors (KNN) classification model to classify penguin species using <code>body_mass_g</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>preprocess_recipe <span class="ot">=</span> <span class="fu">recipe</span>(medv <span class="sc">~</span> ., <span class="at">data =</span> boston_data) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_interact</span>(<span class="at">terms =</span> <span class="sc">~</span>rm<span class="sc">:</span>age)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>We then define our model specification using <code>linear_reg()</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model_spec <span class="ot">=</span> <span class="fu">linear_reg</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Next, we use a <code>workflow</code>, a concept from the <code>tidymodels</code> package that helps streamline the modeling process by bundling together the preprocessing and modeling steps. This makes the workflow easier to manage and ensures that all steps are consistently applied.</p>
-<ul>
-<li><code>add_recipe()</code>: Adds the preprocessing recipe to the workflow.</li>
-<li><code>add_model()</code>: Adds the model specification to the workflow.</li>
-</ul>
-<p>Finally, we fit the workflow to the data.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>linear_model_workflow <span class="ot">=</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(preprocess_recipe) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(model_spec) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Alternatively, we can specify a model without an intercept.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>preprocess_recipe <span class="ot">=</span> <span class="fu">recipe</span>(medv <span class="sc">~</span> ., <span class="at">data =</span> boston_data) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_interact</span>(<span class="at">terms =</span> <span class="sc">~</span>rm<span class="sc">:</span>age)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>model_spec <span class="ot">=</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>linear_model_workflow <span class="ot">=</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(preprocess_recipe) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(model_spec, <span class="at">formula =</span> medv <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> . <span class="sc">-</span>rm) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>knn_model_fit <span class="ot">=</span> <span class="fu">nearest_neighbor</span>(<span class="at">mode =</span> <span class="st">"classification"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(species <span class="sc">~</span> body_mass_g, <span class="at">data =</span> penguin_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
-<section id="inspect-the-model-coefficients" class="level1">
-<h1>Inspect the Model Coefficients</h1>
-<p>After fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.</p>
+<section id="task-4-make-predictions" class="level2">
+<h2 class="anchored" data-anchor-id="task-4-make-predictions">Task 4: Make Predictions</h2>
+<p>Use the fitted model to make predictions on the penguin data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>linear_model_workflow <span class="sc">%&gt;%</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 5
-  term        estimate std.error statistic  p.value
-  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-1 (Intercept) -59.6       7.79       -7.65 1.01e-13
-2 rm           13.7       1.20       11.4  4.39e-27
-3 age           0.382     0.0967      3.94 9.15e- 5
-4 rm_x_age     -0.0714    0.0151     -4.72 3.03e- 6</code></pre>
-</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">=</span> knn_model_fit <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(penguin_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
-<section id="make-predictions" class="level1">
-<h1>Make Predictions</h1>
-<p>Finally, we’ll use our model to make predictions.</p>
+<section id="task-5-evaluate-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="task-5-evaluate-the-model">Task 5: Evaluate the Model</h2>
+<p>Create a confusion matrix to evaluate the performance of the KNN classification model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">=</span> linear_model_workflow <span class="sc">%&gt;%</span> </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>penguin_data <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(species) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(predictions) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">conf_mat</span>(<span class="at">truth =</span> species, <span class="at">estimate =</span> .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
-</section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
-<p>In this tutorial, we demonstrated how to perform a multiple linear regression using the Boston Housing dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.</p>
-<p>Feel free to explore further by adding more variables or trying different types of models. Happy coding!</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

@@ -19,6 +19,7 @@ learn and apply concepts introduced in the course.
 - **[KNN regression](knn_regression/knn_regression.qmd)**
 
 - **[KNN classification](knn_classification/knn_classification.qmd)**
+  - [Exercises for "KNN classification"](knn_classification/knn_classification_exercise_set.qmd)
 
 - **[Bayes classifier simulation](bayes_classifier_simulation/bayes_classifier_simulation.qmd)**
 
