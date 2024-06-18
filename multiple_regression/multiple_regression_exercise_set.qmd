@@ -1,12 +1,17 @@
 ---
-title: "KNN Regression with Boston Housing Data: Exercise Set"
+title: "KNN Regression with [Boston Housing Data](../datasets/boston.qmd) - Exercise Set"
 format: html
+execute: 
+  cache: true
 ---
 
 # Exercise Set
 
+This exercise set is designed to help you practice the steps involved in performing K-Nearest Neighbors (KNN) regression using the Boston housing dataset. Each task is followed by a chunk of code that presents the solution.
+
 ## Task 1: Load Necessary Libraries
-Load the required libraries: `tidyverse` and `tidymodels`.
+
+**Task:** Load the `tidyverse` and `tidymodels` libraries.
 
 ```{r load_libraries}
 #| code-fold: true
@@ -17,7 +22,8 @@ library(tidymodels)
 ```
 
 ## Task 2: Load the Data
-Select the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.
+
+**Task:** Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.
 
 ```{r load_data}
 #| code-fold: true
@@ -29,7 +35,8 @@ boston_data = MASS::Boston %>%
 ```
 
 ## Task 3: Fit the KNN Regression Model
-Fit a K-Nearest Neighbors (KNN) regression model to predict `medv` using `rm`. Set the number of neighbors to 100.
+
+**Task:** Fit a K-Nearest Neighbors (KNN) regression model to predict `medv` using `rm`. Set the number of neighbors to 100.
 
 ```{r fit_knn_regression}
 #| code-fold: true
@@ -39,11 +46,12 @@ knn_model_fit = nearest_neighbor(
   mode = "regression",
   neighbors = 100
 ) %>% 
-fit(medv ~ rm, data = boston_data)
+  fit(medv ~ rm, data = boston_data)
 ```
 
 ## Task 4: Make Predictions
-Use the fitted model to make predictions on the Boston Housing data.
+
+**Task:** Use the fitted model to make predictions.
 
 ```{r predict}
 #| code-fold: true

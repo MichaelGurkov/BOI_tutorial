@@ -156,7 +156,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">KNN Regression with Boston Housing Data</h1>
+<h1 class="title">KNN Regression with <a href="../datasets/boston.html">Boston Housing Data</a></h1>
 </div>
 
 
@@ -175,7 +175,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>In this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) regression using the Boston Housing dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) using KNN regression.</p>
+<p>In this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) regression using the Boston housing dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) using KNN regression.</p>
 <p>We’ll be using the <code>tidyverse</code> and <code>tidymodels</code> libraries in R for data manipulation and modeling. Let’s get started!</p>
 </section>
 <section id="load-necessary-libraries" class="level1">
@@ -188,7 +188,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="load-the-data" class="level1">
 <h1>Load the Data</h1>
-<p>Next, we’ll select the relevant columns from the Boston Housing dataset. We’ll ensure there are no duplicate rows.</p>
+<p>Next, we’ll select the relevant columns from the Boston housing dataset. We’ll ensure there are no duplicate rows.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>boston_data <span class="ot">=</span> MASS<span class="sc">::</span>Boston <span class="sc">%&gt;%</span> </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(rm, medv) <span class="sc">%&gt;%</span> </span>
@@ -217,7 +217,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>In this tutorial, we demonstrated how to perform KNN regression using the Boston Housing dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.</p>
+<p>In this tutorial, we demonstrated how to perform KNN regression using the Boston housing dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.</p>
 <p>Feel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!</p>
 
 

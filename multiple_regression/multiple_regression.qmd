@@ -1,11 +1,13 @@
 ---
-title: "Multiple Linear Regression with Boston Housing Data"
+title: "Multiple Linear Regression with [Boston Housing Data](../datasets/boston.qmd)"
 format: html
+execute: 
+  cache: true
 ---
 
 # Introduction
 
-In this tutorial, we'll explore how to perform a multiple linear regression using the Boston Housing dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we'll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) and the proportion of owner-occupied units built before 1940 (age).
+In this tutorial, we'll explore how to perform a multiple linear regression using the Boston housing dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we'll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) and the proportion of owner-occupied units built before 1940 (age).
 
 We'll be using the `tidyverse` and `tidymodels` libraries in R for data manipulation and modeling. Let's get started!
 
@@ -20,9 +22,9 @@ library(tidymodels)
 
 # Load the Data
 
-Next, we'll load the Boston Housing dataset and select the relevant columns.
+Next, we'll load the Boston housing dataset and select the relevant columns.
 
-```{r load_data}
+```{r load_data, cache=TRUE}
 boston_data = MASS::Boston %>%
   select(rm, age, medv)
 ```
@@ -35,14 +37,14 @@ The `recipe` package, part of the `tidymodels` ecosystem, provides a way to prep
 
 - `step_interact()`: Creates interaction terms between variables.
 
-```{r fit_linear_reg}
+```{r fit_linear_reg, cache=TRUE}
 preprocess_recipe = recipe(medv ~ ., data = boston_data) %>% 
   step_interact(terms = ~rm:age)
 ```
 
 We then define our model specification using `linear_reg()`.
 
-```{r model_spec}
+```{r model_spec, cache=TRUE}
 model_spec = linear_reg()
 ```
 
@@ -53,7 +55,7 @@ Next, we use a `workflow`, a concept from the `tidymodels` package that helps st
 
 Finally, we fit the workflow to the data.
 
-```{r linear_model_workflow}
+```{r linear_model_workflow, cache=TRUE}
 linear_model_workflow = workflow() %>% 
   add_recipe(preprocess_recipe) %>% 
   add_model(model_spec) %>% 
@@ -62,7 +64,7 @@ linear_model_workflow = workflow() %>%
 
 Alternatively, we can specify a model without an intercept.
 
-```{r fit_linear_reg_no_intercept, eval=FALSE}
+```{r fit_linear_reg_no_intercept, eval=FALSE, cache=TRUE}
 preprocess_recipe = recipe(medv ~ ., data = boston_data) %>% 
   step_interact(terms = ~rm:age)
 
@@ -79,7 +81,7 @@ linear_model_workflow = workflow() %>%
 
 After fitting the model, it's essential to inspect the coefficients to understand the relationship between the variables.
 
-```{r coefficients}
+```{r coefficients, cache=TRUE}
 linear_model_workflow %>% 
   tidy()
 ```
@@ -95,6 +97,6 @@ predictions = linear_model_workflow %>%
 
 # Conclusion
 
-In this tutorial, we demonstrated how to perform a multiple linear regression using the Boston Housing dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.
+In this tutorial, we demonstrated how to perform a multiple linear regression using the Boston housing dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.
 
 Feel free to explore further by adding more variables or trying different types of models. Happy coding!

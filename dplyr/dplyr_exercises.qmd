@@ -70,6 +70,9 @@ filtered_data
 4. Filter the rows where `score` is less than 80.
 
 ```{r ex4_solution}
+#| code-fold: true
+#| code-summary: "Show the code"
+
 filtered_data = data %>%
   filter(score < 80)
 

@@ -1,6 +1,8 @@
 ---
 title: "Introduction to Tree Classification with R"
 format: html
+execute: 
+  cache: true
 ---
 
 Welcome to this tutorial on tree classification. This tutorial aims to introduce the concept of tree classification, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree classification is a powerful tool for predicting categorical outcomes based on input features, and it is widely used in various fields.

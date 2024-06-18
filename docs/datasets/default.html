@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Tutorials for DS course materials - KNN Regression with Boston Housing Data: Exercise Set</title>
+<title>Tutorials for DS course materials - Introduction to the Default Data Set</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -142,13 +142,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#exercise-set" id="toc-exercise-set" class="nav-link active" data-scroll-target="#exercise-set">Exercise Set</a>
-  <ul class="collapse">
-  <li><a href="#task-1-load-necessary-libraries" id="toc-task-1-load-necessary-libraries" class="nav-link" data-scroll-target="#task-1-load-necessary-libraries">Task 1: Load Necessary Libraries</a></li>
-  <li><a href="#task-2-load-the-data" id="toc-task-2-load-the-data" class="nav-link" data-scroll-target="#task-2-load-the-data">Task 2: Load the Data</a></li>
-  <li><a href="#task-3-fit-the-knn-regression-model" id="toc-task-3-fit-the-knn-regression-model" class="nav-link" data-scroll-target="#task-3-fit-the-knn-regression-model">Task 3: Fit the KNN Regression Model</a></li>
-  <li><a href="#task-4-make-predictions" id="toc-task-4-make-predictions" class="nav-link" data-scroll-target="#task-4-make-predictions">Task 4: Make Predictions</a></li>
-  </ul></li>
+  <li><a href="#variables-in-the-default-data-set" id="toc-variables-in-the-default-data-set" class="nav-link active" data-scroll-target="#variables-in-the-default-data-set">Variables in the Default Data Set</a></li>
+  <li><a href="#loading-the-default-data-set" id="toc-loading-the-default-data-set" class="nav-link" data-scroll-target="#loading-the-default-data-set">Loading the Default Data Set</a></li>
   </ul>
 </nav>
     </div>
@@ -157,7 +152,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">KNN Regression with Boston Housing Data: Exercise Set</h1>
+<h1 class="title">Introduction to the Default Data Set</h1>
 </div>
 
 
@@ -174,58 +169,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="exercise-set" class="level1">
-<h1>Exercise Set</h1>
-<section id="task-1-load-necessary-libraries" class="level2">
-<h2 class="anchored" data-anchor-id="task-1-load-necessary-libraries">Task 1: Load Necessary Libraries</h2>
-<p>Load the required libraries: <code>tidyverse</code> and <code>tidymodels</code>.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
+<p>The Default data set, included in the ISLR package, is frequently utilized in classification tasks within machine learning and statistical analysis. This data set comprises information about 10,000 individuals, offering insights into factors that might influence loan default behavior. It includes variables indicating default status, student status, average credit card balance, and income.</p>
+<section id="variables-in-the-default-data-set" class="level2">
+<h2 class="anchored" data-anchor-id="variables-in-the-default-data-set">Variables in the Default Data Set</h2>
+<p>Here is an explanation of each variable in the Default data set, along with their names and data types:</p>
+<ol type="1">
+<li><strong>default</strong>: Indicates whether the individual defaulted on their loan (Factor: <code>No</code>, <code>Yes</code>)</li>
+<li><strong>student</strong>: Indicates whether the individual is a student (Factor: <code>No</code>, <code>Yes</code>)</li>
+<li><strong>balance</strong>: The average balance that the individual has remaining on their credit card (Numeric)</li>
+<li><strong>income</strong>: The individual’s income (Numeric)</li>
+</ol>
 </section>
-<section id="task-2-load-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="task-2-load-the-data">Task 2: Load the Data</h2>
-<p>Select the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.</p>
+<section id="loading-the-default-data-set" class="level2">
+<h2 class="anchored" data-anchor-id="loading-the-default-data-set">Loading the Default Data Set</h2>
+<p>In R, data sets from specific packages are often loaded using the <code>::</code> operator, which allows you to access a dataset or function from a particular package without attaching the entire package. This is particularly useful to avoid name conflicts or reduce the clutter in your namespace.</p>
+<p>To load the Default data set from the <code>ISLR</code> package, you can use the following code:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>boston_data <span class="ot">=</span> MASS<span class="sc">::</span>Boston <span class="sc">%&gt;%</span> </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(rm, medv) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the Default data set</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"Default"</span>, <span class="at">package =</span> <span class="st">"ISLR"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="task-3-fit-the-knn-regression-model" class="level2">
-<h2 class="anchored" data-anchor-id="task-3-fit-the-knn-regression-model">Task 3: Fit the KNN Regression Model</h2>
-<p>Fit a K-Nearest Neighbors (KNN) regression model to predict <code>medv</code> using <code>rm</code>. Set the number of neighbors to 100.</p>
+<p>Here’s a step-by-step explanation of the code:</p>
+<ol type="1">
+<li><p><strong>data(“Default”, package = “ISLR”)</strong>: This line loads the Default data set. The <code>data</code> function is a base R function that loads specified data sets. By providing the name of the data set (<code>"Default"</code>) and the package from which it comes (<code>"ISLR"</code>), R understands where to find the data set.</p></li>
+<li><p><strong>ISLR::Default</strong>: Alternatively, you can directly reference the data set using the <code>::</code> operator as follows:</p></li>
+</ol>
 <div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>knn_model_fit <span class="ot">=</span> <span class="fu">nearest_neighbor</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"regression"</span>,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">neighbors =</span> <span class="dv">100</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(medv <span class="sc">~</span> rm, <span class="at">data =</span> boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Default <span class="ot">=</span> ISLR<span class="sc">::</span>Default</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="task-4-make-predictions" class="level2">
-<h2 class="anchored" data-anchor-id="task-4-make-predictions">Task 4: Make Predictions</h2>
-<p>Use the fitted model to make predictions on the Boston Housing data.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">=</span> knn_model_fit <span class="sc">%&gt;%</span> </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
+<p>The <code>::</code> operator allows you to access the <code>Default</code> data set from the <code>ISLR</code> package directly. This method does not load the entire <code>ISLR</code> package into your R session, but only the specific data set or function you are interested in.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

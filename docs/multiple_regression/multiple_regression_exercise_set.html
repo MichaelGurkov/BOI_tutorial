@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Tutorials for DS course materials - KNN Regression with Boston Housing Data: Exercise Set</title>
+<title>Tutorials for DS course materials - KNN Regression with Boston Housing Data - Exercise Set</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -157,7 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">KNN Regression with Boston Housing Data: Exercise Set</h1>
+<h1 class="title">KNN Regression with <a href="../datasets/boston.html">Boston Housing Data</a> - Exercise Set</h1>
 </div>
 
 
@@ -176,9 +176,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="exercise-set" class="level1">
 <h1>Exercise Set</h1>
+<p>This exercise set is designed to help you practice the steps involved in performing K-Nearest Neighbors (KNN) regression using the Boston housing dataset. Each task is followed by a chunk of code that presents the solution.</p>
 <section id="task-1-load-necessary-libraries" class="level2">
 <h2 class="anchored" data-anchor-id="task-1-load-necessary-libraries">Task 1: Load Necessary Libraries</h2>
-<p>Load the required libraries: <code>tidyverse</code> and <code>tidymodels</code>.</p>
+<p><strong>Task:</strong> Load the <code>tidyverse</code> and <code>tidymodels</code> libraries.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
@@ -189,7 +190,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="task-2-load-the-data" class="level2">
 <h2 class="anchored" data-anchor-id="task-2-load-the-data">Task 2: Load the Data</h2>
-<p>Select the relevant columns from the Boston Housing dataset and ensure there are no duplicate rows.</p>
+<p><strong>Task:</strong> Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
@@ -201,7 +202,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="task-3-fit-the-knn-regression-model" class="level2">
 <h2 class="anchored" data-anchor-id="task-3-fit-the-knn-regression-model">Task 3: Fit the KNN Regression Model</h2>
-<p>Fit a K-Nearest Neighbors (KNN) regression model to predict <code>medv</code> using <code>rm</code>. Set the number of neighbors to 100.</p>
+<p><strong>Task:</strong> Fit a K-Nearest Neighbors (KNN) regression model to predict <code>medv</code> using <code>rm</code>. Set the number of neighbors to 100.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
@@ -209,13 +210,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"regression"</span>,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">neighbors =</span> <span class="dv">100</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">fit</span>(medv <span class="sc">~</span> rm, <span class="at">data =</span> boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(medv <span class="sc">~</span> rm, <span class="at">data =</span> boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="task-4-make-predictions" class="level2">
 <h2 class="anchored" data-anchor-id="task-4-make-predictions">Task 4: Make Predictions</h2>
-<p>Use the fitted model to make predictions on the Boston Housing data.</p>
+<p><strong>Task:</strong> Use the fitted model to make predictions.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
