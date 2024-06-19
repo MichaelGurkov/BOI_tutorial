@@ -1,11 +1,13 @@
 ---
-title: "KNN Regression with Boston Housing Data"
+title: "KNN Regression with [Boston Housing Data](../datasets/boston.qmd)"
 format: html
+execute: 
+  cache: true
 ---
 
 # Introduction
 
-In this tutorial, we'll explore how to perform K-Nearest Neighbors (KNN) regression using the Boston Housing dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we'll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) using KNN regression.
+In this tutorial, we'll explore how to perform K-Nearest Neighbors (KNN) regression using the Boston housing dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we'll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) using KNN regression.
 
 We'll be using the `tidyverse` and `tidymodels` libraries in R for data manipulation and modeling. Let's get started!
 
@@ -20,7 +22,7 @@ library(tidymodels)
 
 # Load the Data
 
-Next, we'll select the relevant columns from the Boston Housing dataset. We'll ensure there are no duplicate rows.
+Next, we'll select the relevant columns from the Boston housing dataset. We'll ensure there are no duplicate rows.
 
 ```{r load_data}
 boston_data = MASS::Boston %>% 
@@ -53,6 +55,6 @@ predictions = knn_model_fit %>%
 
 # Conclusion
 
-In this tutorial, we demonstrated how to perform KNN regression using the Boston Housing dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.
+In this tutorial, we demonstrated how to perform KNN regression using the Boston housing dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.
 
 Feel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!

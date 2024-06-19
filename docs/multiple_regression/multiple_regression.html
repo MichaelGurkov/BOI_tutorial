@@ -157,7 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Multiple Linear Regression with Boston Housing Data</h1>
+<h1 class="title">Multiple Linear Regression with <a href="../datasets/boston.html">Boston Housing Data</a></h1>
 </div>
 
 
@@ -176,7 +176,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>In this tutorial, we’ll explore how to perform a multiple linear regression using the Boston Housing dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) and the proportion of owner-occupied units built before 1940 (age).</p>
+<p>In this tutorial, we’ll explore how to perform a multiple linear regression using the Boston housing dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) and the proportion of owner-occupied units built before 1940 (age).</p>
 <p>We’ll be using the <code>tidyverse</code> and <code>tidymodels</code> libraries in R for data manipulation and modeling. Let’s get started!</p>
 </section>
 <section id="load-necessary-libraries" class="level1">
@@ -189,7 +189,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="load-the-data" class="level1">
 <h1>Load the Data</h1>
-<p>Next, we’ll load the Boston Housing dataset and select the relevant columns.</p>
+<p>Next, we’ll load the Boston housing dataset and select the relevant columns.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>boston_data <span class="ot">=</span> MASS<span class="sc">::</span>Boston <span class="sc">%&gt;%</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(rm, age, medv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -263,7 +263,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>In this tutorial, we demonstrated how to perform a multiple linear regression using the Boston Housing dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.</p>
+<p>In this tutorial, we demonstrated how to perform a multiple linear regression using the Boston housing dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.</p>
 <p>Feel free to explore further by adding more variables or trying different types of models. Happy coding!</p>
 
 

@@ -1,11 +1,13 @@
 ---
-title: "Simple Linear Regression with Boston Housing Data"
+title: "Simple Linear Regression with [Boston Housing Data](../datasets/default.qmd)"
 format: html
+execute:
+  cache: true
 ---
 
 # Introduction
 
-In this tutorial, we'll explore how to perform a simple linear regression using the Boston Housing dataset. Linear regression is a foundational statistical method that allows us to model the relationship between a dependent variable and one or more independent variables. Here, we'll investigate the relationship between the median value of owner-occupied homes (medv) and the average number of rooms per dwelling (rm).
+In this tutorial, we'll explore how to perform a simple linear regression using the Boston housing dataset. Linear regression is a foundational statistical method that allows us to model the relationship between a dependent variable and one or more independent variables. Here, we'll investigate the relationship between the median value of owner-occupied homes (medv) and the average number of rooms per dwelling (rm).
 
 We'll be using the `tidyverse` and `tidymodels` libraries in R for data manipulation and modeling. Let's get started!
 
@@ -20,7 +22,7 @@ library(tidymodels)
 
 # Load the Data
 
-Next, we'll load the Boston Housing dataset and select the relevant columns.
+Next, we'll load the Boston housing dataset and select the relevant columns.
 
 ```{r load_data}
 boston_data = MASS::Boston %>%
@@ -56,6 +58,6 @@ predictions = linear_model_fit %>%
 
 # Conclusion
 
-In this tutorial, we demonstrated how to perform a simple linear regression using the Boston Housing dataset. We went through loading the data, fitting a model, inspecting the coefficients, and making predictions. This foundational technique can be applied to various datasets and provides a basis for more complex modeling.
+In this tutorial, we demonstrated how to perform a simple linear regression using the Boston housing dataset. We went through loading the data, fitting a model, inspecting the coefficients, and making predictions. This foundational technique can be applied to various datasets and provides a basis for more complex modeling.
 
 Feel free to explore further by adding more variables or trying different types of models. Happy coding!

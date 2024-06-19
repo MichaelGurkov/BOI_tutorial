@@ -32,6 +32,10 @@ learn and apply concepts introduced in the course.
 - **[Tree classification](tree_classification/tree_classification.qmd)**
   - [Exercises for "Tree classification"](tree_classification/tree_classification_exercise_set.qmd)
 
-- **[Cross validation](cross_validation/cross_validation.qmd)**
+- **[Cross validation]**
+
+- **[Data sets]**
+  - [Boston dataset](datasets/boston.qmd)
+  - [Default dataset](datasets/default.qmd)
 
 Explore the topics and start learning!

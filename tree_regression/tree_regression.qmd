@@ -1,9 +1,11 @@
 ---
-title: "Tree Regression with Boston Housing Data"
+title: "Tree Regression with [Boston Housing Data](../datasets/boston.qmd)"
 format: html
+execute: 
+  cache: true
 ---
 
-Welcome to this comprehensive tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using the Boston Housing dataset. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields.
+Welcome to this comprehensive tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using the Boston housing dataset. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields.
 
 ## What is Tree Regression?
 
