@@ -1,5 +1,5 @@
 ---
-title: "Simple Linear Regression with [Boston Housing Data](../datasets/default.qmd)"
+title: "Simple Linear Regression with [Boston Housing Data](../datasets/boston.qmd)"
 format: html
 execute:
   cache: true

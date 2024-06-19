@@ -1,5 +1,5 @@
 ---
-title: "KNN Classification with Default Data"
+title: "KNN Classification with [Default](../datasets/default.qmd) data"
 format: html
 execute: 
   cache: true

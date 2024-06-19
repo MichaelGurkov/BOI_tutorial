@@ -30,6 +30,7 @@ learn and apply concepts introduced in the course.
   - [Exercises for "Tree regression"](tree_regression/tree_regression_exercise_set.qmd)
 
 - **[Tree classification](tree_classification/tree_classification.qmd)**
+  - [Practice for "Tree classification"](tree_classification/tree_classification_practice.qmd)
   - [Exercises for "Tree classification"](tree_classification/tree_classification_exercise_set.qmd)
 
 - **[Cross validation]**
