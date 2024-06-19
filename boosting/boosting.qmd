@@ -1,0 +1,151 @@
+---
+title: "Introduction to Boosted Tree Regression with [Boston](../datasets/boston.qmd) data"
+format: html
+execute: 
+  cache: true
+---
+
+Welcome to this tutorial on Boosted Tree regression. This tutorial aims to introduce the concept of Boosted Tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Boosted Tree regression is a powerful tool for predicting continuous outcomes based on input features and is widely used in various fields.
+
+## What is Boosted Tree Regression?
+
+Boosted Tree regression is an ensemble learning method that combines the predictions of several base estimators, typically decision trees, in order to improve robustness over a single estimator. Boosting sequentially applies the weak model to the data and adjusts weights to emphasize the misclassified instances.
+
+## Loading Necessary Libraries
+
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, `MASS` for accessing the dataset, and `xgboost` for the Boosted Tree model.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(MASS)
+library(xgboost)
+```
+
+## Loading the Data
+
+We load and prepare the `Boston` dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (`medv`), which we will predict using the other attributes.
+
+```{r load_data}
+boston_data = MASS::Boston
+```
+
+## Splitting the Data
+
+We split the data into training and testing sets using the `initial_split` function. We set a 50-50 split by setting the `prop` argument.
+
+```{r split_data}
+data_split = initial_split(boston_data, prop = 0.5)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Fitting the Boosted Tree Regression Model
+
+Next, we fit a Boosted Tree regression model to predict `medv` using all available predictors. We use a `recipe` to preprocess the data and define the model using `boost_tree` with specified parameters. The `workflow` function combines the recipe and model for fitting.
+
+```{r}
+preprocess_recipe = recipe(medv ~ ., data = train_set)
+
+bt_model = boost_tree(
+  trees = 500,
+  tree_depth = 6,
+  learn_rate = 0.1,
+  loss_reduction = 0,
+  sample_size = 1,
+  mode = "regression",
+  engine = "xgboost"
+)
+
+bt_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(bt_model)
+
+bt_model_fit = bt_workflow %>% 
+  fit(train_set)
+```
+
+## Making Predictions
+
+Once the model is fitted, we use it to make predictions on the test set. The `predict` function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).
+
+```{r}
+predictions = bt_model_fit %>% 
+  predict(test_set)
+
+metrics = test_set %>% 
+  bind_cols(predictions) %>% 
+  metrics(truth = medv, estimate = .pred)
+
+metrics
+```
+
+## Evaluating Feature Importance
+
+We can evaluate the importance of each feature in the Boosted Tree model using the `xgboost` package's `xgb.importance` function. This helps in understanding which features contribute most to the model's predictions.
+
+```{r}
+importance_matrix = xgb.importance(model = bt_model_fit %>% extract_fit_engine())
+xgb.plot.importance(importance_matrix)
+```
+
+## Tuning the Boosted Tree Model
+
+Hyperparameter tuning is essential for improving the performance of the Boosted Tree model. We use cross-validation to determine the optimal values for parameters like `tree_depth` and `learn_rate`.
+
+We define a Boosted Tree model with tunable parameters and update the workflow to include these tunable parameters. We then define the resampling method using 5-fold cross-validation with `vfold_cv`.
+
+```{r}
+# Define the Boosted Tree model with tunable parameters
+bt_tune_model = boost_tree(
+  trees = 500,
+  tree_depth = tune(),
+  learn_rate = tune(),
+  loss_reduction = 0,
+  sample_size = 1,
+  mode = "regression"
+) %>% 
+  set_engine("xgboost")
+
+# Update the workflow
+tune_bt_workflow = bt_workflow %>% 
+  update_model(bt_tune_model)
+
+# Define the resampling method
+set.seed(123)
+cv_splits = vfold_cv(train_set, v = 5)
+
+# Perform tuning
+tune_results = tune_grid(
+  tune_bt_workflow,
+  resamples = cv_splits,
+  grid = grid_regular(tree_depth(range = c(2, 10)), learn_rate(range = c(0.01, 0.3)), levels = 10)
+)
+
+# Extract the best parameters
+best_params = select_best(tune_results, metric = "rmse")
+```
+
+The `tune_grid` function performs a grid search over a range of `tree_depth` and `learn_rate` values to find the best parameter combination that minimizes the RMSE metric. We then finalize the model with the optimal parameters and fit it to the training data using `last_fit`, which refits the model on the entire training set and evaluates it on the test set.
+
+```{r}
+# Finalize the model with the best parameters
+final_bt_workflow = finalize_workflow(tune_bt_workflow, best_params)
+
+# Fit the finalized model
+final_bt_fit = final_bt_workflow %>%
+  last_fit(data_split)
+```
+
+## Evaluating the Final Model
+
+Finally, we evaluate the performance of the tuned Boosted Tree model using RMSE on the test set predictions.
+
+```{r}
+final_bt_fit %>% 
+  collect_metrics()
+```
+
+## Conclusion
+
+This tutorial has provided an in-depth look at Boosted Tree regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and evaluating feature importance, we have demonstrated the entire process of Boosted Tree regression analysis. Additionally, we have shown how to tune a Boosted Tree model using the `tidymodels` framework to improve its performance. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively.

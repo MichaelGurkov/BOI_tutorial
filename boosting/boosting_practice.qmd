@@ -1,0 +1,175 @@
+---
+title: "Practice Set: Boosted Tree Regression with Boston Data"
+format: html
+execute: 
+  cache: true
+---
+
+Welcome to this practice set on Boosted Tree regression. This set will guide you through a series of tasks to reinforce your understanding of Boosted Tree regression using the Boston dataset. Each section will include tasks and the corresponding R code for implementation.
+
+## Task 1: Loading Necessary Libraries
+
+Load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, `MASS` for accessing the dataset, and `xgboost` for the Boosted Tree model.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(MASS)
+library(xgboost)
+```
+
+## Task 2: Loading the Data
+
+Load and prepare the `Boston` dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (`medv`), which we will predict using the other attributes.
+
+```{r load_data}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+boston_data = MASS::Boston
+```
+
+## Task 3: Splitting the Data
+
+Split the data into training and testing sets using the `initial_split` function. Set a 50-50 split by setting the `prop` argument.
+
+```{r split_data}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+data_split = initial_split(boston_data, prop = 0.5)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Task 4: Fitting the Boosted Tree Regression Model
+
+Fit a Boosted Tree regression model to predict `medv` using all available predictors. Use a `recipe` to preprocess the data and define the model using `boost_tree` with specified parameters. Combine the recipe and model using the `workflow` function and fit it to the training data.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+preprocess_recipe = recipe(medv ~ ., data = train_set)
+
+bt_model = boost_tree(
+  trees = 500,
+  tree_depth = 6,
+  learn_rate = 0.1,
+  loss_reduction = 0,
+  sample_size = 1,
+  mode = "regression",
+  engine = "xgboost"
+)
+
+bt_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(bt_model)
+
+bt_model_fit = bt_workflow %>% 
+  fit(train_set)
+```
+
+## Task 5: Making Predictions
+
+Use the fitted model to make predictions on the test set. Evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+predictions = bt_model_fit %>% 
+  predict(test_set)
+
+metrics = test_set %>% 
+  bind_cols(predictions) %>% 
+  metrics(truth = medv, estimate = .pred)
+
+metrics
+```
+
+## Task 6: Evaluating Feature Importance
+
+Evaluate the importance of each feature in the Boosted Tree model using the `xgboost` package's `xgb.importance` function. Visualize the feature importance.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+importance_matrix = xgb.importance(model = bt_model_fit %>% extract_fit_engine())
+xgb.plot.importance(importance_matrix)
+```
+
+## Task 7: Tuning the Boosted Tree Model
+
+Perform hyperparameter tuning to improve the performance of the Boosted Tree model. Use cross-validation to determine the optimal values for parameters like `tree_depth` and `learn_rate`.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Define the Boosted Tree model with tunable parameters
+bt_tune_model = boost_tree(
+  trees = 500,
+  tree_depth = tune(),
+  learn_rate = tune(),
+  loss_reduction = 0,
+  sample_size = 1,
+  mode = "regression"
+) %>% 
+  set_engine("xgboost")
+
+# Update the workflow
+tune_bt_workflow = bt_workflow %>% 
+  update_model(bt_tune_model)
+
+# Define the resampling method
+set.seed(123)
+cv_splits = vfold_cv(train_set, v = 5)
+
+# Perform tuning
+tune_results = tune_grid(
+  tune_bt_workflow,
+  resamples = cv_splits,
+  grid = grid_regular(tree_depth(range = c(2, 10)), learn_rate(range = c(0.01, 0.3)), levels = 10)
+)
+
+# Extract the best parameters
+best_params = select_best(tune_results, metric = "rmse")
+```
+
+## Task 8: Finalizing the Model
+
+Finalize the model with the optimal parameters and fit it to the training data using `last_fit`, which refits the model on the entire training set and evaluates it on the test set.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Finalize the model with the best parameters
+final_bt_workflow = finalize_workflow(tune_bt_workflow, best_params)
+
+# Fit the finalized model
+final_bt_fit = final_bt_workflow %>%
+  last_fit(data_split)
+```
+
+## Task 9: Evaluating the Final Model
+
+Evaluate the performance of the tuned Boosted Tree model using RMSE on the test set predictions.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+final_bt_fit %>% 
+  collect_metrics()
+```

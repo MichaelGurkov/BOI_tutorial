@@ -13,30 +13,32 @@ learn and apply concepts introduced in the course.
   - [Exercises for "Data Wrangling with dplyr"](dplyr/dplyr_exercises.qmd)
 
 - **[Simple linear regression](simple_regression/simple_regression.qmd)**
-  - [Exercises for Simple linear regression](simple_regression/simple_regression_exercise_set.qmd)
+  <!-- - [Exercises for Simple linear regression](simple_regression/simple_regression_exercise_set.qmd) -->
 
 - **[Multiple linear regression](multiple_regression/multiple_regression.qmd)**
-  - [Exercises for Multiple linear regression](multiple_regression/multiple_regression_exercise_set.qmd)
+  <!-- - [Exercises for Multiple linear regression](multiple_regression/multiple_regression_exercise_set.qmd) -->
 
 - **[KNN regression](knn_regression/knn_regression.qmd)**
-  - [Exercises for KNN regression](knn_regression/knn_regression_exercise_set.qmd)
+  <!-- - [Exercises for KNN regression](knn_regression/knn_regression_exercise_set.qmd) -->
 
 - **[KNN classification](knn_classification/knn_classification.qmd)**
-  - [Exercises for KNN classification](knn_classification/knn_classification_exercise_set.qmd)
+  <!-- - [Exercises for KNN classification](knn_classification/knn_classification_exercise_set.qmd) -->
 
 - **[Bayes classifier simulation](bayes_classifier_simulation/bayes_classifier_simulation.qmd)**
 
 - **[Tree regression](tree_regression/tree_regression.qmd)**
   - [Practice for Tree regression](tree_regression/tree_regression_practice.qmd)
-  - [Exercises for Tree regression](tree_regression/tree_regression_exercise_set.qmd)
+  <!-- - [Exercises for Tree regression](tree_regression/tree_regression_exercise_set.qmd) -->
 
 - **[Random Forest](random_forest/random_forest.qmd)**
   - [Practice for Tree regression](random_forest/random_forest_practice.qmd)
-  - [Exercises for Random Forest](tree_classification/tree_classification_exercise_set.qmd)
+  <!-- - [Exercises for Random Forest](tree_classification/tree_classification_exercise_set.qmd) -->
+
+- **[Boosted trees](boosting/boosting.qmd)**
 
 - **[Tree classification](tree_classification/tree_classification.qmd)**
   - [Practice for Tree classification](tree_classification/tree_classification_practice.qmd)
-  - [Exercises for Tree classification](tree_classification/tree_classification_exercise_set.qmd)
+  <!-- - [Exercises for Tree classification](tree_classification/tree_classification_exercise_set.qmd) -->
 
 - **[Cross validation]**
 
