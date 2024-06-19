@@ -32,7 +32,7 @@ boston_data = MASS::Boston
 
 ## Splitting the Data
 
-We split the data into training and testing sets. The `initial_split` function ensures that the proportion of `medv` is maintained in both sets.
+We split the data into training and testing sets using the `initial_split` function. We set a 50-50 split by setting the `prop` argument.
 
 ```{r split_data}
 data_split = initial_split(boston_data, prop = 0.5)
