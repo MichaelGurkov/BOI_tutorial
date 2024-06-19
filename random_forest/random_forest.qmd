@@ -1,0 +1,148 @@
+---
+title: "Introduction to Random Forest Regression with [Boston](../datasets/boston.qmd) data"
+format: html
+execute: 
+  cache: true
+---
+
+Welcome to this tutorial on Random Forest regression. This tutorial aims to introduce the concept of Random Forest regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Random Forest regression is a powerful tool for predicting continuous outcomes based on input features and is widely used in various fields.
+
+## What is Random Forest Regression?
+
+Random Forest regression is an ensemble learning method that constructs multiple decision trees during training and outputs the average prediction of the individual trees. This method improves predictive accuracy and controls overfitting.
+
+## Loading Necessary Libraries
+
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, `MASS` for accessing the dataset, and `randomForest` for the Random Forest model.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(MASS)
+library(randomForest)
+```
+
+## Loading the Data
+
+We load and prepare the `Boston` dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (`medv`), which we will predict using the other attributes.
+
+```{r load_data}
+boston_data = MASS::Boston
+```
+
+## Splitting the Data
+
+We split the data into training and testing sets using the `initial_split` function. We set a 50-50 split by setting the `prop` argument.
+
+```{r split_data}
+data_split = initial_split(boston_data, prop = 0.5)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Fitting the Random Forest Regression Model
+
+Next, we fit a Random Forest regression model to predict `medv` using all available predictors. We use a `recipe` to preprocess the data and define the model using `rand_forest` with specified parameters. The `workflow` function combines the recipe and model for fitting.
+
+```{r}
+preprocess_recipe = recipe(medv ~ ., data = train_set)
+
+rf_model = rand_forest(
+  mtry = 12,
+  trees = 500,
+  mode = "regression"
+) %>% 
+  set_engine("randomForest")
+
+rf_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(rf_model)
+
+rf_model_fit = rf_workflow %>% 
+  fit(train_set)
+```
+
+## Making Predictions
+
+Once the model is fitted, we use it to make predictions on the test set. The `predict` function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).
+
+```{r}
+predictions = rf_model_fit %>% 
+  predict(test_set)
+
+metrics = test_set %>% 
+  bind_cols(predictions) %>% 
+  metrics(truth = medv, estimate = .pred)
+
+metrics
+```
+
+## Evaluating Feature Importance
+
+We can evaluate the importance of each feature in the Random Forest model using the `randomForest` package's `importance` function. This helps in understanding which features contribute most to the model's predictions.
+
+```{r}
+
+rf_model_fit %>% 
+  extract_fit_engine() %>% 
+  importance()
+
+```
+
+## Tuning the Random Forest Model
+
+Hyperparameter tuning is essential for improving the performance of the Random Forest model. We use cross-validation to determine the optimal values for parameters like `mtry` (number of variables considered at each split) and `trees` (number of trees in the forest).
+
+We define a Random Forest model with tunable parameters and update the workflow to include these tunable parameters. We then define the resampling method using 5-fold cross-validation with `vfold_cv`.
+
+```{r}
+# Define the Random Forest model with tunable parameters
+rf_tune_model = rand_forest(
+  mtry = tune(),
+  trees = tune(),
+  mode = "regression",
+  engine = "randomForest"
+)
+
+# Update the workflow
+tune_rf_workflow = rf_workflow %>% 
+  update_model(rf_tune_model)
+
+# Define the resampling method
+set.seed(123)
+cv_splits = vfold_cv(train_set, v = 5)
+
+# Perform tuning
+tune_results = tune_grid(
+  tune_rf_workflow,
+  resamples = cv_splits,
+  grid = grid_regular(mtry(range = c(2, 10)), trees(range = c(100, 1000)), levels = 10)
+)
+
+# Extract the best parameters
+best_params = select_best(tune_results, metric = "rmse")
+```
+
+The `tune_grid` function performs a grid search over a range of `mtry` and `trees` values to find the best parameter combination that minimizes the RMSE metric. We then finalize the model with the optimal parameters and fit it to the training data using `last_fit`, which refits the model on the entire training set and evaluates it on the test set.
+
+```{r}
+# Finalize the model with the best parameters
+final_rf_workflow = finalize_workflow(tune_rf_workflow, best_params)
+
+# Fit the finalized model
+final_rf_fit = final_rf_workflow %>%
+  last_fit(data_split)
+```
+
+## Evaluating the Final Model
+
+Finally, we evaluate the performance of the tuned Random Forest model using RMSE on the test set predictions.
+
+```{r}
+final_rf_fit %>% 
+  collect_metrics()
+```
+
+## Conclusion
+
+This tutorial has provided an in-depth look at Random Forest regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and evaluating feature importance, we have demonstrated the entire process of Random Forest regression analysis. Additionally, we have shown how to tune a Random Forest model using the `tidymodels` framework to improve its performance. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively.

@@ -1,0 +1,207 @@
+---
+title: "Tree Classification Practice Set with [Default](../datasets/default.qmd) data"
+format: html
+execute: 
+  cache: true
+---
+
+Welcome to this practice set on tree classification. This set aims to reinforce your understanding of tree classification through hands-on tasks using the Default dataset. Follow the tasks to complete the analysis.
+
+## What is Tree Classification?
+
+Tree classification is a type of decision tree used for predicting categorical class labels. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to maximize the homogeneity of the target variable within each subset.
+
+## Task 1: Loading Necessary Libraries
+
+**Task**: Load the required libraries for data manipulation, model fitting, accessing the dataset, and visualizing the tree.
+
+```{r}
+# Load necessary libraries
+library(tidyverse)
+library(tidymodels)
+library(ISLR)
+library(rpart.plot)
+```
+
+## Task 2: Loading the Data
+
+**Task**: Load and prepare the `Default` dataset, converting the `default` column to a factor.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Load and prepare the data
+default_data = Default %>% 
+  mutate(default = factor(default))
+```
+
+## Task 3: Visualizing the Data
+
+**Task**: Visualize the relationship between the predictor variables `balance` and `income` from the `default_data` dataset, colored by the `default` status.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Visualize the data
+default_data %>% 
+  ggplot(aes(balance, income, color = default)) + 
+  geom_point()
+```
+
+## Task 4: Splitting the Data
+
+**Task**: Split the data into training and testing sets using stratified sampling.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Split the data
+data_split = initial_split(default_data, strata = default)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Task 5: Fitting the Tree Classification Model
+
+**Task**: Fit a tree classification model to predict `default` using `balance` and `income` as predictors.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Define the preprocessing recipe
+preprocess_recipe = recipe(default ~ balance + income, data = train_set)
+
+# Define the tree model
+tree_model = decision_tree(
+  cost_complexity = 0,
+  tree_depth = 5,
+  mode = "classification",
+  min_n = 5,
+  engine = "rpart"
+)
+
+# Combine recipe and model into a workflow
+tree_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(tree_model)
+
+# Fit the model
+tree_model_fit = tree_workflow %>% 
+  fit(train_set)
+```
+
+## Task 6: Making Predictions
+
+**Task**: Use the fitted model to make predictions on the test set and evaluate the model performance using a confusion matrix.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Make predictions on the test set
+predictions = tree_model_fit %>% 
+  predict(test_set)
+
+# Evaluate the model performance
+test_set %>% 
+  bind_cols(predictions) %>% 
+  conf_mat(truth = default, estimate = .pred_class)
+```
+
+## Task 7: Visualizing the Tree
+
+**Task**: Visualize the structure of the fitted tree to understand the splits and predictions.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Visualize the tree structure
+tree_model_fit %>% 
+  extract_fit_engine() %>% 
+  rpart.plot(roundint = FALSE)
+```
+
+## Task 8: Pruning the Tree
+
+**Task**: Perform tree pruning using cross-validation to find the optimal `cost_complexity` parameter.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Define the tree model with tunable cost complexity
+tree_tune_model = decision_tree(
+  cost_complexity = tune(),
+  tree_depth = 5,
+  mode = "classification",
+  min_n = 5
+) %>% 
+  set_engine("rpart")
+
+# Update the workflow
+tree_workflow = tree_workflow %>% 
+  update_model(tree_tune_model)
+
+# Define the resampling method
+set.seed(123)
+cv_splits = vfold_cv(train_set, v = 5)
+
+# Perform tuning
+tune_results = tune_grid(
+  tree_workflow,
+  resamples = cv_splits,
+  grid = 20
+)
+
+# Extract the best parameters
+best_params = select_best(tune_results, metric = "accuracy")
+
+# Finalize the model with the best parameters
+final_tree_workflow = finalize_workflow(tree_workflow, best_params)
+
+# Fit the finalized model
+final_tree_fit = final_tree_workflow %>%
+  last_fit(data_split)
+```
+
+## Task 9: Visualizing the Pruned Tree
+
+**Task**: Visualize the pruned tree to compare it with the original tree.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Visualize the pruned tree
+final_tree_fit %>% 
+  extract_fit_engine() %>% 
+  rpart.plot(roundint = FALSE)
+```
+
+## Task 10: Evaluating the Pruned Tree
+
+**Task**: Evaluate the performance of the pruned tree using a confusion matrix on the test set predictions.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Evaluate the pruned tree performance
+final_tree_fit %>% 
+  collect_predictions() %>% 
+  conf_mat(truth = default, estimate = .pred_class)
+```

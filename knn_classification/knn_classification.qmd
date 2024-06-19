@@ -1,45 +1,46 @@
 ---
-title: "KNN Classification with Palmer Penguins Data"
+title: "KNN Classification with [Default](../datasets/default.qmd) data"
 format: html
+execute: 
+  cache: true
 ---
 
 # Introduction
 
-In this tutorial, we'll explore how to perform K-Nearest Neighbors (KNN) classification using the Palmer Penguins dataset. KNN classification is a non-parametric method that classifies data points based on the k-nearest neighbors to a data point. This method is particularly useful for classification tasks when the relationship between features and the target variable is complex and nonlinear. Here, we'll investigate how to classify penguin species based on body mass using KNN classification.
+In this tutorial, we'll explore how to perform K-Nearest Neighbors (KNN) classification using the Default dataset. KNN classification is a non-parametric method that classifies data points based on the k-nearest neighbors to a data point. This method is particularly useful for classification tasks when the relationship between features and the target variable is complex and nonlinear. Here, we'll investigate how to classify default status based on balance using KNN classification.
 
 We'll be using the `tidyverse` and `tidymodels` libraries in R for data manipulation and modeling. Let's get started!
 
 # Load Necessary Libraries
 
-First, we'll load the required libraries. The `tidyverse` package provides tools for data manipulation and visualization, while `tidymodels` is a suite of packages for modeling. We will also load the `palmerpenguins` package which contains the dataset.
+First, we'll load the required libraries. The `tidyverse` package provides tools for data manipulation and visualization, while `tidymodels` is a suite of packages for modeling. We will also load the `ISLR` package which contains the dataset.
 
 ```{r load_libraries}
 library(tidyverse)
 library(tidymodels)
-library(palmerpenguins)
+library(ISLR)
 ```
 
 # Load the Data
 
-Next, we'll select the relevant columns from the Palmer Penguins dataset. We'll filter out the `Adelie` species to simplify our classification task, remove any rows with missing values in `body_mass_g`, and ensure the `species` column is treated as a factor.
+Next, we'll select the relevant columns from the Default dataset. We'll filter out any rows with missing values in `balance`, and ensure the `default` column is treated as a factor.
 
 ```{r load_data}
-penguin_data = penguins %>% 
-  filter(!species == "Adelie") %>% 
-  select(body_mass_g, species) %>% 
-  filter(!is.na(body_mass_g)) %>% 
-  mutate(species = factor(species))
+default_data = Default %>% 
+  select(balance, default) %>% 
+  filter(!is.na(balance)) %>% 
+  mutate(default = factor(default))
 ```
 
 # Fit the KNN Classification Model
 
-Now, we'll fit a K-Nearest Neighbors (KNN) classification model. Our goal is to classify penguin species using `body_mass_g`. 
+Now, we'll fit a K-Nearest Neighbors (KNN) classification model. Our goal is to classify default status using `balance`. 
 
 The `nearest_neighbor()` function from `parsnip` is used to specify the KNN model. Here, we set the mode to "classification". We then fit the model to our data.
 
 ```{r fit_classification}
 knn_model_fit = nearest_neighbor(mode = "classification") %>% 
-  fit(species ~ body_mass_g, data = penguin_data)
+  fit(default ~ balance, data = default_data)
 ```
 
 # Make Predictions
@@ -48,7 +49,7 @@ Next, we'll use our model to make predictions.
 
 ```{r predict}
 predictions = knn_model_fit %>% 
-  predict(penguin_data)
+  predict(default_data)
 ```
 
 # Evaluate the Model
@@ -65,14 +66,15 @@ A confusion matrix is a table used to describe the performance of a classificati
 These metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.
 
 ```{r confusion_matrix}
-penguin_data %>% 
-  select(species) %>% 
+default_data %>% 
+  select(default) %>% 
   bind_cols(predictions) %>% 
-  conf_mat(truth = species, estimate = .pred_class)
+  conf_mat(truth = default, estimate = .pred_class)
 ```
 
 # Conclusion
 
-In this tutorial, we demonstrated how to perform KNN classification using the Palmer Penguins dataset. We went through loading the data, fitting a KNN classification model, making predictions, and evaluating the model using a confusion matrix. KNN classification is a versatile technique that can capture complex relationships in data and is useful for various classification tasks.
+In this tutorial, we demonstrated how to perform KNN classification using the Default dataset. We went through loading the data, fitting a KNN classification model, making predictions, and evaluating the model using a confusion matrix. KNN classification is a versatile technique that can capture complex relationships in data and is useful for various classification tasks.
 
 Feel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!
+```

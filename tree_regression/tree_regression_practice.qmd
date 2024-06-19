@@ -1,0 +1,177 @@
+---
+title: "Practice Set: Tree Regression with Boston Data"
+format: html
+execute: 
+  cache: true
+---
+
+Welcome to this practice set on tree regression. This set aims to test your understanding of tree regression by guiding you through tasks based on the provided code snippets. Tree regression is a powerful tool for predicting continuous outcomes based on input features and is widely used in various fields.
+
+## Task 1: Load Necessary Libraries
+
+**Task:** Load the required libraries for analysis, including `tidyverse`, `tidymodels`, `MASS`, and `rpart.plot`.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(MASS)
+library(rpart.plot)
+```
+
+## Task 2: Load the Data
+
+**Task:** Load and prepare the `Boston` dataset from the `MASS` package.
+
+```{r load_data}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+boston_data = MASS::Boston
+```
+
+## Task 3: Split the Data
+
+**Task:** Split the data into training and testing sets using a 50-50 split.
+
+```{r split_data}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+data_split = initial_split(boston_data, prop = 0.5)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Task 4: Fit the Tree Regression Model
+
+**Task:** Fit a tree regression model to predict `medv` using all available predictors. Use a `recipe` to preprocess the data and define the model with specific parameters.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+preprocess_recipe = recipe(medv ~ ., data = train_set)
+
+tree_model = decision_tree(
+  cost_complexity = 0,
+  tree_depth = 5,
+  mode = "regression",
+  min_n = 5,
+  engine = "rpart"
+)
+
+tree_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(tree_model)
+
+tree_model_fit = tree_workflow %>% 
+  fit(train_set)
+```
+
+## Task 5: Make Predictions
+
+**Task:** Use the fitted model to make predictions on the test set and evaluate the model performance using RMSE (Root Mean Squared Error).
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+predictions = tree_model_fit %>% 
+  predict(test_set)
+
+metrics = test_set %>% 
+  bind_cols(predictions) %>% 
+  metrics(truth = medv, estimate = .pred)
+
+metrics
+```
+
+## Task 6: Visualize the Tree
+
+**Task:** Visualize the structure of the fitted tree to understand the splits and predictions.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+tree_model_fit %>% 
+  extract_fit_engine() %>% 
+  rpart.plot(roundint = FALSE)
+```
+
+## Task 7: Prune the Tree
+
+**Task:** Use cross-validation to determine the optimal `cost_complexity` value and prune the tree to reduce overfitting.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Define the tree model with tunable cost complexity
+tree_tune_model = decision_tree(
+  cost_complexity = tune(),
+  tree_depth = 5,
+  mode = "regression",
+  min_n = 5
+) %>% 
+  set_engine("rpart")
+
+# Update the workflow
+tune_tree_workflow = tree_workflow %>% 
+  update_model(tree_tune_model)
+
+# Define the resampling method
+set.seed(123)
+cv_splits = vfold_cv(train_set, v = 5)
+
+# Perform tuning
+tune_results = tune_grid(
+  tune_tree_workflow,
+  resamples = cv_splits,
+  grid = grid_regular(cost_complexity(range = c(-2, -0.5)), levels = 20)
+)
+
+# Extract the best parameters
+best_params = select_best(tune_results, metric = "rmse")
+```
+
+## Task 8: Fit and Visualize the Pruned Tree
+
+**Task:** Finalize the model with the optimal `cost_complexity` parameter and fit it to the training data. Visualize the pruned tree.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Finalize the model with the best parameters
+final_tree_workflow = finalize_workflow(tune_tree_workflow, best_params)
+
+# Fit the finalized model
+final_tree_fit = final_tree_workflow %>%
+  last_fit(data_split)
+
+# Visualize the pruned tree
+final_tree_fit %>% 
+  extract_fit_engine() %>% 
+  rpart.plot(roundint = FALSE)
+```
+
+## Task 9: Evaluate the Pruned Tree
+
+**Task:** Evaluate the performance of the pruned tree using RMSE on the test set predictions.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+final_tree_fit %>% 
+  collect_metrics()
+```

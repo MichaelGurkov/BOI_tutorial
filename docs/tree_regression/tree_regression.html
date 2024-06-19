@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+<meta name="generator" content="quarto-1.4.555">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Tutorials for DS course materials - Introduction to Tree Regression with R</title>
+<title>Tutorials for DS course materials - Introduction to Tree Regression with Boston data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -144,11 +144,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#what-is-tree-regression" id="toc-what-is-tree-regression" class="nav-link active" data-scroll-target="#what-is-tree-regression">What is Tree Regression?</a></li>
   <li><a href="#loading-necessary-libraries" id="toc-loading-necessary-libraries" class="nav-link" data-scroll-target="#loading-necessary-libraries">Loading Necessary Libraries</a></li>
-  <li><a href="#load-the-data" id="toc-load-the-data" class="nav-link" data-scroll-target="#load-the-data">Load the Data</a></li>
-  <li><a href="#visualizing-the-data" id="toc-visualizing-the-data" class="nav-link" data-scroll-target="#visualizing-the-data">Visualizing the Data</a></li>
+  <li><a href="#loading-the-data" id="toc-loading-the-data" class="nav-link" data-scroll-target="#loading-the-data">Loading the Data</a></li>
+  <li><a href="#splitting-the-data" id="toc-splitting-the-data" class="nav-link" data-scroll-target="#splitting-the-data">Splitting the Data</a></li>
   <li><a href="#fitting-the-tree-regression-model" id="toc-fitting-the-tree-regression-model" class="nav-link" data-scroll-target="#fitting-the-tree-regression-model">Fitting the Tree Regression Model</a></li>
   <li><a href="#making-predictions" id="toc-making-predictions" class="nav-link" data-scroll-target="#making-predictions">Making Predictions</a></li>
   <li><a href="#visualizing-the-tree" id="toc-visualizing-the-tree" class="nav-link" data-scroll-target="#visualizing-the-tree">Visualizing the Tree</a></li>
+  <li><a href="#pruning-the-tree" id="toc-pruning-the-tree" class="nav-link" data-scroll-target="#pruning-the-tree">Pruning the Tree</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
@@ -158,7 +159,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Introduction to Tree Regression with R</h1>
+<h1 class="title">Introduction to Tree Regression with <a href="../datasets/boston.html">Boston</a> data</h1>
 </div>
 
 
@@ -175,72 +176,88 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Welcome to this comprehensive tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields.</p>
+<p>Welcome to this tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields.</p>
 <section id="what-is-tree-regression" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-tree-regression">What is Tree Regression?</h2>
-<p>Tree regression is a type of decision tree that is used for predicting continuous values. Unlike classification trees that predict discrete class labels, regression trees predict a continuous target variable. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to minimize the variance within each subset.</p>
+<p>Tree regression is a type of decision tree that is used for predicting continuous target variables. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to minimize the variance of the target variable within each subset.</p>
 </section>
 <section id="loading-necessary-libraries" class="level2">
 <h2 class="anchored" data-anchor-id="loading-necessary-libraries">Loading Necessary Libraries</h2>
-<p>First, we need to load the required libraries for our analysis. We will use <code>tidyverse</code> for data manipulation and visualization, <code>tidymodels</code> for model fitting, and <code>palmerpenguins</code> for accessing the dataset.</p>
+<p>First, we need to load the required libraries for our analysis. We will use <code>tidyverse</code> for data manipulation and visualization, <code>tidymodels</code> for model fitting, <code>MASS</code> for accessing the dataset, and <code>rpart.plot</code> for visualizing the tree.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(palmerpenguins)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="load-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="load-the-data">Load the Data</h2>
-<p>Next, we’ll select the relevant columns from the Palmer Penguins dataset.</p>
+<section id="loading-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-the-data">Loading the Data</h2>
+<p>We load and prepare the <code>Boston</code> dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (<code>medv</code>), which we will predict using the other attributes.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>penguin_data <span class="ot">=</span> penguins <span class="sc">%&gt;%</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(species, body_mass_g, bill_depth_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>boston_data <span class="ot">=</span> MASS<span class="sc">::</span>Boston</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="visualizing-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="visualizing-the-data">Visualizing the Data</h2>
-<p>We start by visualizing the relationship between the predictor variable <code>body_mass_g</code> and the target variable <code>bill_depth_mm</code> from the <code>penguin_data</code> dataset.</p>
+<section id="splitting-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="splitting-the-data">Splitting the Data</h2>
+<p>We split the data into training and testing sets using the <code>initial_split</code> function. We set a 50-50 split by setting the <code>prop</code> argument.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>penguin_data <span class="sc">%&gt;%</span> </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(body_mass_g, bill_depth_mm)) <span class="sc">+</span> </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> species))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="tree_regression_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_split <span class="ot">=</span> <span class="fu">initial_split</span>(boston_data, <span class="at">prop =</span> <span class="fl">0.5</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>train_set <span class="ot">=</span> <span class="fu">training</span>(data_split)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>test_set <span class="ot">=</span> <span class="fu">testing</span>(data_split)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="fitting-the-tree-regression-model" class="level2">
 <h2 class="anchored" data-anchor-id="fitting-the-tree-regression-model">Fitting the Tree Regression Model</h2>
-<p>Next, we fit a tree regression model to predict <code>bill_depth_mm</code> using <code>body_mass_g</code> as the predictor. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.</p>
+<p>Next, we fit a tree regression model to predict <code>medv</code> using all available predictors. We use a <code>recipe</code> to preprocess the data and define the model using <code>decision_tree</code> with specified parameters. The <code>workflow</code> function combines the recipe and model for fitting.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>tree_model_fit <span class="ot">=</span> <span class="fu">decision_tree</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">cost_complexity =</span> <span class="dv">0</span>,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tree_depth =</span> <span class="dv">2</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"regression"</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">engine =</span> <span class="st">"rpart"</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_n =</span> <span class="dv">5</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(bill_depth_mm <span class="sc">~</span> body_mass_g, <span class="at">data =</span> penguin_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>preprocess_recipe <span class="ot">=</span> <span class="fu">recipe</span>(medv <span class="sc">~</span> ., <span class="at">data =</span> train_set)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>tree_model <span class="ot">=</span> <span class="fu">decision_tree</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cost_complexity =</span> <span class="dv">0</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">tree_depth =</span> <span class="dv">5</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"regression"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_n =</span> <span class="dv">5</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">engine =</span> <span class="st">"rpart"</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>tree_workflow <span class="ot">=</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(preprocess_recipe) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(tree_model)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>tree_model_fit <span class="ot">=</span> tree_workflow <span class="sc">%&gt;%</span> </span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train_set)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="making-predictions" class="level2">
 <h2 class="anchored" data-anchor-id="making-predictions">Making Predictions</h2>
-<p>Once the model is fitted, we use it to make predictions on the <code>penguin_data</code>. We then visualize the predicted values along with the actual values.</p>
+<p>Once the model is fitted, we use it to make predictions on the test set. The <code>predict</code> function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">=</span> tree_model_fit <span class="sc">%&gt;%</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(penguin_data)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(test_set)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>penguin_data <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>metrics <span class="ot">=</span> test_set <span class="sc">%&gt;%</span> </span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(predictions) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(body_mass_g, bill_depth_mm)) <span class="sc">+</span> </span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> species)) <span class="sc">+</span> </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> .pred), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">4563</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">metrics</span>(<span class="at">truth =</span> medv, <span class="at">estimate =</span> .pred)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>metrics</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard       3.88 
+2 rsq     standard       0.814
+3 mae     standard       2.81 </code></pre>
+</div>
+</div>
+</section>
+<section id="visualizing-the-tree" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-the-tree">Visualizing the Tree</h2>
+<p>We visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated. The <code>rpart.plot</code> function helps in creating a clear graphical representation of the tree.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tree_model_fit <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rpart.plot</span>(<span class="at">roundint =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -250,25 +267,77 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="visualizing-the-tree" class="level2">
-<h2 class="anchored" data-anchor-id="visualizing-the-tree">Visualizing the Tree</h2>
-<p>Finally, we visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated.</p>
+<section id="pruning-the-tree" class="level2">
+<h2 class="anchored" data-anchor-id="pruning-the-tree">Pruning the Tree</h2>
+<p>Tree pruning is a technique used to reduce the size of a decision tree by removing sections that provide little predictive power. Pruning helps improve the model’s generalizability by reducing overfitting. We use cross-validation to determine the optimal complexity parameter (<code>cost_complexity</code>) value.</p>
+<p>We define a tree model with tunable <code>cost_complexity</code> and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with <code>vfold_cv</code>. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tree_model_fit <span class="sc">%&gt;%</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rpart.plot</span>(<span class="at">roundint =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the tree model with tunable cost complexity</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>tree_tune_model <span class="ot">=</span> <span class="fu">decision_tree</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cost_complexity =</span> <span class="fu">tune</span>(),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">tree_depth =</span> <span class="dv">5</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"regression"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_n =</span> <span class="dv">5</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"rpart"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Update the workflow</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>tune_tree_workflow <span class="ot">=</span> tree_workflow <span class="sc">%&gt;%</span> </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_model</span>(tree_tune_model)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the resampling method</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>cv_splits <span class="ot">=</span> <span class="fu">vfold_cv</span>(train_set, <span class="at">v =</span> <span class="dv">5</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform tuning</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>tune_results <span class="ot">=</span> <span class="fu">tune_grid</span>(</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  tune_tree_workflow,</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">resamples =</span> cv_splits,</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">grid =</span> <span class="fu">grid_regular</span>(<span class="fu">cost_complexity</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="sc">-</span><span class="fl">0.5</span>)), <span class="at">levels =</span> <span class="dv">20</span>)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the best parameters</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>best_params <span class="ot">=</span> <span class="fu">select_best</span>(tune_results, <span class="at">metric =</span> <span class="st">"rmse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>tune_grid</code> function performs a grid search over a range of <code>cost_complexity</code> values to find the best parameter that minimizes the RMSE metric. We then finalize the model with the optimal <code>cost_complexity</code> parameter and fit it to the training data using <code>last_fit</code>, which refits the model on the entire training set and evaluates it on the test set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Finalize the model with the best parameters</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>final_tree_workflow <span class="ot">=</span> <span class="fu">finalize_workflow</span>(tune_tree_workflow, best_params)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the finalized model</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>final_tree_fit <span class="ot">=</span> final_tree_workflow <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">last_fit</span>(data_split)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can visualize the pruned tree to compare it with the original tree.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the pruned tree</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>final_tree_fit <span class="sc">%&gt;%</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rpart.plot</span>(<span class="at">roundint =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="tree_regression_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="tree_regression_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
+</div>
+</div>
+<p>Finally, we evaluate the performance of the pruned tree using RMSE on the test set predictions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>final_tree_fit <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 4
+  .metric .estimator .estimate .config             
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
+1 rmse    standard       4.08  Preprocessor1_Model1
+2 rsq     standard       0.793 Preprocessor1_Model1</code></pre>
 </div>
 </div>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This tutorial has provided an in-depth look at tree regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree regression analysis. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively.</p>
+<p>This tutorial has provided an in-depth look at tree regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree regression analysis. Additionally, we have shown how to prune a decision tree using the <code>tidymodels</code> framework to improve its performance by reducing overfitting. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively.</p>
 
 
 </section>

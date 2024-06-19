@@ -1,80 +1,381 @@
 [
   {
+    "objectID": "tree_regression/tree_regression_practice.html",
+    "href": "tree_regression/tree_regression_practice.html",
+    "title": "Practice Set: Tree Regression with Boston Data",
+    "section": "",
+    "text": "Welcome to this practice set on tree regression. This set aims to test your understanding of tree regression by guiding you through tasks based on the provided code snippets. Tree regression is a powerful tool for predicting continuous outcomes based on input features and is widely used in various fields."
+  },
+  {
+    "objectID": "tree_regression/tree_regression_practice.html#task-1-load-necessary-libraries",
+    "href": "tree_regression/tree_regression_practice.html#task-1-load-necessary-libraries",
+    "title": "Practice Set: Tree Regression with Boston Data",
+    "section": "Task 1: Load Necessary Libraries",
+    "text": "Task 1: Load Necessary Libraries\nTask: Load the required libraries for analysis, including tidyverse, tidymodels, MASS, and rpart.plot.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(rpart.plot)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_practice.html#task-2-load-the-data",
+    "href": "tree_regression/tree_regression_practice.html#task-2-load-the-data",
+    "title": "Practice Set: Tree Regression with Boston Data",
+    "section": "Task 2: Load the Data",
+    "text": "Task 2: Load the Data\nTask: Load and prepare the Boston dataset from the MASS package.\n\n\nShow the code\nboston_data = MASS::Boston"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_practice.html#task-3-split-the-data",
+    "href": "tree_regression/tree_regression_practice.html#task-3-split-the-data",
+    "title": "Practice Set: Tree Regression with Boston Data",
+    "section": "Task 3: Split the Data",
+    "text": "Task 3: Split the Data\nTask: Split the data into training and testing sets using a 50-50 split.\n\n\nShow the code\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_practice.html#task-4-fit-the-tree-regression-model",
+    "href": "tree_regression/tree_regression_practice.html#task-4-fit-the-tree-regression-model",
+    "title": "Practice Set: Tree Regression with Boston Data",
+    "section": "Task 4: Fit the Tree Regression Model",
+    "text": "Task 4: Fit the Tree Regression Model\nTask: Fit a tree regression model to predict medv using all available predictors. Use a recipe to preprocess the data and define the model with specific parameters.\n\n\nShow the code\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\ntree_model = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 5,\n  mode = \"regression\",\n  min_n = 5,\n  engine = \"rpart\"\n)\n\ntree_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(tree_model)\n\ntree_model_fit = tree_workflow %&gt;% \n  fit(train_set)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_practice.html#task-5-make-predictions",
+    "href": "tree_regression/tree_regression_practice.html#task-5-make-predictions",
+    "title": "Practice Set: Tree Regression with Boston Data",
+    "section": "Task 5: Make Predictions",
+    "text": "Task 5: Make Predictions\nTask: Use the fitted model to make predictions on the test set and evaluate the model performance using RMSE (Root Mean Squared Error).\n\n\nShow the code\npredictions = tree_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_practice.html#task-6-visualize-the-tree",
+    "href": "tree_regression/tree_regression_practice.html#task-6-visualize-the-tree",
+    "title": "Practice Set: Tree Regression with Boston Data",
+    "section": "Task 6: Visualize the Tree",
+    "text": "Task 6: Visualize the Tree\nTask: Visualize the structure of the fitted tree to understand the splits and predictions.\n\n\nShow the code\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_practice.html#task-7-prune-the-tree",
+    "href": "tree_regression/tree_regression_practice.html#task-7-prune-the-tree",
+    "title": "Practice Set: Tree Regression with Boston Data",
+    "section": "Task 7: Prune the Tree",
+    "text": "Task 7: Prune the Tree\nTask: Use cross-validation to determine the optimal cost_complexity value and prune the tree to reduce overfitting.\n\n\nShow the code\n# Define the tree model with tunable cost complexity\ntree_tune_model = decision_tree(\n  cost_complexity = tune(),\n  tree_depth = 5,\n  mode = \"regression\",\n  min_n = 5\n) %&gt;% \n  set_engine(\"rpart\")\n\n# Update the workflow\ntune_tree_workflow = tree_workflow %&gt;% \n  update_model(tree_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_tree_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(cost_complexity(range = c(-2, -0.5)), levels = 20)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_practice.html#task-8-fit-and-visualize-the-pruned-tree",
+    "href": "tree_regression/tree_regression_practice.html#task-8-fit-and-visualize-the-pruned-tree",
+    "title": "Practice Set: Tree Regression with Boston Data",
+    "section": "Task 8: Fit and Visualize the Pruned Tree",
+    "text": "Task 8: Fit and Visualize the Pruned Tree\nTask: Finalize the model with the optimal cost_complexity parameter and fit it to the training data. Visualize the pruned tree.\n\n\nShow the code\n# Finalize the model with the best parameters\nfinal_tree_workflow = finalize_workflow(tune_tree_workflow, best_params)\n\n# Fit the finalized model\nfinal_tree_fit = final_tree_workflow %&gt;%\n  last_fit(data_split)\n\n# Visualize the pruned tree\nfinal_tree_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_practice.html#task-9-evaluate-the-pruned-tree",
+    "href": "tree_regression/tree_regression_practice.html#task-9-evaluate-the-pruned-tree",
+    "title": "Practice Set: Tree Regression with Boston Data",
+    "section": "Task 9: Evaluate the Pruned Tree",
+    "text": "Task 9: Evaluate the Pruned Tree\nTask: Evaluate the performance of the pruned tree using RMSE on the test set predictions.\n\n\nShow the code\nfinal_tree_fit %&gt;% \n  collect_metrics()"
+  },
+  {
     "objectID": "tree_regression/tree_regression.html",
     "href": "tree_regression/tree_regression.html",
-    "title": "Introduction to Tree Regression with R",
+    "title": "Introduction to Tree Regression with Boston data",
     "section": "",
-    "text": "Welcome to this comprehensive tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields."
+    "text": "Welcome to this tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields."
   },
   {
     "objectID": "tree_regression/tree_regression.html#what-is-tree-regression",
     "href": "tree_regression/tree_regression.html#what-is-tree-regression",
-    "title": "Introduction to Tree Regression with R",
+    "title": "Introduction to Tree Regression with Boston data",
     "section": "What is Tree Regression?",
-    "text": "What is Tree Regression?\nTree regression is a type of decision tree that is used for predicting continuous values. Unlike classification trees that predict discrete class labels, regression trees predict a continuous target variable. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to minimize the variance within each subset."
+    "text": "What is Tree Regression?\nTree regression is a type of decision tree that is used for predicting continuous target variables. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to minimize the variance of the target variable within each subset."
   },
   {
     "objectID": "tree_regression/tree_regression.html#loading-necessary-libraries",
     "href": "tree_regression/tree_regression.html#loading-necessary-libraries",
-    "title": "Introduction to Tree Regression with R",
+    "title": "Introduction to Tree Regression with Boston data",
     "section": "Loading Necessary Libraries",
-    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, and palmerpenguins for accessing the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\nlibrary(rpart.plot)"
+    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, MASS for accessing the dataset, and rpart.plot for visualizing the tree.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(rpart.plot)"
   },
   {
-    "objectID": "tree_regression/tree_regression.html#load-the-data",
-    "href": "tree_regression/tree_regression.html#load-the-data",
-    "title": "Introduction to Tree Regression with R",
-    "section": "Load the Data",
-    "text": "Load the Data\nNext, we’ll select the relevant columns from the Palmer Penguins dataset.\n\npenguin_data = penguins %&gt;%\n  select(species, body_mass_g, bill_depth_mm)"
+    "objectID": "tree_regression/tree_regression.html#loading-the-data",
+    "href": "tree_regression/tree_regression.html#loading-the-data",
+    "title": "Introduction to Tree Regression with Boston data",
+    "section": "Loading the Data",
+    "text": "Loading the Data\nWe load and prepare the Boston dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (medv), which we will predict using the other attributes.\n\nboston_data = MASS::Boston"
   },
   {
-    "objectID": "tree_regression/tree_regression.html#visualizing-the-data",
-    "href": "tree_regression/tree_regression.html#visualizing-the-data",
-    "title": "Introduction to Tree Regression with R",
-    "section": "Visualizing the Data",
-    "text": "Visualizing the Data\nWe start by visualizing the relationship between the predictor variable body_mass_g and the target variable bill_depth_mm from the penguin_data dataset.\n\npenguin_data %&gt;% \n  ggplot(aes(body_mass_g, bill_depth_mm)) + \n  geom_point(aes(color = species))"
+    "objectID": "tree_regression/tree_regression.html#splitting-the-data",
+    "href": "tree_regression/tree_regression.html#splitting-the-data",
+    "title": "Introduction to Tree Regression with Boston data",
+    "section": "Splitting the Data",
+    "text": "Splitting the Data\nWe split the data into training and testing sets using the initial_split function. We set a 50-50 split by setting the prop argument.\n\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
   },
   {
     "objectID": "tree_regression/tree_regression.html#fitting-the-tree-regression-model",
     "href": "tree_regression/tree_regression.html#fitting-the-tree-regression-model",
-    "title": "Introduction to Tree Regression with R",
+    "title": "Introduction to Tree Regression with Boston data",
     "section": "Fitting the Tree Regression Model",
-    "text": "Fitting the Tree Regression Model\nNext, we fit a tree regression model to predict bill_depth_mm using body_mass_g as the predictor. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.\n\ntree_model_fit = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 2,\n  mode = \"regression\",\n  engine = \"rpart\",\n  min_n = 5\n) %&gt;%\n  fit(bill_depth_mm ~ body_mass_g, data = penguin_data)"
+    "text": "Fitting the Tree Regression Model\nNext, we fit a tree regression model to predict medv using all available predictors. We use a recipe to preprocess the data and define the model using decision_tree with specified parameters. The workflow function combines the recipe and model for fitting.\n\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\ntree_model = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 5,\n  mode = \"regression\",\n  min_n = 5,\n  engine = \"rpart\"\n)\n\ntree_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(tree_model)\n\ntree_model_fit = tree_workflow %&gt;% \n  fit(train_set)"
   },
   {
     "objectID": "tree_regression/tree_regression.html#making-predictions",
     "href": "tree_regression/tree_regression.html#making-predictions",
-    "title": "Introduction to Tree Regression with R",
+    "title": "Introduction to Tree Regression with Boston data",
     "section": "Making Predictions",
-    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the penguin_data. We then visualize the predicted values along with the actual values.\n\npredictions = tree_model_fit %&gt;% \n  predict(penguin_data)\n\npenguin_data %&gt;% \n  bind_cols(predictions) %&gt;% \n  ggplot(aes(body_mass_g, bill_depth_mm)) + \n  geom_point(aes(color = species)) + \n  geom_point(aes(y = .pred), color = \"red\") +\n  geom_vline(xintercept = 4563)"
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).\n\npredictions = tree_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics\n\n# A tibble: 3 × 3\n  .metric .estimator .estimate\n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;\n1 rmse    standard       3.88 \n2 rsq     standard       0.814\n3 mae     standard       2.81"
   },
   {
     "objectID": "tree_regression/tree_regression.html#visualizing-the-tree",
     "href": "tree_regression/tree_regression.html#visualizing-the-tree",
-    "title": "Introduction to Tree Regression with R",
+    "title": "Introduction to Tree Regression with Boston data",
     "section": "Visualizing the Tree",
-    "text": "Visualizing the Tree\nFinally, we visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated.\n\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+    "text": "Visualizing the Tree\nWe visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated. The rpart.plot function helps in creating a clear graphical representation of the tree.\n\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression.html#pruning-the-tree",
+    "href": "tree_regression/tree_regression.html#pruning-the-tree",
+    "title": "Introduction to Tree Regression with Boston data",
+    "section": "Pruning the Tree",
+    "text": "Pruning the Tree\nTree pruning is a technique used to reduce the size of a decision tree by removing sections that provide little predictive power. Pruning helps improve the model’s generalizability by reducing overfitting. We use cross-validation to determine the optimal complexity parameter (cost_complexity) value.\nWe define a tree model with tunable cost_complexity and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with vfold_cv. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.\n\n# Define the tree model with tunable cost complexity\ntree_tune_model = decision_tree(\n  cost_complexity = tune(),\n  tree_depth = 5,\n  mode = \"regression\",\n  min_n = 5\n) %&gt;% \n  set_engine(\"rpart\")\n\n# Update the workflow\ntune_tree_workflow = tree_workflow %&gt;% \n  update_model(tree_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_tree_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(cost_complexity(range = c(-2, -0.5)), levels = 20)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\nThe tune_grid function performs a grid search over a range of cost_complexity values to find the best parameter that minimizes the RMSE metric. We then finalize the model with the optimal cost_complexity parameter and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_tree_workflow = finalize_workflow(tune_tree_workflow, best_params)\n\n# Fit the finalized model\nfinal_tree_fit = final_tree_workflow %&gt;%\n  last_fit(data_split)\n\nWe can visualize the pruned tree to compare it with the original tree.\n\n# Visualize the pruned tree\nfinal_tree_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)\n\n\n\n\n\n\n\n\nFinally, we evaluate the performance of the pruned tree using RMSE on the test set predictions.\n\nfinal_tree_fit %&gt;% \n  collect_metrics()\n\n# A tibble: 2 × 4\n  .metric .estimator .estimate .config             \n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               \n1 rmse    standard       4.08  Preprocessor1_Model1\n2 rsq     standard       0.793 Preprocessor1_Model1"
   },
   {
     "objectID": "tree_regression/tree_regression.html#conclusion",
     "href": "tree_regression/tree_regression.html#conclusion",
-    "title": "Introduction to Tree Regression with R",
+    "title": "Introduction to Tree Regression with Boston data",
     "section": "Conclusion",
-    "text": "Conclusion\nThis tutorial has provided an in-depth look at tree regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree regression analysis. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
+    "text": "Conclusion\nThis tutorial has provided an in-depth look at tree regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree regression analysis. Additionally, we have shown how to prune a decision tree using the tidymodels framework to improve its performance by reducing overfitting. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
   },
   {
-    "objectID": "simple_regression/simple_regression.html",
-    "href": "simple_regression/simple_regression.html",
-    "title": "Simple Linear Regression with Palmer Penguins Data",
+    "objectID": "tree_classification/tree_classification_exercise_set.html",
+    "href": "tree_classification/tree_classification_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
     "section": "",
-    "text": "Introduction\nIn this tutorial, we’ll explore how to perform a simple linear regression using the Palmer Penguins dataset. Linear regression is a foundational statistical method that allows us to model the relationship between a dependent variable and one or more independent variables. Here, we’ll investigate the relationship between the body mass and the bill depth of penguins.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the palmerpenguins package which contains the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Palmer Penguins dataset.\n\npenguin_data = penguins %&gt;%\n  select(species, body_mass_g, bill_depth_mm)\n\n\n\nFit the Linear Regression Model\nNow, we’ll fit a simple linear regression model. Our goal is to predict bill_depth_mm using body_mass_g.\n\nlinear_model_fit = linear_reg() %&gt;% \n  fit(bill_depth_mm ~ body_mass_g, data = penguin_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_fit %&gt;% \n  tidy()\n\n# A tibble: 2 × 5\n  term        estimate std.error statistic   p.value\n  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;\n1 (Intercept) 22.0      0.504        43.8  1.04e-141\n2 body_mass_g -0.00116  0.000118     -9.87 2.28e- 20\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_fit %&gt;% \n  predict(penguin_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a simple linear regression using the Palmer Penguins dataset. We went through loading the data, fitting a model, inspecting the coefficients, and making predictions. This foundational technique can be applied to various datasets and provides a basis for more complex modeling.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
+    "text": "This exercise set is designed to help you practice the steps involved in performing K-Nearest Neighbors (KNN) regression using the Boston housing dataset. Each task is followed by a chunk of code that presents the solution.\n\n\nTask: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nTask: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nTask: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nTask: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
   },
   {
-    "objectID": "knn_regression/knn_regression.html",
-    "href": "knn_regression/knn_regression.html",
-    "title": "KNN Regression with Palmer Penguins Data",
+    "objectID": "tree_classification/tree_classification_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "tree_classification/tree_classification_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
     "section": "",
-    "text": "Introduction\nIn this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) regression using the Palmer Penguins dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we’ll investigate how bill depth is influenced by body mass using KNN regression.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the palmerpenguins package which contains the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Palmer Penguins dataset. We’ll remove the species column as it’s not needed for this regression task and ensure there are no duplicate rows.\n\npenguin_data = penguins %&gt;% \n  select(-species) %&gt;% \n  distinct()\n\n\n\nFit the KNN Regression Model\nNow, we’ll fit a K-Nearest Neighbors (KNN) regression model. Our goal is to predict bill_depth_mm using body_mass_g. We set the number of neighbors to 100.\nThe nearest_neighbor() function from parsnip is used to specify the KNN model. Here, we set the mode to “regression” and specify the number of neighbors. We then fit the model to our data.\n\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n  ) %&gt;%\n  fit(bill_depth_mm ~ body_mass_g, data = penguin_data)\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = knn_model_fit %&gt;% \n  predict(penguin_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform KNN regression using the Palmer Penguins dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.\nFeel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!"
+    "text": "Task: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_exercise_set.html#task-2-load-the-data",
+    "href": "tree_classification/tree_classification_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "tree_classification/tree_classification_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_exercise_set.html#task-4-make-predictions",
+    "href": "tree_classification/tree_classification_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_exercise_set.html",
+    "href": "simple_regression/simple_regression_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "This exercise set is designed to help you practice the steps involved in performing K-Nearest Neighbors (KNN) regression using the Boston housing dataset. Each task is followed by a chunk of code that presents the solution.\n\n\nTask: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nTask: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nTask: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nTask: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "simple_regression/simple_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_exercise_set.html#task-2-load-the-data",
+    "href": "simple_regression/simple_regression_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "simple_regression/simple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_exercise_set.html#task-4-make-predictions",
+    "href": "simple_regression/simple_regression_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "random_forest/random_forest_practice.html",
+    "href": "random_forest/random_forest_practice.html",
+    "title": "Practice Set: Random Forest Regression with Boston Data",
+    "section": "",
+    "text": "Task: Load the required libraries for analysis: tidyverse, tidymodels, MASS, and randomForest.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(randomForest)"
+  },
+  {
+    "objectID": "random_forest/random_forest_practice.html#loading-necessary-libraries",
+    "href": "random_forest/random_forest_practice.html#loading-necessary-libraries",
+    "title": "Practice Set: Random Forest Regression with Boston Data",
+    "section": "",
+    "text": "Task: Load the required libraries for analysis: tidyverse, tidymodels, MASS, and randomForest.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(randomForest)"
+  },
+  {
+    "objectID": "random_forest/random_forest_practice.html#loading-the-data",
+    "href": "random_forest/random_forest_practice.html#loading-the-data",
+    "title": "Practice Set: Random Forest Regression with Boston Data",
+    "section": "Loading the Data",
+    "text": "Loading the Data\nTask: Load the Boston dataset from the MASS package.\n\n\nShow the code\nboston_data = MASS::Boston"
+  },
+  {
+    "objectID": "random_forest/random_forest_practice.html#splitting-the-data",
+    "href": "random_forest/random_forest_practice.html#splitting-the-data",
+    "title": "Practice Set: Random Forest Regression with Boston Data",
+    "section": "Splitting the Data",
+    "text": "Splitting the Data\nTask: Split the data into training and testing sets using the initial_split function with a 50-50 split.\n\n\nShow the code\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
+  },
+  {
+    "objectID": "random_forest/random_forest_practice.html#fitting-the-random-forest-regression-model",
+    "href": "random_forest/random_forest_practice.html#fitting-the-random-forest-regression-model",
+    "title": "Practice Set: Random Forest Regression with Boston Data",
+    "section": "Fitting the Random Forest Regression Model",
+    "text": "Fitting the Random Forest Regression Model\nTask: Fit a Random Forest regression model to predict medv using all available predictors. Use a recipe for preprocessing and the rand_forest model with specified parameters. Combine the recipe and model using a workflow.\n\n\nShow the code\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\nrf_model = rand_forest(\n  mtry = 12,\n  trees = 500,\n  mode = \"regression\"\n) %&gt;% \n  set_engine(\"randomForest\")\n\nrf_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(rf_model)\n\nrf_model_fit = rf_workflow %&gt;% \n  fit(train_set)"
+  },
+  {
+    "objectID": "random_forest/random_forest_practice.html#making-predictions",
+    "href": "random_forest/random_forest_practice.html#making-predictions",
+    "title": "Practice Set: Random Forest Regression with Boston Data",
+    "section": "Making Predictions",
+    "text": "Making Predictions\nTask: Make predictions on the test set using the fitted model. Evaluate the model performance using RMSE.\n\n\nShow the code\npredictions = rf_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics"
+  },
+  {
+    "objectID": "random_forest/random_forest_practice.html#evaluating-feature-importance",
+    "href": "random_forest/random_forest_practice.html#evaluating-feature-importance",
+    "title": "Practice Set: Random Forest Regression with Boston Data",
+    "section": "Evaluating Feature Importance",
+    "text": "Evaluating Feature Importance\nTask: Evaluate the importance of each feature in the Random Forest model using the importance function.\n\n\nShow the code\nrf_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  importance()"
+  },
+  {
+    "objectID": "random_forest/random_forest_practice.html#tuning-the-random-forest-model",
+    "href": "random_forest/random_forest_practice.html#tuning-the-random-forest-model",
+    "title": "Practice Set: Random Forest Regression with Boston Data",
+    "section": "Tuning the Random Forest Model",
+    "text": "Tuning the Random Forest Model\nTask: Perform hyperparameter tuning for the Random Forest model. Define a tunable Random Forest model, update the workflow, and use 5-fold cross-validation to find the best parameters.\n\n\nShow the code\n# Define the Random Forest model with tunable parameters\nrf_tune_model = rand_forest(\n  mtry = tune(),\n  trees = tune(),\n  mode = \"regression\"\n) %&gt;% \n  set_engine(\"randomForest\")\n\n# Update the workflow\ntune_rf_workflow = rf_workflow %&gt;% \n  update_model(rf_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_rf_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(mtry(range = c(2, 10)), trees(range = c(100, 1000)), levels = 10)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\n\nTask: Finalize the model with the optimal parameters and fit it to the training data using last_fit.\n\n\nShow the code\n# Finalize the model with the best parameters\nfinal_rf_workflow = finalize_workflow(tune_rf_workflow, best_params)\n\n# Fit the finalized model\nfinal_rf_fit = final_rf_workflow %&gt;%\n  last_fit(data_split)"
+  },
+  {
+    "objectID": "random_forest/random_forest_practice.html#evaluating-the-final-model",
+    "href": "random_forest/random_forest_practice.html#evaluating-the-final-model",
+    "title": "Practice Set: Random Forest Regression with Boston Data",
+    "section": "Evaluating the Final Model",
+    "text": "Evaluating the Final Model\nTask: Evaluate the performance of the tuned Random Forest model using RMSE on the test set predictions.\n\n\nShow the code\nfinal_rf_fit %&gt;% \n  collect_metrics()\n\n\n```"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html",
+    "href": "multiple_regression/multiple_regression_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "This exercise set is designed to help you practice the steps involved in performing K-Nearest Neighbors (KNN) regression using the Boston housing dataset. Each task is followed by a chunk of code that presents the solution.\n\n\nTask: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nTask: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nTask: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nTask: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-2-load-the-data",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-4-make-predictions",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "knn_regression/knn_regression_exercise_set.html",
+    "href": "knn_regression/knn_regression_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "This exercise set is designed to help you practice the steps involved in performing K-Nearest Neighbors (KNN) regression using the Boston housing dataset. Each task is followed by a chunk of code that presents the solution.\n\n\nTask: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nTask: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nTask: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nTask: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "knn_regression/knn_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "knn_regression/knn_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "knn_regression/knn_regression_exercise_set.html#task-2-load-the-data",
+    "href": "knn_regression/knn_regression_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "knn_regression/knn_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "knn_regression/knn_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "knn_regression/knn_regression_exercise_set.html#task-4-make-predictions",
+    "href": "knn_regression/knn_regression_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "knn_classification/knn_classification_exercise_set.html",
+    "href": "knn_classification/knn_classification_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "This exercise set is designed to help you practice the steps involved in performing K-Nearest Neighbors (KNN) regression using the Boston housing dataset. Each task is followed by a chunk of code that presents the solution.\n\n\nTask: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nTask: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nTask: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nTask: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "knn_classification/knn_classification_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "knn_classification/knn_classification_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "knn_classification/knn_classification_exercise_set.html#task-2-load-the-data",
+    "href": "knn_classification/knn_classification_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "knn_classification/knn_classification_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "knn_classification/knn_classification_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "knn_classification/knn_classification_exercise_set.html#task-4-make-predictions",
+    "href": "knn_classification/knn_classification_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
   },
   {
     "objectID": "index.html",
@@ -88,7 +389,7 @@
     "href": "index.html#topics",
     "title": "Welcome to BOI DS course tutorials",
     "section": "Topics",
-    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression\nMultiple linear regression\nKNN regression\nKNN classification\nBayes classifier simulation\nTree regression\nTree classification\n[Cross validation]\n\nExplore the topics and start learning!"
+    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression \nMultiple linear regression \nKNN regression \nKNN classification \nBayes classifier simulation\nTree regression\n\nPractice for Tree regression \n\nRandom Forest\n\nPractice for Tree regression \n\nBoosted trees\nTree classification\n\nPractice for Tree classification \n\n[Cross validation]\n[Data sets]\n\nBoston dataset\nDefault dataset\n\n\nExplore the topics and start learning!"
   },
   {
     "objectID": "dplyr/dplyr.html",
@@ -145,6 +446,104 @@
     "title": "Wrangling Data with dplyr",
     "section": "",
     "text": "We can combine these verbs to perform more complex data manipulations. For example, let’s select the species, island, and bill length columns, filter for bill lengths greater than 40 mm, and then sort by bill length.\n\n# Combine select, filter, and arrange\npenguins_combined = penguins %&gt;%\n  select(species, island, bill_length_mm) %&gt;%\n  filter(bill_length_mm &gt; 40) %&gt;%\n  arrange(desc(bill_length_mm))\n\n# View the result\nhead(penguins_combined)\n\n# A tibble: 6 × 3\n  species   island bill_length_mm\n  &lt;fct&gt;     &lt;fct&gt;           &lt;dbl&gt;\n1 Gentoo    Biscoe           59.6\n2 Chinstrap Dream            58  \n3 Gentoo    Biscoe           55.9\n4 Chinstrap Dream            55.8\n5 Gentoo    Biscoe           55.1\n6 Gentoo    Biscoe           54.3\n\n\nThese dplyr functions provide a powerful and intuitive way to manipulate and analyze your data. With practice, you’ll find them indispensable for your data wrangling tasks."
+  },
+  {
+    "objectID": "datasets/boston.html",
+    "href": "datasets/boston.html",
+    "title": "Introduction to the Boston Data Set",
+    "section": "",
+    "text": "The Boston data set, famously used in various machine learning and statistical analysis projects, provides a comprehensive look at housing values in the suburbs of Boston. It has been widely used for regression tasks, particularly predicting house prices based on various features. This data set, which originates from the U.S. Census Bureau, contains 506 observations of 14 different variables, each representing different characteristics of the suburbs in Boston."
+  },
+  {
+    "objectID": "datasets/boston.html#variables-in-the-boston-data-set",
+    "href": "datasets/boston.html#variables-in-the-boston-data-set",
+    "title": "Introduction to the Boston Data Set",
+    "section": "Variables in the Boston Data Set",
+    "text": "Variables in the Boston Data Set\nHere is an explanation of each variable in the Boston data set, along with their names and data types:\n\ncrim: Per capita crime rate by town (Numeric)\nzn: Proportion of residential land zoned for lots over 25,000 sq. ft. (Numeric)\nindus: Proportion of non-retail business acres per town (Numeric)\nchas: Charles River dummy variable (1 if tract bounds river; 0 otherwise) (Binary)\nnox: Nitrogen oxides concentration (parts per 10 million) (Numeric)\nrm: Average number of rooms per dwelling (Numeric)\nage: Proportion of owner-occupied units built prior to 1940 (Numeric)\ndis: Weighted distances to five Boston employment centers (Numeric)\nrad: Index of accessibility to radial highways (Ordinal)\ntax: Full-value property tax rate per $10,000 (Numeric)\nptratio: Pupil-teacher ratio by town (Numeric)\nblack: 1000(Bk - 0.63)^2 where Bk is the proportion of Black residents by town (Numeric)\nlstat: Percentage of lower status of the population (Numeric)\nmedv: Median value of owner-occupied homes in $1000s (Numeric)"
+  },
+  {
+    "objectID": "datasets/boston.html#loading-the-boston-data-set",
+    "href": "datasets/boston.html#loading-the-boston-data-set",
+    "title": "Introduction to the Boston Data Set",
+    "section": "Loading the Boston Data Set",
+    "text": "Loading the Boston Data Set\nIn R, data sets from specific packages are often loaded using the :: operator, which allows you to access a dataset or function from a particular package without attaching the entire package. This is particularly useful when you want to avoid name conflicts or simply reduce the clutter in your namespace.\nTo load the Boston data set from the MASS package, you can use the following code:\n\n# Load the Boston data set\ndata(\"Boston\", package = \"MASS\")\n\nHere’s a step-by-step explanation of the code:\n\ndata(“Boston”, package = “MASS”): This line loads the Boston data set. The data function is a base R function that loads specified data sets. By providing the name of the data set (\"Boston\") and the package from which it comes (\"MASS\"), R understands where to find the data set.\nMASS::Boston: Alternatively, you can directly reference the data set using the :: operator as follows:\n\n\nBoston &lt;- MASS::Boston\n\nThe :: operator allows you to access the Boston data set from the MASS package directly. This method does not load the entire MASS package into your R session, but only the specific data set or function you are interested in."
+  },
+  {
+    "objectID": "boosting/boosting.html",
+    "href": "boosting/boosting.html",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "",
+    "text": "Welcome to this tutorial on Boosted Tree regression. This tutorial aims to introduce the concept of Boosted Tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Boosted Tree regression is a powerful tool for predicting continuous outcomes based on input features and is widely used in various fields."
+  },
+  {
+    "objectID": "boosting/boosting.html#what-is-boosted-tree-regression",
+    "href": "boosting/boosting.html#what-is-boosted-tree-regression",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "What is Boosted Tree Regression?",
+    "text": "What is Boosted Tree Regression?\nBoosted Tree regression is an ensemble learning method that combines the predictions of several base estimators, typically decision trees, in order to improve robustness over a single estimator. Boosting sequentially applies the weak model to the data and adjusts weights to emphasize the misclassified instances."
+  },
+  {
+    "objectID": "boosting/boosting.html#loading-necessary-libraries",
+    "href": "boosting/boosting.html#loading-necessary-libraries",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "Loading Necessary Libraries",
+    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, MASS for accessing the dataset, and xgboost for the Boosted Tree model.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(xgboost)"
+  },
+  {
+    "objectID": "boosting/boosting.html#loading-the-data",
+    "href": "boosting/boosting.html#loading-the-data",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "Loading the Data",
+    "text": "Loading the Data\nWe load and prepare the Boston dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (medv), which we will predict using the other attributes.\n\nboston_data = MASS::Boston"
+  },
+  {
+    "objectID": "boosting/boosting.html#splitting-the-data",
+    "href": "boosting/boosting.html#splitting-the-data",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "Splitting the Data",
+    "text": "Splitting the Data\nWe split the data into training and testing sets using the initial_split function. We set a 50-50 split by setting the prop argument.\n\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
+  },
+  {
+    "objectID": "boosting/boosting.html#fitting-the-boosted-tree-regression-model",
+    "href": "boosting/boosting.html#fitting-the-boosted-tree-regression-model",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "Fitting the Boosted Tree Regression Model",
+    "text": "Fitting the Boosted Tree Regression Model\nNext, we fit a Boosted Tree regression model to predict medv using all available predictors. We use a recipe to preprocess the data and define the model using boost_tree with specified parameters. The workflow function combines the recipe and model for fitting.\n\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\nbt_model = boost_tree(\n  trees = 500,\n  tree_depth = 6,\n  learn_rate = 0.1,\n  loss_reduction = 0,\n  sample_size = 1,\n  mode = \"regression\",\n  engine = \"xgboost\"\n)\n\nbt_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(bt_model)\n\nbt_model_fit = bt_workflow %&gt;% \n  fit(train_set)"
+  },
+  {
+    "objectID": "boosting/boosting.html#making-predictions",
+    "href": "boosting/boosting.html#making-predictions",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "Making Predictions",
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).\n\npredictions = bt_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics\n\n# A tibble: 3 × 3\n  .metric .estimator .estimate\n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;\n1 rmse    standard       3.64 \n2 rsq     standard       0.855\n3 mae     standard       2.40"
+  },
+  {
+    "objectID": "boosting/boosting.html#evaluating-feature-importance",
+    "href": "boosting/boosting.html#evaluating-feature-importance",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "Evaluating Feature Importance",
+    "text": "Evaluating Feature Importance\nWe can evaluate the importance of each feature in the Boosted Tree model using the xgboost package’s xgb.importance function. This helps in understanding which features contribute most to the model’s predictions.\n\nimportance_matrix = xgb.importance(model = bt_model_fit %&gt;% extract_fit_engine())\nxgb.plot.importance(importance_matrix)"
+  },
+  {
+    "objectID": "boosting/boosting.html#tuning-the-boosted-tree-model",
+    "href": "boosting/boosting.html#tuning-the-boosted-tree-model",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "Tuning the Boosted Tree Model",
+    "text": "Tuning the Boosted Tree Model\nHyperparameter tuning is essential for improving the performance of the Boosted Tree model. We use cross-validation to determine the optimal values for parameters like tree_depth and learn_rate.\nWe define a Boosted Tree model with tunable parameters and update the workflow to include these tunable parameters. We then define the resampling method using 5-fold cross-validation with vfold_cv.\n\n# Define the Boosted Tree model with tunable parameters\nbt_tune_model = boost_tree(\n  trees = 500,\n  tree_depth = tune(),\n  learn_rate = tune(),\n  loss_reduction = 0,\n  sample_size = 1,\n  mode = \"regression\"\n) %&gt;% \n  set_engine(\"xgboost\")\n\n# Update the workflow\ntune_bt_workflow = bt_workflow %&gt;% \n  update_model(bt_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_bt_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(tree_depth(range = c(2, 10)), learn_rate(range = c(0.01, 0.3)), levels = 10)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\nThe tune_grid function performs a grid search over a range of tree_depth and learn_rate values to find the best parameter combination that minimizes the RMSE metric. We then finalize the model with the optimal parameters and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_bt_workflow = finalize_workflow(tune_bt_workflow, best_params)\n\n# Fit the finalized model\nfinal_bt_fit = final_bt_workflow %&gt;%\n  last_fit(data_split)"
+  },
+  {
+    "objectID": "boosting/boosting.html#evaluating-the-final-model",
+    "href": "boosting/boosting.html#evaluating-the-final-model",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "Evaluating the Final Model",
+    "text": "Evaluating the Final Model\nFinally, we evaluate the performance of the tuned Boosted Tree model using RMSE on the test set predictions.\n\nfinal_bt_fit %&gt;% \n  collect_metrics()\n\n# A tibble: 2 × 4\n  .metric .estimator .estimate .config             \n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               \n1 rmse    standard       4.84  Preprocessor1_Model1\n2 rsq     standard       0.748 Preprocessor1_Model1"
+  },
+  {
+    "objectID": "boosting/boosting.html#conclusion",
+    "href": "boosting/boosting.html#conclusion",
+    "title": "Introduction to Boosted Tree Regression with Boston data",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis tutorial has provided an in-depth look at Boosted Tree regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and evaluating feature importance, we have demonstrated the entire process of Boosted Tree regression analysis. Additionally, we have shown how to tune a Boosted Tree model using the tidymodels framework to improve its performance. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
   },
   {
     "objectID": "bayes_classifier_simulation/bayes_classifier_simulation.html",
@@ -217,87 +616,402 @@
     "text": "Conclusion\nThis tutorial has provided an in-depth look at the Bayes classifier, from concept to implementation in R. By comparing it with the KNN classifier, we have demonstrated different approaches to classification problems. Understanding these methods and their applications will enhance your ability to analyze and interpret data effectively."
   },
   {
+    "objectID": "boosting/boosting_practice.html",
+    "href": "boosting/boosting_practice.html",
+    "title": "Practice Set: Boosted Tree Regression with Boston Data",
+    "section": "",
+    "text": "Welcome to this practice set on Boosted Tree regression. This set will guide you through a series of tasks to reinforce your understanding of Boosted Tree regression using the Boston dataset. Each section will include tasks and the corresponding R code for implementation."
+  },
+  {
+    "objectID": "boosting/boosting_practice.html#task-1-loading-necessary-libraries",
+    "href": "boosting/boosting_practice.html#task-1-loading-necessary-libraries",
+    "title": "Practice Set: Boosted Tree Regression with Boston Data",
+    "section": "Task 1: Loading Necessary Libraries",
+    "text": "Task 1: Loading Necessary Libraries\nLoad the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, MASS for accessing the dataset, and xgboost for the Boosted Tree model.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(xgboost)"
+  },
+  {
+    "objectID": "boosting/boosting_practice.html#task-2-loading-the-data",
+    "href": "boosting/boosting_practice.html#task-2-loading-the-data",
+    "title": "Practice Set: Boosted Tree Regression with Boston Data",
+    "section": "Task 2: Loading the Data",
+    "text": "Task 2: Loading the Data\nLoad and prepare the Boston dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (medv), which we will predict using the other attributes.\n\n\nShow the code\nboston_data = MASS::Boston"
+  },
+  {
+    "objectID": "boosting/boosting_practice.html#task-3-splitting-the-data",
+    "href": "boosting/boosting_practice.html#task-3-splitting-the-data",
+    "title": "Practice Set: Boosted Tree Regression with Boston Data",
+    "section": "Task 3: Splitting the Data",
+    "text": "Task 3: Splitting the Data\nSplit the data into training and testing sets using the initial_split function. Set a 50-50 split by setting the prop argument.\n\n\nShow the code\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
+  },
+  {
+    "objectID": "boosting/boosting_practice.html#task-4-fitting-the-boosted-tree-regression-model",
+    "href": "boosting/boosting_practice.html#task-4-fitting-the-boosted-tree-regression-model",
+    "title": "Practice Set: Boosted Tree Regression with Boston Data",
+    "section": "Task 4: Fitting the Boosted Tree Regression Model",
+    "text": "Task 4: Fitting the Boosted Tree Regression Model\nFit a Boosted Tree regression model to predict medv using all available predictors. Use a recipe to preprocess the data and define the model using boost_tree with specified parameters. Combine the recipe and model using the workflow function and fit it to the training data.\n\n\nShow the code\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\nbt_model = boost_tree(\n  trees = 500,\n  tree_depth = 6,\n  learn_rate = 0.1,\n  loss_reduction = 0,\n  sample_size = 1,\n  mode = \"regression\",\n  engine = \"xgboost\"\n)\n\nbt_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(bt_model)\n\nbt_model_fit = bt_workflow %&gt;% \n  fit(train_set)"
+  },
+  {
+    "objectID": "boosting/boosting_practice.html#task-5-making-predictions",
+    "href": "boosting/boosting_practice.html#task-5-making-predictions",
+    "title": "Practice Set: Boosted Tree Regression with Boston Data",
+    "section": "Task 5: Making Predictions",
+    "text": "Task 5: Making Predictions\nUse the fitted model to make predictions on the test set. Evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).\n\n\nShow the code\npredictions = bt_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics"
+  },
+  {
+    "objectID": "boosting/boosting_practice.html#task-6-evaluating-feature-importance",
+    "href": "boosting/boosting_practice.html#task-6-evaluating-feature-importance",
+    "title": "Practice Set: Boosted Tree Regression with Boston Data",
+    "section": "Task 6: Evaluating Feature Importance",
+    "text": "Task 6: Evaluating Feature Importance\nEvaluate the importance of each feature in the Boosted Tree model using the xgboost package’s xgb.importance function. Visualize the feature importance.\n\n\nShow the code\nimportance_matrix = xgb.importance(model = bt_model_fit %&gt;% extract_fit_engine())\nxgb.plot.importance(importance_matrix)"
+  },
+  {
+    "objectID": "boosting/boosting_practice.html#task-7-tuning-the-boosted-tree-model",
+    "href": "boosting/boosting_practice.html#task-7-tuning-the-boosted-tree-model",
+    "title": "Practice Set: Boosted Tree Regression with Boston Data",
+    "section": "Task 7: Tuning the Boosted Tree Model",
+    "text": "Task 7: Tuning the Boosted Tree Model\nPerform hyperparameter tuning to improve the performance of the Boosted Tree model. Use cross-validation to determine the optimal values for parameters like tree_depth and learn_rate.\n\n\nShow the code\n# Define the Boosted Tree model with tunable parameters\nbt_tune_model = boost_tree(\n  trees = 500,\n  tree_depth = tune(),\n  learn_rate = tune(),\n  loss_reduction = 0,\n  sample_size = 1,\n  mode = \"regression\"\n) %&gt;% \n  set_engine(\"xgboost\")\n\n# Update the workflow\ntune_bt_workflow = bt_workflow %&gt;% \n  update_model(bt_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_bt_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(tree_depth(range = c(2, 10)), learn_rate(range = c(0.01, 0.3)), levels = 10)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")"
+  },
+  {
+    "objectID": "boosting/boosting_practice.html#task-8-finalizing-the-model",
+    "href": "boosting/boosting_practice.html#task-8-finalizing-the-model",
+    "title": "Practice Set: Boosted Tree Regression with Boston Data",
+    "section": "Task 8: Finalizing the Model",
+    "text": "Task 8: Finalizing the Model\nFinalize the model with the optimal parameters and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n\nShow the code\n# Finalize the model with the best parameters\nfinal_bt_workflow = finalize_workflow(tune_bt_workflow, best_params)\n\n# Fit the finalized model\nfinal_bt_fit = final_bt_workflow %&gt;%\n  last_fit(data_split)"
+  },
+  {
+    "objectID": "boosting/boosting_practice.html#task-9-evaluating-the-final-model",
+    "href": "boosting/boosting_practice.html#task-9-evaluating-the-final-model",
+    "title": "Practice Set: Boosted Tree Regression with Boston Data",
+    "section": "Task 9: Evaluating the Final Model",
+    "text": "Task 9: Evaluating the Final Model\nEvaluate the performance of the tuned Boosted Tree model using RMSE on the test set predictions.\n\n\nShow the code\nfinal_bt_fit %&gt;% \n  collect_metrics()"
+  },
+  {
+    "objectID": "datasets/default.html",
+    "href": "datasets/default.html",
+    "title": "Introduction to the Default Data Set",
+    "section": "",
+    "text": "The Default data set, included in the ISLR package, is frequently utilized in classification tasks within machine learning and statistical analysis. This data set comprises information about 10,000 individuals, offering insights into factors that might influence loan default behavior. It includes variables indicating default status, student status, average credit card balance, and income."
+  },
+  {
+    "objectID": "datasets/default.html#variables-in-the-default-data-set",
+    "href": "datasets/default.html#variables-in-the-default-data-set",
+    "title": "Introduction to the Default Data Set",
+    "section": "Variables in the Default Data Set",
+    "text": "Variables in the Default Data Set\nHere is an explanation of each variable in the Default data set, along with their names and data types:\n\ndefault: Indicates whether the individual defaulted on their loan (Factor: No, Yes)\nstudent: Indicates whether the individual is a student (Factor: No, Yes)\nbalance: The average balance that the individual has remaining on their credit card (Numeric)\nincome: The individual’s income (Numeric)"
+  },
+  {
+    "objectID": "datasets/default.html#loading-the-default-data-set",
+    "href": "datasets/default.html#loading-the-default-data-set",
+    "title": "Introduction to the Default Data Set",
+    "section": "Loading the Default Data Set",
+    "text": "Loading the Default Data Set\nIn R, data sets from specific packages are often loaded using the :: operator, which allows you to access a dataset or function from a particular package without attaching the entire package. This is particularly useful to avoid name conflicts or reduce the clutter in your namespace.\nTo load the Default data set from the ISLR package, you can use the following code:\n\n# Load the Default data set\ndata(\"Default\", package = \"ISLR\")\n\nHere’s a step-by-step explanation of the code:\n\ndata(“Default”, package = “ISLR”): This line loads the Default data set. The data function is a base R function that loads specified data sets. By providing the name of the data set (\"Default\") and the package from which it comes (\"ISLR\"), R understands where to find the data set.\nISLR::Default: Alternatively, you can directly reference the data set using the :: operator as follows:\n\n\nDefault = ISLR::Default\n\nThe :: operator allows you to access the Default data set from the ISLR package directly. This method does not load the entire ISLR package into your R session, but only the specific data set or function you are interested in."
+  },
+  {
     "objectID": "dplyr/dplyr_exercises.html",
     "href": "dplyr/dplyr_exercises.html",
     "title": "Tutorials for DS course materials",
     "section": "",
-    "text": "# load libraries\n\nlibrary(tidyverse)\n\nSample Data Frame for Exercises\n\n# Make data for exercises\n\ndata = tibble(\n  id = 1:10,\n  name = c(\n    \"Alice\",\n    \"Bob\",\n    \"Charlie\",\n    \"David\",\n    \"Eva\",\n    \"Frank\",\n    \"Grace\",\n    \"Hannah\",\n    \"Ian\",\n    \"Jack\"\n  ),\n  age = c(23, 45, 34, 27, 19, 31, 29, 41, 36, 24),\n  score = c(85, 92, 88, 91, 76, 83, 77, 89, 94, 78)\n)\n\n\nExercises\n\nSelect the columns name and age.\n\n\n\nShow the code\nselected_data = data %&gt;%\n  select(name, age)\n\nselected_data\n\n\n# A tibble: 10 × 2\n   name      age\n   &lt;chr&gt;   &lt;dbl&gt;\n 1 Alice      23\n 2 Bob        45\n 3 Charlie    34\n 4 David      27\n 5 Eva        19\n 6 Frank      31\n 7 Grace      29\n 8 Hannah     41\n 9 Ian        36\n10 Jack       24\n\n\n\nSelect the columns id, name, and score.\n\n\n\nShow the code\nselected_data = data %&gt;%\n  select(id, name, score)\n\nselected_data\n\n\n# A tibble: 10 × 3\n      id name    score\n   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt;\n 1     1 Alice      85\n 2     2 Bob        92\n 3     3 Charlie    88\n 4     4 David      91\n 5     5 Eva        76\n 6     6 Frank      83\n 7     7 Grace      77\n 8     8 Hannah     89\n 9     9 Ian        94\n10    10 Jack       78\n\n\n\nFilter the rows where age is greater than 30.\n\n\n\nShow the code\nfiltered_data = data %&gt;%\n  filter(age &gt; 30)\n\nfiltered_data\n\n\n# A tibble: 5 × 4\n     id name      age score\n  &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;\n1     2 Bob        45    92\n2     3 Charlie    34    88\n3     6 Frank      31    83\n4     8 Hannah     41    89\n5     9 Ian        36    94\n\n\n\nFilter the rows where score is less than 80.\n\n\nfiltered_data = data %&gt;%\n  filter(score &lt; 80)\n\nfiltered_data\n\n# A tibble: 3 × 4\n     id name    age score\n  &lt;int&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;\n1     5 Eva      19    76\n2     7 Grace    29    77\n3    10 Jack     24    78\n\n\n\nCreate a new column age_in_months which is age multiplied by 12.\n\n\n\nShow the code\nmutated_data = data %&gt;%\n  mutate(age_in_months = age * 12)\n\nmutated_data\n\n\n# A tibble: 10 × 5\n      id name      age score age_in_months\n   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;\n 1     1 Alice      23    85           276\n 2     2 Bob        45    92           540\n 3     3 Charlie    34    88           408\n 4     4 David      27    91           324\n 5     5 Eva        19    76           228\n 6     6 Frank      31    83           372\n 7     7 Grace      29    77           348\n 8     8 Hannah     41    89           492\n 9     9 Ian        36    94           432\n10    10 Jack       24    78           288\n\n\n\nCreate a new column score_category which is “high” if score is greater than 90 and “low” otherwise.\n\n\n\nShow the code\nmutated_data = data %&gt;%\n  mutate(score_category = ifelse(score &gt; 90, \"high\", \"low\"))\n\nmutated_data\n\n\n# A tibble: 10 × 5\n      id name      age score score_category\n   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;         \n 1     1 Alice      23    85 low           \n 2     2 Bob        45    92 high          \n 3     3 Charlie    34    88 low           \n 4     4 David      27    91 high          \n 5     5 Eva        19    76 low           \n 6     6 Frank      31    83 low           \n 7     7 Grace      29    77 low           \n 8     8 Hannah     41    89 low           \n 9     9 Ian        36    94 high          \n10    10 Jack       24    78 low           \n\n\n\nCalculate the average score for the entire dataset.\n\n\n\nShow the code\nsummary_data = data %&gt;%\n  summarize(avg_score = mean(score))\n\nsummary_data\n\n\n# A tibble: 1 × 1\n  avg_score\n      &lt;dbl&gt;\n1      85.3\n\n\n\nCalculate the average age and the maximum score.\n\n\n\nShow the code\nsummary_data = data %&gt;%\n  summarize(avg_age = mean(age), max_score = max(score))\n\nsummary_data\n\n\n# A tibble: 1 × 2\n  avg_age max_score\n    &lt;dbl&gt;     &lt;dbl&gt;\n1    30.9        94\n\n\n\nArrange the dataset by age in ascending order.\n\n\n\nShow the code\narranged_data = data %&gt;%\n  arrange(age)\n\narranged_data\n\n\n# A tibble: 10 × 4\n      id name      age score\n   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;\n 1     5 Eva        19    76\n 2     1 Alice      23    85\n 3    10 Jack       24    78\n 4     4 David      27    91\n 5     7 Grace      29    77\n 6     6 Frank      31    83\n 7     3 Charlie    34    88\n 8     9 Ian        36    94\n 9     8 Hannah     41    89\n10     2 Bob        45    92\n\n\n\nArrange the dataset by score in descending order.\n\n\n\nShow the code\narranged_data = data %&gt;%\n  arrange(desc(score))\n\narranged_data\n\n\n# A tibble: 10 × 4\n      id name      age score\n   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;\n 1     9 Ian        36    94\n 2     2 Bob        45    92\n 3     4 David      27    91\n 4     8 Hannah     41    89\n 5     3 Charlie    34    88\n 6     1 Alice      23    85\n 7     6 Frank      31    83\n 8    10 Jack       24    78\n 9     7 Grace      29    77\n10     5 Eva        19    76"
+    "text": "# load libraries\n\nlibrary(tidyverse)\n\nSample Data Frame for Exercises\n\n# Make data for exercises\n\ndata = tibble(\n  id = 1:10,\n  name = c(\n    \"Alice\",\n    \"Bob\",\n    \"Charlie\",\n    \"David\",\n    \"Eva\",\n    \"Frank\",\n    \"Grace\",\n    \"Hannah\",\n    \"Ian\",\n    \"Jack\"\n  ),\n  age = c(23, 45, 34, 27, 19, 31, 29, 41, 36, 24),\n  score = c(85, 92, 88, 91, 76, 83, 77, 89, 94, 78)\n)\n\n\nExercises\n\nSelect the columns name and age.\n\n\n\nShow the code\nselected_data = data %&gt;%\n  select(name, age)\n\nselected_data\n\n\n# A tibble: 10 × 2\n   name      age\n   &lt;chr&gt;   &lt;dbl&gt;\n 1 Alice      23\n 2 Bob        45\n 3 Charlie    34\n 4 David      27\n 5 Eva        19\n 6 Frank      31\n 7 Grace      29\n 8 Hannah     41\n 9 Ian        36\n10 Jack       24\n\n\n\nSelect the columns id, name, and score.\n\n\n\nShow the code\nselected_data = data %&gt;%\n  select(id, name, score)\n\nselected_data\n\n\n# A tibble: 10 × 3\n      id name    score\n   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt;\n 1     1 Alice      85\n 2     2 Bob        92\n 3     3 Charlie    88\n 4     4 David      91\n 5     5 Eva        76\n 6     6 Frank      83\n 7     7 Grace      77\n 8     8 Hannah     89\n 9     9 Ian        94\n10    10 Jack       78\n\n\n\nFilter the rows where age is greater than 30.\n\n\n\nShow the code\nfiltered_data = data %&gt;%\n  filter(age &gt; 30)\n\nfiltered_data\n\n\n# A tibble: 5 × 4\n     id name      age score\n  &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;\n1     2 Bob        45    92\n2     3 Charlie    34    88\n3     6 Frank      31    83\n4     8 Hannah     41    89\n5     9 Ian        36    94\n\n\n\nFilter the rows where score is less than 80.\n\n\n\nShow the code\nfiltered_data = data %&gt;%\n  filter(score &lt; 80)\n\nfiltered_data\n\n\n# A tibble: 3 × 4\n     id name    age score\n  &lt;int&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;\n1     5 Eva      19    76\n2     7 Grace    29    77\n3    10 Jack     24    78\n\n\n\nCreate a new column age_in_months which is age multiplied by 12.\n\n\n\nShow the code\nmutated_data = data %&gt;%\n  mutate(age_in_months = age * 12)\n\nmutated_data\n\n\n# A tibble: 10 × 5\n      id name      age score age_in_months\n   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;\n 1     1 Alice      23    85           276\n 2     2 Bob        45    92           540\n 3     3 Charlie    34    88           408\n 4     4 David      27    91           324\n 5     5 Eva        19    76           228\n 6     6 Frank      31    83           372\n 7     7 Grace      29    77           348\n 8     8 Hannah     41    89           492\n 9     9 Ian        36    94           432\n10    10 Jack       24    78           288\n\n\n\nCreate a new column score_category which is “high” if score is greater than 90 and “low” otherwise.\n\n\n\nShow the code\nmutated_data = data %&gt;%\n  mutate(score_category = ifelse(score &gt; 90, \"high\", \"low\"))\n\nmutated_data\n\n\n# A tibble: 10 × 5\n      id name      age score score_category\n   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;         \n 1     1 Alice      23    85 low           \n 2     2 Bob        45    92 high          \n 3     3 Charlie    34    88 low           \n 4     4 David      27    91 high          \n 5     5 Eva        19    76 low           \n 6     6 Frank      31    83 low           \n 7     7 Grace      29    77 low           \n 8     8 Hannah     41    89 low           \n 9     9 Ian        36    94 high          \n10    10 Jack       24    78 low           \n\n\n\nCalculate the average score for the entire dataset.\n\n\n\nShow the code\nsummary_data = data %&gt;%\n  summarize(avg_score = mean(score))\n\nsummary_data\n\n\n# A tibble: 1 × 1\n  avg_score\n      &lt;dbl&gt;\n1      85.3\n\n\n\nCalculate the average age and the maximum score.\n\n\n\nShow the code\nsummary_data = data %&gt;%\n  summarize(avg_age = mean(age), max_score = max(score))\n\nsummary_data\n\n\n# A tibble: 1 × 2\n  avg_age max_score\n    &lt;dbl&gt;     &lt;dbl&gt;\n1    30.9        94\n\n\n\nArrange the dataset by age in ascending order.\n\n\n\nShow the code\narranged_data = data %&gt;%\n  arrange(age)\n\narranged_data\n\n\n# A tibble: 10 × 4\n      id name      age score\n   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;\n 1     5 Eva        19    76\n 2     1 Alice      23    85\n 3    10 Jack       24    78\n 4     4 David      27    91\n 5     7 Grace      29    77\n 6     6 Frank      31    83\n 7     3 Charlie    34    88\n 8     9 Ian        36    94\n 9     8 Hannah     41    89\n10     2 Bob        45    92\n\n\n\nArrange the dataset by score in descending order.\n\n\n\nShow the code\narranged_data = data %&gt;%\n  arrange(desc(score))\n\narranged_data\n\n\n# A tibble: 10 × 4\n      id name      age score\n   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;\n 1     9 Ian        36    94\n 2     2 Bob        45    92\n 3     4 David      27    91\n 4     8 Hannah     41    89\n 5     3 Charlie    34    88\n 6     1 Alice      23    85\n 7     6 Frank      31    83\n 8    10 Jack       24    78\n 9     7 Grace      29    77\n10     5 Eva        19    76"
   },
   {
     "objectID": "knn_classification/knn_classification.html",
     "href": "knn_classification/knn_classification.html",
-    "title": "KNN Classification with Palmer Penguins Data",
+    "title": "KNN Classification with Default data",
     "section": "",
-    "text": "Introduction\nIn this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) classification using the Palmer Penguins dataset. KNN classification is a non-parametric method that classifies data points based on the k-nearest neighbors to a data point. This method is particularly useful for classification tasks when the relationship between features and the target variable is complex and nonlinear. Here, we’ll investigate how to classify penguin species based on body mass using KNN classification.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the palmerpenguins package which contains the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Palmer Penguins dataset. We’ll filter out the Adelie species to simplify our classification task, remove any rows with missing values in body_mass_g, and ensure the species column is treated as a factor.\n\npenguin_data = penguins %&gt;% \n  filter(!species == \"Adelie\") %&gt;% \n  select(body_mass_g, species) %&gt;% \n  filter(!is.na(body_mass_g)) %&gt;% \n  mutate(species = factor(species))\n\n\n\nFit the KNN Classification Model\nNow, we’ll fit a K-Nearest Neighbors (KNN) classification model. Our goal is to classify penguin species using body_mass_g.\nThe nearest_neighbor() function from parsnip is used to specify the KNN model. Here, we set the mode to “classification”. We then fit the model to our data.\n\nknn_model_fit = nearest_neighbor(mode = \"classification\") %&gt;% \n  fit(species ~ body_mass_g, data = penguin_data)\n\n\n\nMake Predictions\nNext, we’ll use our model to make predictions.\n\npredictions = knn_model_fit %&gt;% \n  predict(penguin_data)\n\n\n\nEvaluate the Model\nTo evaluate the performance of our KNN classification model, we’ll create a confusion matrix.\nA confusion matrix is a table used to describe the performance of a classification model. It compares the actual values with the values predicted by the model. The confusion matrix provides the following metrics:\n\nTrue Positives (TP): The number of positive class predictions that are actually positive.\nTrue Negatives (TN): The number of negative class predictions that are actually negative.\nFalse Positives (FP): The number of negative class predictions that are actually positive.\nFalse Negatives (FN): The number of positive class predictions that are actually negative.\n\nThese metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.\n\npenguin_data %&gt;% \n  select(species) %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = species, estimate = .pred_class)\n\n           Truth\nPrediction  Chinstrap Gentoo\n  Chinstrap        59      2\n  Gentoo            9    121\n\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform KNN classification using the Palmer Penguins dataset. We went through loading the data, fitting a KNN classification model, making predictions, and evaluating the model using a confusion matrix. KNN classification is a versatile technique that can capture complex relationships in data and is useful for various classification tasks.\nFeel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!"
+    "text": "Introduction\nIn this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) classification using the Default dataset. KNN classification is a non-parametric method that classifies data points based on the k-nearest neighbors to a data point. This method is particularly useful for classification tasks when the relationship between features and the target variable is complex and nonlinear. Here, we’ll investigate how to classify default status based on balance using KNN classification.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the ISLR package which contains the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(ISLR)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Default dataset. We’ll filter out any rows with missing values in balance, and ensure the default column is treated as a factor.\n\ndefault_data = Default %&gt;% \n  select(balance, default) %&gt;% \n  filter(!is.na(balance)) %&gt;% \n  mutate(default = factor(default))\n\n\n\nFit the KNN Classification Model\nNow, we’ll fit a K-Nearest Neighbors (KNN) classification model. Our goal is to classify default status using balance.\nThe nearest_neighbor() function from parsnip is used to specify the KNN model. Here, we set the mode to “classification”. We then fit the model to our data.\n\nknn_model_fit = nearest_neighbor(mode = \"classification\") %&gt;% \n  fit(default ~ balance, data = default_data)\n\n\n\nMake Predictions\nNext, we’ll use our model to make predictions.\n\npredictions = knn_model_fit %&gt;% \n  predict(default_data)\n\n\n\nEvaluate the Model\nTo evaluate the performance of our KNN classification model, we’ll create a confusion matrix.\nA confusion matrix is a table used to describe the performance of a classification model. It compares the actual values with the values predicted by the model. The confusion matrix provides the following metrics:\n\nTrue Positives (TP): The number of positive class predictions that are actually positive.\nTrue Negatives (TN): The number of negative class predictions that are actually negative.\nFalse Positives (FP): The number of negative class predictions that are actually positive.\nFalse Negatives (FN): The number of positive class predictions that are actually negative.\n\nThese metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.\n\ndefault_data %&gt;% \n  select(default) %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)\n\n          Truth\nPrediction   No  Yes\n       No  9639  163\n       Yes   28  170\n\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform KNN classification using the Default dataset. We went through loading the data, fitting a KNN classification model, making predictions, and evaluating the model using a confusion matrix. KNN classification is a versatile technique that can capture complex relationships in data and is useful for various classification tasks.\nFeel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding! ```"
+  },
+  {
+    "objectID": "knn_regression/knn_regression.html",
+    "href": "knn_regression/knn_regression.html",
+    "title": "KNN Regression with Boston Housing Data",
+    "section": "",
+    "text": "Introduction\nIn this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) regression using the Boston housing dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) using KNN regression.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the MASS package which contains the Boston dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Boston housing dataset. We’ll ensure there are no duplicate rows.\n\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\nFit the KNN Regression Model\nNow, we’ll fit a K-Nearest Neighbors (KNN) regression model. Our goal is to predict medv using rm. We set the number of neighbors to 100.\nThe nearest_neighbor() function from parsnip is used to specify the KNN model. Here, we set the mode to “regression” and specify the number of neighbors. We then fit the model to our data.\n\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n  ) %&gt;%\n  fit(medv ~ rm, data = boston_data)\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform KNN regression using the Boston housing dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.\nFeel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!"
   },
   {
     "objectID": "multiple_regression/multiple_regression.html",
     "href": "multiple_regression/multiple_regression.html",
-    "title": "Multiple Linear Regression with Palmer Penguins Data",
+    "title": "Multiple Linear Regression with Boston Housing Data",
     "section": "",
-    "text": "Introduction\nIn this tutorial, we’ll explore how to perform a multiple linear regression using the Palmer Penguins dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we’ll investigate how bill depth is influenced by both body mass and species.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the palmerpenguins package which contains the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Palmer Penguins dataset.\n\npenguin_data = penguins %&gt;%\n  select(species, body_mass_g, bill_depth_mm)\n\n\n\nFit the Multiple Linear Regression Model\nNow, we’ll fit a multiple linear regression model. Our goal is to predict bill_depth_mm using body_mass_g and species. We will create a preprocessing recipe to handle categorical variables and interactions.\nThe recipe package, part of the tidymodels ecosystem, provides a way to preprocess data before modeling. We define the transformations to apply to our data in a consistent and reusable manner using “steps”.\n\nstep_dummy(): Converts categorical variables into dummy/indicator variables (one-hot encoding).\nstep_interact(): Creates interaction terms between variables.\n\nThe starts_with() function from the tidyselect package is used to select columns that start with a specific string, making it easier to apply transformations to multiple columns at once.\n\npreprocess_recipe = recipe(bill_depth_mm ~ ., data = penguin_data) %&gt;% \n  step_dummy(species) %&gt;% \n  step_interact(terms = ~starts_with(\"species\"):body_mass_g)\n\nWe then define our model specification using linear_reg().\n\nmodel_spec = linear_reg()\n\nNext, we use a workflow, a concept from the tidymodels package that helps streamline the modeling process by bundling together the preprocessing and modeling steps. This makes the workflow easier to manage and ensures that all steps are consistently applied.\n\nadd_recipe(): Adds the preprocessing recipe to the workflow.\nadd_model(): Adds the model specification to the workflow.\n\nFinally, we fit the workflow to the data.\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec) %&gt;% \n  fit(penguin_data)\n\nAlternatively, we can use one-hot encoding for the categorical variables and specify a model without an intercept.\n\npreprocess_recipe = recipe(bill_depth_mm ~ ., data = penguin_data) %&gt;% \n  step_dummy(species, one_hot = TRUE) %&gt;% \n  step_interact(terms = ~starts_with(\"species\"):body_mass_g)\n\nmodel_spec = linear_reg() %&gt;% \n  set_engine(\"lm\")\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec, formula = bill_depth_mm ~ 0 + . -body_mass_g) %&gt;% \n  fit(penguin_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_workflow %&gt;% \n  tidy()\n\n# A tibble: 6 × 5\n  term                             estimate std.error statistic  p.value\n  &lt;chr&gt;                               &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept)                     12.7       0.584       21.7   5.06e-66\n2 body_mass_g                      0.00153   0.000157     9.76  5.56e-20\n3 species_Chinstrap               -0.936     1.20        -0.779 4.36e- 1\n4 species_Gentoo                  -4.81      0.995       -4.84  2.02e- 6\n5 species_Chinstrap_x_body_mass_g  0.000257  0.000320     0.803 4.23e- 1\n6 species_Gentoo_x_body_mass_g    -0.000129  0.000222    -0.580 5.62e- 1\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_workflow %&gt;% \n  predict(penguin_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a multiple linear regression using the Palmer Penguins dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
+    "text": "Introduction\nIn this tutorial, we’ll explore how to perform a multiple linear regression using the Boston housing dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) and the proportion of owner-occupied units built before 1940 (age).\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll load the Boston housing dataset and select the relevant columns.\n\nboston_data = MASS::Boston %&gt;%\n  select(rm, age, medv)\n\n\n\nFit the Multiple Linear Regression Model\nNow, we’ll fit a multiple linear regression model. Our goal is to predict medv using rm and age. We will create a preprocessing recipe to handle interactions.\nThe recipe package, part of the tidymodels ecosystem, provides a way to preprocess data before modeling. We define the transformations to apply to our data in a consistent and reusable manner using “steps”.\n\nstep_interact(): Creates interaction terms between variables.\n\n\npreprocess_recipe = recipe(medv ~ ., data = boston_data) %&gt;% \n  step_interact(terms = ~rm:age)\n\nWe then define our model specification using linear_reg().\n\nmodel_spec = linear_reg()\n\nNext, we use a workflow, a concept from the tidymodels package that helps streamline the modeling process by bundling together the preprocessing and modeling steps. This makes the workflow easier to manage and ensures that all steps are consistently applied.\n\nadd_recipe(): Adds the preprocessing recipe to the workflow.\nadd_model(): Adds the model specification to the workflow.\n\nFinally, we fit the workflow to the data.\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec) %&gt;% \n  fit(boston_data)\n\nAlternatively, we can specify a model without an intercept.\n\npreprocess_recipe = recipe(medv ~ ., data = boston_data) %&gt;% \n  step_interact(terms = ~rm:age)\n\nmodel_spec = linear_reg() %&gt;% \n  set_engine(\"lm\")\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec, formula = medv ~ 0 + . -rm) %&gt;% \n  fit(boston_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_workflow %&gt;% \n  tidy()\n\n# A tibble: 4 × 5\n  term        estimate std.error statistic  p.value\n  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept) -59.6       7.79       -7.65 1.01e-13\n2 rm           13.7       1.20       11.4  4.39e-27\n3 age           0.382     0.0967      3.94 9.15e- 5\n4 rm_x_age     -0.0714    0.0151     -4.72 3.03e- 6\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_workflow %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a multiple linear regression using the Boston housing dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
+  },
+  {
+    "objectID": "random_forest/random_forest.html",
+    "href": "random_forest/random_forest.html",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "",
+    "text": "Welcome to this tutorial on Random Forest regression. This tutorial aims to introduce the concept of Random Forest regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Random Forest regression is a powerful tool for predicting continuous outcomes based on input features and is widely used in various fields."
+  },
+  {
+    "objectID": "random_forest/random_forest.html#what-is-random-forest-regression",
+    "href": "random_forest/random_forest.html#what-is-random-forest-regression",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "What is Random Forest Regression?",
+    "text": "What is Random Forest Regression?\nRandom Forest regression is an ensemble learning method that constructs multiple decision trees during training and outputs the average prediction of the individual trees. This method improves predictive accuracy and controls overfitting."
+  },
+  {
+    "objectID": "random_forest/random_forest.html#loading-necessary-libraries",
+    "href": "random_forest/random_forest.html#loading-necessary-libraries",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "Loading Necessary Libraries",
+    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, MASS for accessing the dataset, and randomForest for the Random Forest model.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(randomForest)"
+  },
+  {
+    "objectID": "random_forest/random_forest.html#loading-the-data",
+    "href": "random_forest/random_forest.html#loading-the-data",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "Loading the Data",
+    "text": "Loading the Data\nWe load and prepare the Boston dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (medv), which we will predict using the other attributes.\n\nboston_data = MASS::Boston"
+  },
+  {
+    "objectID": "random_forest/random_forest.html#splitting-the-data",
+    "href": "random_forest/random_forest.html#splitting-the-data",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "Splitting the Data",
+    "text": "Splitting the Data\nWe split the data into training and testing sets using the initial_split function. We set a 50-50 split by setting the prop argument.\n\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
+  },
+  {
+    "objectID": "random_forest/random_forest.html#fitting-the-random-forest-regression-model",
+    "href": "random_forest/random_forest.html#fitting-the-random-forest-regression-model",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "Fitting the Random Forest Regression Model",
+    "text": "Fitting the Random Forest Regression Model\nNext, we fit a Random Forest regression model to predict medv using all available predictors. We use a recipe to preprocess the data and define the model using rand_forest with specified parameters. The workflow function combines the recipe and model for fitting.\n\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\nrf_model = rand_forest(\n  mtry = 12,\n  trees = 500,\n  mode = \"regression\"\n) %&gt;% \n  set_engine(\"randomForest\")\n\nrf_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(rf_model)\n\nrf_model_fit = rf_workflow %&gt;% \n  fit(train_set)"
+  },
+  {
+    "objectID": "random_forest/random_forest.html#making-predictions",
+    "href": "random_forest/random_forest.html#making-predictions",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "Making Predictions",
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).\n\npredictions = rf_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics\n\n# A tibble: 3 × 3\n  .metric .estimator .estimate\n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;\n1 rmse    standard       4.18 \n2 rsq     standard       0.778\n3 mae     standard       2.46"
+  },
+  {
+    "objectID": "random_forest/random_forest.html#evaluating-feature-importance",
+    "href": "random_forest/random_forest.html#evaluating-feature-importance",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "Evaluating Feature Importance",
+    "text": "Evaluating Feature Importance\nWe can evaluate the importance of each feature in the Random Forest model using the randomForest package’s importance function. This helps in understanding which features contribute most to the model’s predictions.\n\nrf_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  importance()\n\n        IncNodePurity\ncrim        561.26323\nzn           33.89163\nindus       158.27625\nchas         27.85886\nnox         422.97131\nrm         9264.10275\nage         342.01914\ndis         691.62347\nrad         146.96660\ntax         328.61642\nptratio     223.09747\nblack       242.72492\nlstat     10116.08758"
+  },
+  {
+    "objectID": "random_forest/random_forest.html#tuning-the-random-forest-model",
+    "href": "random_forest/random_forest.html#tuning-the-random-forest-model",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "Tuning the Random Forest Model",
+    "text": "Tuning the Random Forest Model\nHyperparameter tuning is essential for improving the performance of the Random Forest model. We use cross-validation to determine the optimal values for parameters like mtry (number of variables considered at each split) and trees (number of trees in the forest).\nWe define a Random Forest model with tunable parameters and update the workflow to include these tunable parameters. We then define the resampling method using 5-fold cross-validation with vfold_cv.\n\n# Define the Random Forest model with tunable parameters\nrf_tune_model = rand_forest(\n  mtry = tune(),\n  trees = tune(),\n  mode = \"regression\",\n  engine = \"randomForest\"\n)\n\n# Update the workflow\ntune_rf_workflow = rf_workflow %&gt;% \n  update_model(rf_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_rf_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(mtry(range = c(2, 10)), trees(range = c(100, 1000)), levels = 10)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\nThe tune_grid function performs a grid search over a range of mtry and trees values to find the best parameter combination that minimizes the RMSE metric. We then finalize the model with the optimal parameters and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_rf_workflow = finalize_workflow(tune_rf_workflow, best_params)\n\n# Fit the finalized model\nfinal_rf_fit = final_rf_workflow %&gt;%\n  last_fit(data_split)"
+  },
+  {
+    "objectID": "random_forest/random_forest.html#evaluating-the-final-model",
+    "href": "random_forest/random_forest.html#evaluating-the-final-model",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "Evaluating the Final Model",
+    "text": "Evaluating the Final Model\nFinally, we evaluate the performance of the tuned Random Forest model using RMSE on the test set predictions.\n\nfinal_rf_fit %&gt;% \n  collect_metrics()\n\n# A tibble: 2 × 4\n  .metric .estimator .estimate .config             \n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               \n1 rmse    standard       3.97  Preprocessor1_Model1\n2 rsq     standard       0.802 Preprocessor1_Model1"
+  },
+  {
+    "objectID": "random_forest/random_forest.html#conclusion",
+    "href": "random_forest/random_forest.html#conclusion",
+    "title": "Introduction to Random Forest Regression with Boston data",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis tutorial has provided an in-depth look at Random Forest regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and evaluating feature importance, we have demonstrated the entire process of Random Forest regression analysis. Additionally, we have shown how to tune a Random Forest model using the tidymodels framework to improve its performance. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
+  },
+  {
+    "objectID": "simple_regression/simple_regression.html",
+    "href": "simple_regression/simple_regression.html",
+    "title": "Simple Linear Regression with Boston Housing Data",
+    "section": "",
+    "text": "Introduction\nIn this tutorial, we’ll explore how to perform a simple linear regression using the Boston housing dataset. Linear regression is a foundational statistical method that allows us to model the relationship between a dependent variable and one or more independent variables. Here, we’ll investigate the relationship between the median value of owner-occupied homes (medv) and the average number of rooms per dwelling (rm).\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll load the Boston housing dataset and select the relevant columns.\n\nboston_data = MASS::Boston %&gt;%\n  select(rm, medv)\n\n\n\nFit the Linear Regression Model\nNow, we’ll fit a simple linear regression model. Our goal is to predict medv using rm.\n\nlinear_model_fit = linear_reg() %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_fit %&gt;% \n  tidy()\n\n# A tibble: 2 × 5\n  term        estimate std.error statistic  p.value\n  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept)   -34.7      2.65      -13.1 6.95e-34\n2 rm              9.10     0.419      21.7 2.49e-74\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_fit %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a simple linear regression using the Boston housing dataset. We went through loading the data, fitting a model, inspecting the coefficients, and making predictions. This foundational technique can be applied to various datasets and provides a basis for more complex modeling.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
   },
   {
     "objectID": "tree_classification/tree_classification.html",
     "href": "tree_classification/tree_classification.html",
-    "title": "Introduction to Tree Classification with R",
+    "title": "Introduction to Tree Classification with Default data",
     "section": "",
     "text": "Welcome to this tutorial on tree classification. This tutorial aims to introduce the concept of tree classification, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree classification is a powerful tool for predicting categorical outcomes based on input features, and it is widely used in various fields."
   },
   {
     "objectID": "tree_classification/tree_classification.html#what-is-tree-classification",
     "href": "tree_classification/tree_classification.html#what-is-tree-classification",
-    "title": "Introduction to Tree Classification with R",
+    "title": "Introduction to Tree Classification with Default data",
     "section": "What is Tree Classification?",
     "text": "What is Tree Classification?\nTree classification is a type of decision tree that is used for predicting categorical class labels. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to maximize the homogeneity of the target variable within each subset."
   },
   {
     "objectID": "tree_classification/tree_classification.html#loading-necessary-libraries",
     "href": "tree_classification/tree_classification.html#loading-necessary-libraries",
-    "title": "Introduction to Tree Classification with R",
+    "title": "Introduction to Tree Classification with Default data",
     "section": "Loading Necessary Libraries",
-    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, and palmerpenguins for accessing the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(palmerpenguins)\nlibrary(rpart.plot)"
+    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, ISLR for accessing the dataset, and rpart.plot for visualizing the tree.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(ISLR)\nlibrary(rpart.plot)"
   },
   {
     "objectID": "tree_classification/tree_classification.html#loading-the-data",
     "href": "tree_classification/tree_classification.html#loading-the-data",
-    "title": "Introduction to Tree Classification with R",
+    "title": "Introduction to Tree Classification with Default data",
     "section": "Loading the Data",
-    "text": "Loading the Data\nWe load and prepare the penguin_data dataset, filtering out the Chinstrap species and converting the species column to a factor.\n\npenguin_data = penguins %&gt;% \n  filter(!species == \"Chinstrap\") %&gt;% \n  mutate(species = factor(species))"
+    "text": "Loading the Data\nWe load and prepare the Default dataset, converting the default column to a factor to ensure it is treated as a categorical variable.\n\ndefault_data = Default %&gt;% \n  mutate(default = factor(default))"
   },
   {
     "objectID": "tree_classification/tree_classification.html#visualizing-the-data",
     "href": "tree_classification/tree_classification.html#visualizing-the-data",
-    "title": "Introduction to Tree Classification with R",
+    "title": "Introduction to Tree Classification with Default data",
     "section": "Visualizing the Data",
-    "text": "Visualizing the Data\nWe start by visualizing the relationship between the predictor variables body_mass_g and bill_depth_mm from the penguin_data dataset.\n\npenguin_data %&gt;% \n  ggplot(aes(body_mass_g, bill_depth_mm, color = species)) + \n  geom_point()"
+    "text": "Visualizing the Data\nWe start by visualizing the relationship between the predictor variables balance and income from the default_data dataset, colored by the default status. This helps us understand the distribution and relationship of the variables.\n\ndefault_data %&gt;% \n  ggplot(aes(balance, income, color = default)) + \n  geom_point()"
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html#splitting-the-data",
+    "href": "tree_classification/tree_classification.html#splitting-the-data",
+    "title": "Introduction to Tree Classification with Default data",
+    "section": "Splitting the Data",
+    "text": "Splitting the Data\nWe split the data into training and testing sets. The initial_split function ensures that the proportion of default cases is maintained in both sets. Given the imbalance in the dataset, stratified sampling ensures that the minority class (default cases) is proportionally represented in both sets.\n\ndata_split = initial_split(default_data, strata = default)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
   },
   {
     "objectID": "tree_classification/tree_classification.html#fitting-the-tree-classification-model",
     "href": "tree_classification/tree_classification.html#fitting-the-tree-classification-model",
-    "title": "Introduction to Tree Classification with R",
+    "title": "Introduction to Tree Classification with Default data",
     "section": "Fitting the Tree Classification Model",
-    "text": "Fitting the Tree Classification Model\nNext, we fit a tree classification model to predict species using bill_depth_mm and body_mass_g as predictors. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.\n\ntree_model_fit = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 1,\n  mode = \"classification\",\n  engine = \"rpart\",\n  min_n = 5\n) %&gt;%\n  fit(species ~ bill_depth_mm + body_mass_g, data = penguin_data)"
+    "text": "Fitting the Tree Classification Model\nNext, we fit a tree classification model to predict default using balance and income as predictors. We use a recipe to preprocess the data and define the model using decision_tree with specified parameters. The workflow function combines the recipe and model for fitting.\n\npreprocess_recipe = recipe(default ~ balance + income, data = train_set)\n\ntree_model = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 5,\n  mode = \"classification\",\n  min_n = 5,\n  engine = \"rpart\"\n)\n\ntree_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(tree_model)\n\ntree_model_fit = tree_workflow %&gt;% \n  fit(train_set)"
   },
   {
     "objectID": "tree_classification/tree_classification.html#making-predictions",
     "href": "tree_classification/tree_classification.html#making-predictions",
-    "title": "Introduction to Tree Classification with R",
+    "title": "Introduction to Tree Classification with Default data",
     "section": "Making Predictions",
-    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the penguin_data.\n\npredictions = tree_model_fit %&gt;% \n  predict(penguin_data)"
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using a confusion matrix to compare the predicted classes against the true classes.\n\npredictions = tree_model_fit %&gt;% \n  predict(test_set)\n\ntest_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)\n\n          Truth\nPrediction   No  Yes\n       No  2400   64\n       Yes   11   25"
   },
   {
     "objectID": "tree_classification/tree_classification.html#visualizing-the-tree",
     "href": "tree_classification/tree_classification.html#visualizing-the-tree",
-    "title": "Introduction to Tree Classification with R",
+    "title": "Introduction to Tree Classification with Default data",
     "section": "Visualizing the Tree",
-    "text": "Visualizing the Tree\nFinally, we visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated.\n\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+    "text": "Visualizing the Tree\nWe visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated. The rpart.plot function helps in creating a clear graphical representation of the tree.\n\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification.html#pruning-the-tree",
+    "href": "tree_classification/tree_classification.html#pruning-the-tree",
+    "title": "Introduction to Tree Classification with Default data",
+    "section": "Pruning the Tree",
+    "text": "Pruning the Tree\nTree pruning is a technique used to reduce the size of a decision tree by removing sections that provide little predictive power. Pruning helps improve the model’s generalizability by reducing overfitting. We use cross-validation to determine the optimal complexity parameter (cost_complexity) value.\nWe define a tree model with tunable cost_complexity and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with vfold_cv. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.\n\n# Define the tree model with tunable cost complexity\ntree_tune_model = decision_tree(\n  cost_complexity = tune(),\n  tree_depth = 5,\n  mode = \"classification\",\n  min_n = 5\n) %&gt;% \n  set_engine(\"rpart\")\n\n# Update the workflow\ntree_workflow = tree_workflow %&gt;% \n  update_model(tree_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tree_workflow,\n  resamples = cv_splits,\n  grid = 20\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"accuracy\")\n\nThe tune_grid function performs a grid search over a range of cost_complexity values to find the best parameter that maximizes the accuracy metric. We then finalize the model with the optimal cost_complexity parameter and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_tree_workflow = finalize_workflow(tree_workflow, best_params)\n\n# Fit the finalized model\nfinal_tree_fit = final_tree_workflow %&gt;%\n  last_fit(data_split)\n\nWe can visualize the pruned tree to compare it with the original tree.\n\n# Visualize the pruned tree\nfinal_tree_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)\n\n\n\n\n\n\n\n\nFinally, we evaluate the performance of the pruned tree using a confusion matrix on the test set predictions.\n\nfinal_tree_fit %&gt;% \n  collect_predictions() %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)\n\n          Truth\nPrediction   No  Yes\n       No  2400   63\n       Yes   11   26"
   },
   {
     "objectID": "tree_classification/tree_classification.html#conclusion",
     "href": "tree_classification/tree_classification.html#conclusion",
-    "title": "Introduction to Tree Classification with R",
+    "title": "Introduction to Tree Classification with Default data",
     "section": "Conclusion",
-    "text": "Conclusion\nThis tutorial has provided an in-depth look at tree classification, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree classification analysis. Understanding these methods and their applications will enhance your ability to analyze and interpret categorical data effectively."
+    "text": "Conclusion\nThis tutorial has provided an in-depth look at tree classification, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree classification analysis. Additionally, we have shown how to prune a decision tree using the tidymodels framework to improve its performance by reducing overfitting. Understanding these methods and their applications will enhance your ability to analyze and interpret categorical data effectively."
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html",
+    "href": "tree_classification/tree_classification_practice.html",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "",
+    "text": "Welcome to this practice set on tree classification. This set aims to reinforce your understanding of tree classification through hands-on tasks using the Default dataset. Follow the tasks to complete the analysis."
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#what-is-tree-classification",
+    "href": "tree_classification/tree_classification_practice.html#what-is-tree-classification",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "What is Tree Classification?",
+    "text": "What is Tree Classification?\nTree classification is a type of decision tree used for predicting categorical class labels. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to maximize the homogeneity of the target variable within each subset."
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#task-1-loading-necessary-libraries",
+    "href": "tree_classification/tree_classification_practice.html#task-1-loading-necessary-libraries",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "Task 1: Loading Necessary Libraries",
+    "text": "Task 1: Loading Necessary Libraries\nTask: Load the required libraries for data manipulation, model fitting, accessing the dataset, and visualizing the tree.\n\n# Load necessary libraries\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(ISLR)\nlibrary(rpart.plot)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#task-2-loading-the-data",
+    "href": "tree_classification/tree_classification_practice.html#task-2-loading-the-data",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "Task 2: Loading the Data",
+    "text": "Task 2: Loading the Data\nTask: Load and prepare the Default dataset, converting the default column to a factor.\n\n\nShow the code\n# Load and prepare the data\ndefault_data = Default %&gt;% \n  mutate(default = factor(default))"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#task-3-visualizing-the-data",
+    "href": "tree_classification/tree_classification_practice.html#task-3-visualizing-the-data",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "Task 3: Visualizing the Data",
+    "text": "Task 3: Visualizing the Data\nTask: Visualize the relationship between the predictor variables balance and income from the default_data dataset, colored by the default status.\n\n\nShow the code\n# Visualize the data\ndefault_data %&gt;% \n  ggplot(aes(balance, income, color = default)) + \n  geom_point()"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#task-4-splitting-the-data",
+    "href": "tree_classification/tree_classification_practice.html#task-4-splitting-the-data",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "Task 4: Splitting the Data",
+    "text": "Task 4: Splitting the Data\nTask: Split the data into training and testing sets using stratified sampling.\n\n\nShow the code\n# Split the data\ndata_split = initial_split(default_data, strata = default)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#task-5-fitting-the-tree-classification-model",
+    "href": "tree_classification/tree_classification_practice.html#task-5-fitting-the-tree-classification-model",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "Task 5: Fitting the Tree Classification Model",
+    "text": "Task 5: Fitting the Tree Classification Model\nTask: Fit a tree classification model to predict default using balance and income as predictors.\n\n\nShow the code\n# Define the preprocessing recipe\npreprocess_recipe = recipe(default ~ balance + income, data = train_set)\n\n# Define the tree model\ntree_model = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 5,\n  mode = \"classification\",\n  min_n = 5,\n  engine = \"rpart\"\n)\n\n# Combine recipe and model into a workflow\ntree_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(tree_model)\n\n# Fit the model\ntree_model_fit = tree_workflow %&gt;% \n  fit(train_set)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#task-6-making-predictions",
+    "href": "tree_classification/tree_classification_practice.html#task-6-making-predictions",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "Task 6: Making Predictions",
+    "text": "Task 6: Making Predictions\nTask: Use the fitted model to make predictions on the test set and evaluate the model performance using a confusion matrix.\n\n\nShow the code\n# Make predictions on the test set\npredictions = tree_model_fit %&gt;% \n  predict(test_set)\n\n# Evaluate the model performance\ntest_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#task-7-visualizing-the-tree",
+    "href": "tree_classification/tree_classification_practice.html#task-7-visualizing-the-tree",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "Task 7: Visualizing the Tree",
+    "text": "Task 7: Visualizing the Tree\nTask: Visualize the structure of the fitted tree to understand the splits and predictions.\n\n\nShow the code\n# Visualize the tree structure\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#task-8-pruning-the-tree",
+    "href": "tree_classification/tree_classification_practice.html#task-8-pruning-the-tree",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "Task 8: Pruning the Tree",
+    "text": "Task 8: Pruning the Tree\nTask: Perform tree pruning using cross-validation to find the optimal cost_complexity parameter.\n\n\nShow the code\n# Define the tree model with tunable cost complexity\ntree_tune_model = decision_tree(\n  cost_complexity = tune(),\n  tree_depth = 5,\n  mode = \"classification\",\n  min_n = 5\n) %&gt;% \n  set_engine(\"rpart\")\n\n# Update the workflow\ntree_workflow = tree_workflow %&gt;% \n  update_model(tree_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tree_workflow,\n  resamples = cv_splits,\n  grid = 20\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"accuracy\")\n\n# Finalize the model with the best parameters\nfinal_tree_workflow = finalize_workflow(tree_workflow, best_params)\n\n# Fit the finalized model\nfinal_tree_fit = final_tree_workflow %&gt;%\n  last_fit(data_split)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#task-9-visualizing-the-pruned-tree",
+    "href": "tree_classification/tree_classification_practice.html#task-9-visualizing-the-pruned-tree",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "Task 9: Visualizing the Pruned Tree",
+    "text": "Task 9: Visualizing the Pruned Tree\nTask: Visualize the pruned tree to compare it with the original tree.\n\n\nShow the code\n# Visualize the pruned tree\nfinal_tree_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
+  },
+  {
+    "objectID": "tree_classification/tree_classification_practice.html#task-10-evaluating-the-pruned-tree",
+    "href": "tree_classification/tree_classification_practice.html#task-10-evaluating-the-pruned-tree",
+    "title": "Tree Classification Practice Set with Default data",
+    "section": "Task 10: Evaluating the Pruned Tree",
+    "text": "Task 10: Evaluating the Pruned Tree\nTask: Evaluate the performance of the pruned tree using a confusion matrix on the test set predictions.\n\n\nShow the code\n# Evaluate the pruned tree performance\nfinal_tree_fit %&gt;% \n  collect_predictions() %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_exercise_set.html",
+    "href": "tree_regression/tree_regression_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "This exercise set is designed to help you practice the steps involved in performing K-Nearest Neighbors (KNN) regression using the Boston housing dataset. Each task is followed by a chunk of code that presents the solution.\n\n\nTask: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nTask: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nTask: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nTask: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "tree_regression/tree_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_exercise_set.html#task-2-load-the-data",
+    "href": "tree_regression/tree_regression_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "tree_regression/tree_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "tree_regression/tree_regression_exercise_set.html#task-4-make-predictions",
+    "href": "tree_regression/tree_regression_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
   }
 ]

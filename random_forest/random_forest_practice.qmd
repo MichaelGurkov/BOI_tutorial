@@ -1,0 +1,168 @@
+---
+title: "Practice Set: Random Forest Regression with Boston Data"
+format: html
+execute: 
+  cache: true
+---
+
+## Loading Necessary Libraries
+
+**Task:** Load the required libraries for analysis: `tidyverse`, `tidymodels`, `MASS`, and `randomForest`.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(MASS)
+library(randomForest)
+```
+
+## Loading the Data
+
+**Task:** Load the `Boston` dataset from the `MASS` package.
+
+```{r load_data}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+boston_data = MASS::Boston
+```
+
+## Splitting the Data
+
+**Task:** Split the data into training and testing sets using the `initial_split` function with a 50-50 split.
+
+```{r split_data}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+data_split = initial_split(boston_data, prop = 0.5)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Fitting the Random Forest Regression Model
+
+**Task:** Fit a Random Forest regression model to predict `medv` using all available predictors. Use a `recipe` for preprocessing and the `rand_forest` model with specified parameters. Combine the recipe and model using a `workflow`.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+preprocess_recipe = recipe(medv ~ ., data = train_set)
+
+rf_model = rand_forest(
+  mtry = 12,
+  trees = 500,
+  mode = "regression"
+) %>% 
+  set_engine("randomForest")
+
+rf_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(rf_model)
+
+rf_model_fit = rf_workflow %>% 
+  fit(train_set)
+```
+
+## Making Predictions
+
+**Task:** Make predictions on the test set using the fitted model. Evaluate the model performance using RMSE.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+predictions = rf_model_fit %>% 
+  predict(test_set)
+
+metrics = test_set %>% 
+  bind_cols(predictions) %>% 
+  metrics(truth = medv, estimate = .pred)
+
+metrics
+```
+
+## Evaluating Feature Importance
+
+**Task:** Evaluate the importance of each feature in the Random Forest model using the `importance` function.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+rf_model_fit %>% 
+  extract_fit_engine() %>% 
+  importance()
+
+```
+
+## Tuning the Random Forest Model
+
+**Task:** Perform hyperparameter tuning for the Random Forest model. Define a tunable Random Forest model, update the workflow, and use 5-fold cross-validation to find the best parameters.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Define the Random Forest model with tunable parameters
+rf_tune_model = rand_forest(
+  mtry = tune(),
+  trees = tune(),
+  mode = "regression"
+) %>% 
+  set_engine("randomForest")
+
+# Update the workflow
+tune_rf_workflow = rf_workflow %>% 
+  update_model(rf_tune_model)
+
+# Define the resampling method
+set.seed(123)
+cv_splits = vfold_cv(train_set, v = 5)
+
+# Perform tuning
+tune_results = tune_grid(
+  tune_rf_workflow,
+  resamples = cv_splits,
+  grid = grid_regular(mtry(range = c(2, 10)), trees(range = c(100, 1000)), levels = 10)
+)
+
+# Extract the best parameters
+best_params = select_best(tune_results, metric = "rmse")
+```
+
+**Task:** Finalize the model with the optimal parameters and fit it to the training data using `last_fit`.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Finalize the model with the best parameters
+final_rf_workflow = finalize_workflow(tune_rf_workflow, best_params)
+
+# Fit the finalized model
+final_rf_fit = final_rf_workflow %>%
+  last_fit(data_split)
+```
+
+## Evaluating the Final Model
+
+**Task:** Evaluate the performance of the tuned Random Forest model using RMSE on the test set predictions.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+final_rf_fit %>% 
+  collect_metrics()
+```
+```

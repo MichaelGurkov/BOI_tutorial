@@ -1,6 +1,8 @@
 ---
-title: "Introduction to Tree Classification with R"
+title: "Introduction to Tree Classification with [Default](../datasets/default.qmd) data"
 format: html
+execute: 
+  cache: true
 ---
 
 Welcome to this tutorial on tree classification. This tutorial aims to introduce the concept of tree classification, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree classification is a powerful tool for predicting categorical outcomes based on input features, and it is widely used in various fields.
@@ -11,62 +13,83 @@ Tree classification is a type of decision tree that is used for predicting categ
 
 ## Loading Necessary Libraries
 
-First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, and `palmerpenguins` for accessing the dataset.
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, `ISLR` for accessing the dataset, and `rpart.plot` for visualizing the tree.
 
 ```{r}
 library(tidyverse)
 library(tidymodels)
-library(palmerpenguins)
+library(ISLR)
 library(rpart.plot)
 ```
 
 ## Loading the Data
 
-We load and prepare the `penguin_data` dataset, filtering out the `Chinstrap` species and converting the `species` column to a factor.
+We load and prepare the `Default` dataset, converting the `default` column to a factor to ensure it is treated as a categorical variable.
 
 ```{r load_data}
-penguin_data = penguins %>% 
-  filter(!species == "Chinstrap") %>% 
-  mutate(species = factor(species))
+default_data = Default %>% 
+  mutate(default = factor(default))
 ```
 
 ## Visualizing the Data
 
-We start by visualizing the relationship between the predictor variables `body_mass_g` and `bill_depth_mm` from the `penguin_data` dataset.
+We start by visualizing the relationship between the predictor variables `balance` and `income` from the `default_data` dataset, colored by the `default` status. This helps us understand the distribution and relationship of the variables.
 
 ```{r}
-penguin_data %>% 
-  ggplot(aes(body_mass_g, bill_depth_mm, color = species)) + 
+default_data %>% 
+  ggplot(aes(balance, income, color = default)) + 
   geom_point()
+```
+
+## Splitting the Data
+
+We split the data into training and testing sets. The `initial_split` function ensures that the proportion of default cases is maintained in both sets. Given the imbalance in the dataset, stratified sampling ensures that the minority class (default cases) is proportionally represented in both sets.
+
+```{r split_data}
+data_split = initial_split(default_data, strata = default)
+train_set = training(data_split)
+test_set = testing(data_split)
 ```
 
 ## Fitting the Tree Classification Model
 
-Next, we fit a tree classification model to predict `species` using `bill_depth_mm` and `body_mass_g` as predictors. We specify the model parameters, including the tree depth, minimum number of observations in a node, and the engine to be used.
+Next, we fit a tree classification model to predict `default` using `balance` and `income` as predictors. We use a `recipe` to preprocess the data and define the model using `decision_tree` with specified parameters. The `workflow` function combines the recipe and model for fitting.
 
 ```{r}
-tree_model_fit = decision_tree(
+preprocess_recipe = recipe(default ~ balance + income, data = train_set)
+
+tree_model = decision_tree(
   cost_complexity = 0,
-  tree_depth = 1,
+  tree_depth = 5,
   mode = "classification",
-  engine = "rpart",
-  min_n = 5
-) %>%
-  fit(species ~ bill_depth_mm + body_mass_g, data = penguin_data)
+  min_n = 5,
+  engine = "rpart"
+)
+
+tree_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(tree_model)
+
+tree_model_fit = tree_workflow %>% 
+  fit(train_set)
 ```
 
 ## Making Predictions
 
-Once the model is fitted, we use it to make predictions on the `penguin_data`.
+Once the model is fitted, we use it to make predictions on the test set. The `predict` function from the workflow provides these predictions. We then evaluate the model performance using a confusion matrix to compare the predicted classes against the true classes.
 
 ```{r}
 predictions = tree_model_fit %>% 
-  predict(penguin_data)
+  predict(test_set)
+
+test_set %>% 
+  bind_cols(predictions) %>% 
+  conf_mat(truth = default, estimate = .pred_class)
 ```
 
 ## Visualizing the Tree
 
-Finally, we visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated.
+We visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated. The `rpart.plot` function helps in creating a clear graphical representation of the tree.
 
 ```{r}
 tree_model_fit %>% 
@@ -74,6 +97,69 @@ tree_model_fit %>%
   rpart.plot(roundint = FALSE)
 ```
 
+## Pruning the Tree
+
+Tree pruning is a technique used to reduce the size of a decision tree by removing sections that provide little predictive power. Pruning helps improve the model's generalizability by reducing overfitting. We use cross-validation to determine the optimal complexity parameter (`cost_complexity`) value.
+
+We define a tree model with tunable `cost_complexity` and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with `vfold_cv`. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.
+
+```{r}
+# Define the tree model with tunable cost complexity
+tree_tune_model = decision_tree(
+  cost_complexity = tune(),
+  tree_depth = 5,
+  mode = "classification",
+  min_n = 5
+) %>% 
+  set_engine("rpart")
+
+# Update the workflow
+tree_workflow = tree_workflow %>% 
+  update_model(tree_tune_model)
+
+# Define the resampling method
+set.seed(123)
+cv_splits = vfold_cv(train_set, v = 5)
+
+# Perform tuning
+tune_results = tune_grid(
+  tree_workflow,
+  resamples = cv_splits,
+  grid = 20
+)
+
+# Extract the best parameters
+best_params = select_best(tune_results, metric = "accuracy")
+```
+
+The `tune_grid` function performs a grid search over a range of `cost_complexity` values to find the best parameter that maximizes the accuracy metric. We then finalize the model with the optimal `cost_complexity` parameter and fit it to the training data using `last_fit`, which refits the model on the entire training set and evaluates it on the test set.
+
+```{r}
+# Finalize the model with the best parameters
+final_tree_workflow = finalize_workflow(tree_workflow, best_params)
+
+# Fit the finalized model
+final_tree_fit = final_tree_workflow %>%
+  last_fit(data_split)
+```
+
+We can visualize the pruned tree to compare it with the original tree.
+
+```{r}
+# Visualize the pruned tree
+final_tree_fit %>% 
+  extract_fit_engine() %>% 
+  rpart.plot(roundint = FALSE)
+```
+
+Finally, we evaluate the performance of the pruned tree using a confusion matrix on the test set predictions.
+
+```{r}
+final_tree_fit %>% 
+  collect_predictions() %>% 
+  conf_mat(truth = default, estimate = .pred_class)
+```
+
 ## Conclusion
 
-This tutorial has provided an in-depth look at tree classification, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree classification analysis. Understanding these methods and their applications will enhance your ability to analyze and interpret categorical data effectively.
+This tutorial has provided an in-depth look at tree classification, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree classification analysis. Additionally, we have shown how to prune a decision tree using the `tidymodels` framework to improve its performance by reducing overfitting. Understanding these methods and their applications will enhance your ability to analyze and interpret categorical data effectively.

@@ -1,37 +1,38 @@
 ---
-title: "KNN Regression with Palmer Penguins Data"
+title: "KNN Regression with [Boston Housing Data](../datasets/boston.qmd)"
 format: html
+execute: 
+  cache: true
 ---
 
 # Introduction
 
-In this tutorial, we'll explore how to perform K-Nearest Neighbors (KNN) regression using the Palmer Penguins dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we'll investigate how bill depth is influenced by body mass using KNN regression.
+In this tutorial, we'll explore how to perform K-Nearest Neighbors (KNN) regression using the Boston housing dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we'll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) using KNN regression.
 
 We'll be using the `tidyverse` and `tidymodels` libraries in R for data manipulation and modeling. Let's get started!
 
 # Load Necessary Libraries
 
-First, we'll load the required libraries. The `tidyverse` package provides tools for data manipulation and visualization, while `tidymodels` is a suite of packages for modeling. We will also load the `palmerpenguins` package which contains the dataset.
+First, we'll load the required libraries. The `tidyverse` package provides tools for data manipulation and visualization, while `tidymodels` is a suite of packages for modeling. We will also load the `MASS` package which contains the Boston dataset.
 
 ```{r load_libraries}
 library(tidyverse)
 library(tidymodels)
-library(palmerpenguins)
 ```
 
 # Load the Data
 
-Next, we'll select the relevant columns from the Palmer Penguins dataset. We'll remove the `species` column as it's not needed for this regression task and ensure there are no duplicate rows.
+Next, we'll select the relevant columns from the Boston housing dataset. We'll ensure there are no duplicate rows.
 
 ```{r load_data}
-penguin_data = penguins %>% 
-  select(-species) %>% 
+boston_data = MASS::Boston %>% 
+  select(rm, medv) %>% 
   distinct()
 ```
 
 # Fit the KNN Regression Model
 
-Now, we'll fit a K-Nearest Neighbors (KNN) regression model. Our goal is to predict `bill_depth_mm` using `body_mass_g`. We set the number of neighbors to 100. 
+Now, we'll fit a K-Nearest Neighbors (KNN) regression model. Our goal is to predict `medv` using `rm`. We set the number of neighbors to 100. 
 
 The `nearest_neighbor()` function from `parsnip` is used to specify the KNN model. Here, we set the mode to "regression" and specify the number of neighbors. We then fit the model to our data.
 
@@ -40,7 +41,7 @@ knn_model_fit = nearest_neighbor(
   mode = "regression",
   neighbors = 100
   ) %>%
-  fit(bill_depth_mm ~ body_mass_g, data = penguin_data)
+  fit(medv ~ rm, data = boston_data)
 ```
 
 # Make Predictions
@@ -49,11 +50,11 @@ Finally, we'll use our model to make predictions.
 
 ```{r predict}
 predictions = knn_model_fit %>% 
-  predict(penguin_data)
+  predict(boston_data)
 ```
 
 # Conclusion
 
-In this tutorial, we demonstrated how to perform KNN regression using the Palmer Penguins dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.
+In this tutorial, we demonstrated how to perform KNN regression using the Boston housing dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.
 
 Feel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!
