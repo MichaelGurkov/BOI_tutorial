@@ -1,5 +1,5 @@
 ---
-title: "Introduction to Random Forest Regression with [Boston](../datasets/boston.qmd) data"
+title: "Introduction to Random Forest Regression with [Boston Housing Data](../datasets/boston.qmd)"
 format: html
 execute: 
   cache: true
@@ -50,9 +50,9 @@ preprocess_recipe = recipe(medv ~ ., data = train_set)
 rf_model = rand_forest(
   mtry = 12,
   trees = 500,
-  mode = "regression"
-) %>% 
-  set_engine("randomForest")
+  mode = "regression",
+  engine = "randomForest",
+)
 
 rf_workflow = workflow() %>% 
   add_recipe(preprocess_recipe) %>% 
