@@ -389,7 +389,8 @@
     "href": "index.html#topics",
     "title": "Welcome to BOI DS course tutorials",
     "section": "Topics",
-    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression \nMultiple linear regression \nKNN regression \nKNN classification \nBayes classifier simulation\nTree regression\n\nPractice for Tree regression \n\nRandom Forest\n\nPractice for Random Forest \n\nBoosted trees\n\nPractice for Boosted trees\n\nTree classification\n\nPractice for Tree classification \n\nCross validation\nData sets\n\nBoston dataset\nDefault dataset\n\n\nExplore the topics and start learning!"
+    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression \nMultiple linear regression \nKNN regression \nKNN classification \nBayes classifier simulation\nTree regression\n\nPractice for Tree regression \n\nRandom Forest\n\nPractice for Random Forest \n\nBoosted trees\n\nPractice for Boosted trees\n\nTree classification\n\nPractice for Tree classification \n\n[Cross validation]\n[Data sets]\n\nBoston dataset\nDefault dataset\n\n\nExplore the topics and start learning!"
+
   },
   {
     "objectID": "dplyr/dplyr.html",
