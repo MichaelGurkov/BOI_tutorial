@@ -115,9 +115,9 @@ rf_model_fit %>%
 rf_tune_model = rand_forest(
   mtry = tune(),
   trees = tune(),
-  mode = "regression"
-) %>% 
-  set_engine("randomForest")
+  mode = "regression",
+  engine = "randomForest"
+)
 
 # Update the workflow
 tune_rf_workflow = rf_workflow %>% 

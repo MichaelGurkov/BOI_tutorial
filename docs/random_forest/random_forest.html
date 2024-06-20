@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Tutorials for DS course materials - Introduction to Random Forest Regression with Boston data</title>
+<title>Tutorials for DS course materials - Introduction to Random Forest Regression with Boston Housing Data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -160,7 +160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Introduction to Random Forest Regression with <a href="../datasets/boston.html">Boston</a> data</h1>
+<h1 class="title">Introduction to Random Forest Regression with <a href="../datasets/boston.html">Boston Housing Data</a></h1>
 </div>
 
 
@@ -217,9 +217,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>rf_model <span class="ot">=</span> <span class="fu">rand_forest</span>(</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mtry =</span> <span class="dv">12</span>,</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">trees =</span> <span class="dv">500</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"regression"</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"randomForest"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"regression"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">engine =</span> <span class="st">"randomForest"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>rf_workflow <span class="ot">=</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(preprocess_recipe) <span class="sc">%&gt;%</span> </span>
@@ -245,9 +245,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code># A tibble: 3 × 3
   .metric .estimator .estimate
   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-1 rmse    standard       4.18 
-2 rsq     standard       0.778
-3 mae     standard       2.46 </code></pre>
+1 rmse    standard       3.58 
+2 rsq     standard       0.849
+3 mae     standard       2.38 </code></pre>
 </div>
 </div>
 </section>
@@ -260,19 +260,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">importance</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        IncNodePurity
-crim        561.26323
-zn           33.89163
-indus       158.27625
-chas         27.85886
-nox         422.97131
-rm         9264.10275
-age         342.01914
-dis         691.62347
-rad         146.96660
-tax         328.61642
-ptratio     223.09747
-black       242.72492
-lstat     10116.08758</code></pre>
+crim       1057.79043
+zn           29.25321
+indus       164.50425
+chas         46.86825
+nox         327.89736
+rm        11088.36691
+age         385.99537
+dis        1078.85218
+rad          65.83751
+tax         369.97017
+ptratio     255.36530
+black       255.27804
+lstat      5812.11319</code></pre>
 </div>
 </div>
 </section>
@@ -327,8 +327,8 @@ lstat     10116.08758</code></pre>
 <pre><code># A tibble: 2 × 4
   .metric .estimator .estimate .config             
   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-1 rmse    standard       3.97  Preprocessor1_Model1
-2 rsq     standard       0.802 Preprocessor1_Model1</code></pre>
+1 rmse    standard       3.33  Preprocessor1_Model1
+2 rsq     standard       0.870 Preprocessor1_Model1</code></pre>
 </div>
 </div>
 </section>

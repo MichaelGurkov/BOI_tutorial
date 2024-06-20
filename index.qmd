@@ -31,18 +31,19 @@ learn and apply concepts introduced in the course.
   <!-- - [Exercises for Tree regression](tree_regression/tree_regression_exercise_set.qmd) -->
 
 - **[Random Forest](random_forest/random_forest.qmd)**
-  - [Practice for Tree regression](random_forest/random_forest_practice.qmd)
+  - [Practice for Random Forest](random_forest/random_forest_practice.qmd)
   <!-- - [Exercises for Random Forest](tree_classification/tree_classification_exercise_set.qmd) -->
 
 - **[Boosted trees](boosting/boosting.qmd)**
+  - [Practice for Boosted trees](boosting/boosting_practice.qmd)
 
 - **[Tree classification](tree_classification/tree_classification.qmd)**
   - [Practice for Tree classification](tree_classification/tree_classification_practice.qmd)
   <!-- - [Exercises for Tree classification](tree_classification/tree_classification_exercise_set.qmd) -->
 
-- **[Cross validation]**
+- **Cross validation**
 
-- **[Data sets]**
+- **Data sets**
   - [Boston dataset](datasets/boston.qmd)
   - [Default dataset](datasets/default.qmd)
 

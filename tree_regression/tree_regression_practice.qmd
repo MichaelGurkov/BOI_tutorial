@@ -118,9 +118,9 @@ tree_tune_model = decision_tree(
   cost_complexity = tune(),
   tree_depth = 5,
   mode = "regression",
-  min_n = 5
-) %>% 
-  set_engine("rpart")
+  min_n = 5,
+  engine = "rpart"
+)
 
 # Update the workflow
 tune_tree_workflow = tree_workflow %>% 

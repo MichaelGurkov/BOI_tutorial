@@ -53,7 +53,7 @@
     "href": "tree_regression/tree_regression_practice.html#task-7-prune-the-tree",
     "title": "Practice Set: Tree Regression with Boston Data",
     "section": "Task 7: Prune the Tree",
-    "text": "Task 7: Prune the Tree\nTask: Use cross-validation to determine the optimal cost_complexity value and prune the tree to reduce overfitting.\n\n\nShow the code\n# Define the tree model with tunable cost complexity\ntree_tune_model = decision_tree(\n  cost_complexity = tune(),\n  tree_depth = 5,\n  mode = \"regression\",\n  min_n = 5\n) %&gt;% \n  set_engine(\"rpart\")\n\n# Update the workflow\ntune_tree_workflow = tree_workflow %&gt;% \n  update_model(tree_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_tree_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(cost_complexity(range = c(-2, -0.5)), levels = 20)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")"
+    "text": "Task 7: Prune the Tree\nTask: Use cross-validation to determine the optimal cost_complexity value and prune the tree to reduce overfitting.\n\n\nShow the code\n# Define the tree model with tunable cost complexity\ntree_tune_model = decision_tree(\n  cost_complexity = tune(),\n  tree_depth = 5,\n  mode = \"regression\",\n  min_n = 5,\n  engine = \"rpart\"\n)\n\n# Update the workflow\ntune_tree_workflow = tree_workflow %&gt;% \n  update_model(tree_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_tree_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(cost_complexity(range = c(-2, -0.5)), levels = 20)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")"
   },
   {
     "objectID": "tree_regression/tree_regression_practice.html#task-8-fit-and-visualize-the-pruned-tree",
@@ -72,70 +72,70 @@
   {
     "objectID": "tree_regression/tree_regression.html",
     "href": "tree_regression/tree_regression.html",
-    "title": "Introduction to Tree Regression with Boston data",
+    "title": "Introduction to Tree Regression with Boston Housing Data",
     "section": "",
     "text": "Welcome to this tutorial on tree regression. This tutorial aims to introduce the concept of tree regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Tree regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields."
   },
   {
     "objectID": "tree_regression/tree_regression.html#what-is-tree-regression",
     "href": "tree_regression/tree_regression.html#what-is-tree-regression",
-    "title": "Introduction to Tree Regression with Boston data",
+    "title": "Introduction to Tree Regression with Boston Housing Data",
     "section": "What is Tree Regression?",
     "text": "What is Tree Regression?\nTree regression is a type of decision tree that is used for predicting continuous target variables. The tree is constructed by recursively splitting the data into subsets based on the values of input features, aiming to minimize the variance of the target variable within each subset."
   },
   {
     "objectID": "tree_regression/tree_regression.html#loading-necessary-libraries",
     "href": "tree_regression/tree_regression.html#loading-necessary-libraries",
-    "title": "Introduction to Tree Regression with Boston data",
+    "title": "Introduction to Tree Regression with Boston Housing Data",
     "section": "Loading Necessary Libraries",
     "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, MASS for accessing the dataset, and rpart.plot for visualizing the tree.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(rpart.plot)"
   },
   {
     "objectID": "tree_regression/tree_regression.html#loading-the-data",
     "href": "tree_regression/tree_regression.html#loading-the-data",
-    "title": "Introduction to Tree Regression with Boston data",
+    "title": "Introduction to Tree Regression with Boston Housing Data",
     "section": "Loading the Data",
     "text": "Loading the Data\nWe load and prepare the Boston dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (medv), which we will predict using the other attributes.\n\nboston_data = MASS::Boston"
   },
   {
     "objectID": "tree_regression/tree_regression.html#splitting-the-data",
     "href": "tree_regression/tree_regression.html#splitting-the-data",
-    "title": "Introduction to Tree Regression with Boston data",
+    "title": "Introduction to Tree Regression with Boston Housing Data",
     "section": "Splitting the Data",
     "text": "Splitting the Data\nWe split the data into training and testing sets using the initial_split function. We set a 50-50 split by setting the prop argument.\n\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
   },
   {
     "objectID": "tree_regression/tree_regression.html#fitting-the-tree-regression-model",
     "href": "tree_regression/tree_regression.html#fitting-the-tree-regression-model",
-    "title": "Introduction to Tree Regression with Boston data",
+    "title": "Introduction to Tree Regression with Boston Housing Data",
     "section": "Fitting the Tree Regression Model",
     "text": "Fitting the Tree Regression Model\nNext, we fit a tree regression model to predict medv using all available predictors. We use a recipe to preprocess the data and define the model using decision_tree with specified parameters. The workflow function combines the recipe and model for fitting.\n\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\ntree_model = decision_tree(\n  cost_complexity = 0,\n  tree_depth = 5,\n  mode = \"regression\",\n  min_n = 5,\n  engine = \"rpart\"\n)\n\ntree_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(tree_model)\n\ntree_model_fit = tree_workflow %&gt;% \n  fit(train_set)"
   },
   {
     "objectID": "tree_regression/tree_regression.html#making-predictions",
     "href": "tree_regression/tree_regression.html#making-predictions",
-    "title": "Introduction to Tree Regression with Boston data",
+    "title": "Introduction to Tree Regression with Boston Housing Data",
     "section": "Making Predictions",
-    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).\n\npredictions = tree_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics\n\n# A tibble: 3 × 3\n  .metric .estimator .estimate\n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;\n1 rmse    standard       3.88 \n2 rsq     standard       0.814\n3 mae     standard       2.81"
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).\n\npredictions = tree_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics\n\n# A tibble: 3 × 3\n  .metric .estimator .estimate\n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;\n1 rmse    standard       4.88 \n2 rsq     standard       0.755\n3 mae     standard       3.30"
   },
   {
     "objectID": "tree_regression/tree_regression.html#visualizing-the-tree",
     "href": "tree_regression/tree_regression.html#visualizing-the-tree",
-    "title": "Introduction to Tree Regression with Boston data",
+    "title": "Introduction to Tree Regression with Boston Housing Data",
     "section": "Visualizing the Tree",
     "text": "Visualizing the Tree\nWe visualize the structure of the fitted tree to understand how the splits are made and how the predictions are generated. The rpart.plot function helps in creating a clear graphical representation of the tree.\n\ntree_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)"
   },
   {
     "objectID": "tree_regression/tree_regression.html#pruning-the-tree",
     "href": "tree_regression/tree_regression.html#pruning-the-tree",
-    "title": "Introduction to Tree Regression with Boston data",
+    "title": "Introduction to Tree Regression with Boston Housing Data",
     "section": "Pruning the Tree",
-    "text": "Pruning the Tree\nTree pruning is a technique used to reduce the size of a decision tree by removing sections that provide little predictive power. Pruning helps improve the model’s generalizability by reducing overfitting. We use cross-validation to determine the optimal complexity parameter (cost_complexity) value.\nWe define a tree model with tunable cost_complexity and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with vfold_cv. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.\n\n# Define the tree model with tunable cost complexity\ntree_tune_model = decision_tree(\n  cost_complexity = tune(),\n  tree_depth = 5,\n  mode = \"regression\",\n  min_n = 5\n) %&gt;% \n  set_engine(\"rpart\")\n\n# Update the workflow\ntune_tree_workflow = tree_workflow %&gt;% \n  update_model(tree_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_tree_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(cost_complexity(range = c(-2, -0.5)), levels = 20)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\nThe tune_grid function performs a grid search over a range of cost_complexity values to find the best parameter that minimizes the RMSE metric. We then finalize the model with the optimal cost_complexity parameter and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_tree_workflow = finalize_workflow(tune_tree_workflow, best_params)\n\n# Fit the finalized model\nfinal_tree_fit = final_tree_workflow %&gt;%\n  last_fit(data_split)\n\nWe can visualize the pruned tree to compare it with the original tree.\n\n# Visualize the pruned tree\nfinal_tree_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)\n\n\n\n\n\n\n\n\nFinally, we evaluate the performance of the pruned tree using RMSE on the test set predictions.\n\nfinal_tree_fit %&gt;% \n  collect_metrics()\n\n# A tibble: 2 × 4\n  .metric .estimator .estimate .config             \n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               \n1 rmse    standard       4.08  Preprocessor1_Model1\n2 rsq     standard       0.793 Preprocessor1_Model1"
+    "text": "Pruning the Tree\nTree pruning is a technique used to reduce the size of a decision tree by removing sections that provide little predictive power. Pruning helps improve the model’s generalizability by reducing overfitting. We use cross-validation to determine the optimal complexity parameter (cost_complexity) value.\nWe define a tree model with tunable cost_complexity and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with vfold_cv. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.\n\n# Define the tree model with tunable cost complexity\ntree_tune_model = decision_tree(\n  cost_complexity = tune(),\n  tree_depth = 5,\n  mode = \"regression\",\n  engine = \"rpart\",\n  min_n = 5\n)\n\n# Update the workflow\ntune_tree_workflow = tree_workflow %&gt;% \n  update_model(tree_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_tree_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(cost_complexity(range = c(-2, -0.5)), levels = 20)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\nThe tune_grid function performs a grid search over a range of cost_complexity values to find the best parameter that minimizes the RMSE metric. We then finalize the model with the optimal cost_complexity parameter and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_tree_workflow = finalize_workflow(tune_tree_workflow, best_params)\n\n# Fit the finalized model\nfinal_tree_fit = final_tree_workflow %&gt;%\n  last_fit(data_split)\n\nWe can visualize the pruned tree to compare it with the original tree.\n\n# Visualize the pruned tree\nfinal_tree_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)\n\n\n\n\n\n\n\n\nFinally, we evaluate the performance of the pruned tree using RMSE on the test set predictions.\n\nfinal_tree_fit %&gt;% \n  collect_metrics()\n\n# A tibble: 2 × 4\n  .metric .estimator .estimate .config             \n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               \n1 rmse    standard       5.16  Preprocessor1_Model1\n2 rsq     standard       0.726 Preprocessor1_Model1"
   },
   {
     "objectID": "tree_regression/tree_regression.html#conclusion",
     "href": "tree_regression/tree_regression.html#conclusion",
-    "title": "Introduction to Tree Regression with Boston data",
+    "title": "Introduction to Tree Regression with Boston Housing Data",
     "section": "Conclusion",
     "text": "Conclusion\nThis tutorial has provided an in-depth look at tree regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing the tree structure, we have demonstrated the entire process of tree regression analysis. Additionally, we have shown how to prune a decision tree using the tidymodels framework to improve its performance by reducing overfitting. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
   },
@@ -263,7 +263,7 @@
     "href": "random_forest/random_forest_practice.html#tuning-the-random-forest-model",
     "title": "Practice Set: Random Forest Regression with Boston Data",
     "section": "Tuning the Random Forest Model",
-    "text": "Tuning the Random Forest Model\nTask: Perform hyperparameter tuning for the Random Forest model. Define a tunable Random Forest model, update the workflow, and use 5-fold cross-validation to find the best parameters.\n\n\nShow the code\n# Define the Random Forest model with tunable parameters\nrf_tune_model = rand_forest(\n  mtry = tune(),\n  trees = tune(),\n  mode = \"regression\"\n) %&gt;% \n  set_engine(\"randomForest\")\n\n# Update the workflow\ntune_rf_workflow = rf_workflow %&gt;% \n  update_model(rf_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_rf_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(mtry(range = c(2, 10)), trees(range = c(100, 1000)), levels = 10)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\n\nTask: Finalize the model with the optimal parameters and fit it to the training data using last_fit.\n\n\nShow the code\n# Finalize the model with the best parameters\nfinal_rf_workflow = finalize_workflow(tune_rf_workflow, best_params)\n\n# Fit the finalized model\nfinal_rf_fit = final_rf_workflow %&gt;%\n  last_fit(data_split)"
+    "text": "Tuning the Random Forest Model\nTask: Perform hyperparameter tuning for the Random Forest model. Define a tunable Random Forest model, update the workflow, and use 5-fold cross-validation to find the best parameters.\n\n\nShow the code\n# Define the Random Forest model with tunable parameters\nrf_tune_model = rand_forest(\n  mtry = tune(),\n  trees = tune(),\n  mode = \"regression\",\n  engine = \"randomForest\"\n)\n\n# Update the workflow\ntune_rf_workflow = rf_workflow %&gt;% \n  update_model(rf_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_rf_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(mtry(range = c(2, 10)), trees(range = c(100, 1000)), levels = 10)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\n\nTask: Finalize the model with the optimal parameters and fit it to the training data using last_fit.\n\n\nShow the code\n# Finalize the model with the best parameters\nfinal_rf_workflow = finalize_workflow(tune_rf_workflow, best_params)\n\n# Fit the finalized model\nfinal_rf_fit = final_rf_workflow %&gt;%\n  last_fit(data_split)"
   },
   {
     "objectID": "random_forest/random_forest_practice.html#evaluating-the-final-model",
@@ -389,7 +389,7 @@
     "href": "index.html#topics",
     "title": "Welcome to BOI DS course tutorials",
     "section": "Topics",
-    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression \nMultiple linear regression \nKNN regression \nKNN classification \nBayes classifier simulation\nTree regression\n\nPractice for Tree regression \n\nRandom Forest\n\nPractice for Tree regression \n\nBoosted trees\nTree classification\n\nPractice for Tree classification \n\n[Cross validation]\n[Data sets]\n\nBoston dataset\nDefault dataset\n\n\nExplore the topics and start learning!"
+    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression \nMultiple linear regression \nKNN regression \nKNN classification \nBayes classifier simulation\nTree regression\n\nPractice for Tree regression \n\nRandom Forest\n\nPractice for Random Forest \n\nBoosted trees\n\nPractice for Boosted trees\n\nTree classification\n\nPractice for Tree classification \n\nCross validation\nData sets\n\nBoston dataset\nDefault dataset\n\n\nExplore the topics and start learning!"
   },
   {
     "objectID": "dplyr/dplyr.html",
@@ -718,7 +718,7 @@
     "href": "knn_classification/knn_classification.html",
     "title": "KNN Classification with Default data",
     "section": "",
-    "text": "Introduction\nIn this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) classification using the Default dataset. KNN classification is a non-parametric method that classifies data points based on the k-nearest neighbors to a data point. This method is particularly useful for classification tasks when the relationship between features and the target variable is complex and nonlinear. Here, we’ll investigate how to classify default status based on balance using KNN classification.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the ISLR package which contains the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(ISLR)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Default dataset. We’ll filter out any rows with missing values in balance, and ensure the default column is treated as a factor.\n\ndefault_data = Default %&gt;% \n  select(balance, default) %&gt;% \n  filter(!is.na(balance)) %&gt;% \n  mutate(default = factor(default))\n\n\n\nFit the KNN Classification Model\nNow, we’ll fit a K-Nearest Neighbors (KNN) classification model. Our goal is to classify default status using balance.\nThe nearest_neighbor() function from parsnip is used to specify the KNN model. Here, we set the mode to “classification”. We then fit the model to our data.\n\nknn_model_fit = nearest_neighbor(mode = \"classification\") %&gt;% \n  fit(default ~ balance, data = default_data)\n\n\n\nMake Predictions\nNext, we’ll use our model to make predictions.\n\npredictions = knn_model_fit %&gt;% \n  predict(default_data)\n\n\n\nEvaluate the Model\nTo evaluate the performance of our KNN classification model, we’ll create a confusion matrix.\nA confusion matrix is a table used to describe the performance of a classification model. It compares the actual values with the values predicted by the model. The confusion matrix provides the following metrics:\n\nTrue Positives (TP): The number of positive class predictions that are actually positive.\nTrue Negatives (TN): The number of negative class predictions that are actually negative.\nFalse Positives (FP): The number of negative class predictions that are actually positive.\nFalse Negatives (FN): The number of positive class predictions that are actually negative.\n\nThese metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.\n\ndefault_data %&gt;% \n  select(default) %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)\n\n          Truth\nPrediction   No  Yes\n       No  9639  163\n       Yes   28  170\n\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform KNN classification using the Default dataset. We went through loading the data, fitting a KNN classification model, making predictions, and evaluating the model using a confusion matrix. KNN classification is a versatile technique that can capture complex relationships in data and is useful for various classification tasks.\nFeel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding! ```"
+    "text": "Introduction\nIn this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) classification using the Default dataset. KNN classification is a non-parametric method that classifies data points based on the k-nearest neighbors to a data point. This method is particularly useful for classification tasks when the relationship between features and the target variable is complex and nonlinear. Here, we’ll investigate how to classify default status based on balance using KNN classification.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the ISLR package which contains the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(ISLR)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Default dataset. We’ll filter out any rows with missing values in balance, and ensure the default column is treated as a factor.\n\ndefault_data = Default %&gt;% \n  select(balance, default) %&gt;% \n  filter(!is.na(balance)) %&gt;% \n  mutate(default = factor(default))\n\n\n\nFit the KNN Classification Model\nNow, we’ll fit a K-Nearest Neighbors (KNN) classification model. Our goal is to classify default status using balance.\nThe nearest_neighbor() function from parsnip is used to specify the KNN model. Here, we set the mode to “classification”. We then fit the model to our data.\n\nknn_model_fit = nearest_neighbor(mode = \"classification\") %&gt;% \n  fit(default ~ balance, data = default_data)\n\n\n\nMake Predictions\nNext, we’ll use our model to make predictions.\n\npredictions = knn_model_fit %&gt;% \n  predict(default_data)\n\n\n\nEvaluate the Model\nTo evaluate the performance of our KNN classification model, we’ll create a confusion matrix.\nA confusion matrix is a table used to describe the performance of a classification model. It compares the actual values with the values predicted by the model. The confusion matrix provides the following metrics:\n\nTrue Positives (TP): The number of positive class predictions that are actually positive.\nTrue Negatives (TN): The number of negative class predictions that are actually negative.\nFalse Positives (FP): The number of negative class predictions that are actually positive.\nFalse Negatives (FN): The number of positive class predictions that are actually negative.\n\nThese metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.\n\ndefault_data %&gt;% \n  select(default) %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)\n\n          Truth\nPrediction   No  Yes\n       No  9639  163\n       Yes   28  170\n\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform KNN classification using the Default dataset. We went through loading the data, fitting a KNN classification model, making predictions, and evaluating the model using a confusion matrix. KNN classification is a versatile technique that can capture complex relationships in data and is useful for various classification tasks.\nFeel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!"
   },
   {
     "objectID": "knn_regression/knn_regression.html",
@@ -737,77 +737,77 @@
   {
     "objectID": "random_forest/random_forest.html",
     "href": "random_forest/random_forest.html",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "",
     "text": "Welcome to this tutorial on Random Forest regression. This tutorial aims to introduce the concept of Random Forest regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Random Forest regression is a powerful tool for predicting continuous outcomes based on input features and is widely used in various fields."
   },
   {
     "objectID": "random_forest/random_forest.html#what-is-random-forest-regression",
     "href": "random_forest/random_forest.html#what-is-random-forest-regression",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "What is Random Forest Regression?",
     "text": "What is Random Forest Regression?\nRandom Forest regression is an ensemble learning method that constructs multiple decision trees during training and outputs the average prediction of the individual trees. This method improves predictive accuracy and controls overfitting."
   },
   {
     "objectID": "random_forest/random_forest.html#loading-necessary-libraries",
     "href": "random_forest/random_forest.html#loading-necessary-libraries",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "Loading Necessary Libraries",
     "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, MASS for accessing the dataset, and randomForest for the Random Forest model.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(randomForest)"
   },
   {
     "objectID": "random_forest/random_forest.html#loading-the-data",
     "href": "random_forest/random_forest.html#loading-the-data",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "Loading the Data",
     "text": "Loading the Data\nWe load and prepare the Boston dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (medv), which we will predict using the other attributes.\n\nboston_data = MASS::Boston"
   },
   {
     "objectID": "random_forest/random_forest.html#splitting-the-data",
     "href": "random_forest/random_forest.html#splitting-the-data",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "Splitting the Data",
     "text": "Splitting the Data\nWe split the data into training and testing sets using the initial_split function. We set a 50-50 split by setting the prop argument.\n\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
   },
   {
     "objectID": "random_forest/random_forest.html#fitting-the-random-forest-regression-model",
     "href": "random_forest/random_forest.html#fitting-the-random-forest-regression-model",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "Fitting the Random Forest Regression Model",
-    "text": "Fitting the Random Forest Regression Model\nNext, we fit a Random Forest regression model to predict medv using all available predictors. We use a recipe to preprocess the data and define the model using rand_forest with specified parameters. The workflow function combines the recipe and model for fitting.\n\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\nrf_model = rand_forest(\n  mtry = 12,\n  trees = 500,\n  mode = \"regression\"\n) %&gt;% \n  set_engine(\"randomForest\")\n\nrf_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(rf_model)\n\nrf_model_fit = rf_workflow %&gt;% \n  fit(train_set)"
+    "text": "Fitting the Random Forest Regression Model\nNext, we fit a Random Forest regression model to predict medv using all available predictors. We use a recipe to preprocess the data and define the model using rand_forest with specified parameters. The workflow function combines the recipe and model for fitting.\n\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\nrf_model = rand_forest(\n  mtry = 12,\n  trees = 500,\n  mode = \"regression\",\n  engine = \"randomForest\",\n)\n\nrf_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(rf_model)\n\nrf_model_fit = rf_workflow %&gt;% \n  fit(train_set)"
   },
   {
     "objectID": "random_forest/random_forest.html#making-predictions",
     "href": "random_forest/random_forest.html#making-predictions",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "Making Predictions",
-    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).\n\npredictions = rf_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics\n\n# A tibble: 3 × 3\n  .metric .estimator .estimate\n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;\n1 rmse    standard       4.18 \n2 rsq     standard       0.778\n3 mae     standard       2.46"
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).\n\npredictions = rf_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics\n\n# A tibble: 3 × 3\n  .metric .estimator .estimate\n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;\n1 rmse    standard       3.58 \n2 rsq     standard       0.849\n3 mae     standard       2.38"
   },
   {
     "objectID": "random_forest/random_forest.html#evaluating-feature-importance",
     "href": "random_forest/random_forest.html#evaluating-feature-importance",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "Evaluating Feature Importance",
-    "text": "Evaluating Feature Importance\nWe can evaluate the importance of each feature in the Random Forest model using the randomForest package’s importance function. This helps in understanding which features contribute most to the model’s predictions.\n\nrf_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  importance()\n\n        IncNodePurity\ncrim        561.26323\nzn           33.89163\nindus       158.27625\nchas         27.85886\nnox         422.97131\nrm         9264.10275\nage         342.01914\ndis         691.62347\nrad         146.96660\ntax         328.61642\nptratio     223.09747\nblack       242.72492\nlstat     10116.08758"
+    "text": "Evaluating Feature Importance\nWe can evaluate the importance of each feature in the Random Forest model using the randomForest package’s importance function. This helps in understanding which features contribute most to the model’s predictions.\n\nrf_model_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  importance()\n\n        IncNodePurity\ncrim       1057.79043\nzn           29.25321\nindus       164.50425\nchas         46.86825\nnox         327.89736\nrm        11088.36691\nage         385.99537\ndis        1078.85218\nrad          65.83751\ntax         369.97017\nptratio     255.36530\nblack       255.27804\nlstat      5812.11319"
   },
   {
     "objectID": "random_forest/random_forest.html#tuning-the-random-forest-model",
     "href": "random_forest/random_forest.html#tuning-the-random-forest-model",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "Tuning the Random Forest Model",
     "text": "Tuning the Random Forest Model\nHyperparameter tuning is essential for improving the performance of the Random Forest model. We use cross-validation to determine the optimal values for parameters like mtry (number of variables considered at each split) and trees (number of trees in the forest).\nWe define a Random Forest model with tunable parameters and update the workflow to include these tunable parameters. We then define the resampling method using 5-fold cross-validation with vfold_cv.\n\n# Define the Random Forest model with tunable parameters\nrf_tune_model = rand_forest(\n  mtry = tune(),\n  trees = tune(),\n  mode = \"regression\",\n  engine = \"randomForest\"\n)\n\n# Update the workflow\ntune_rf_workflow = rf_workflow %&gt;% \n  update_model(rf_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_rf_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(mtry(range = c(2, 10)), trees(range = c(100, 1000)), levels = 10)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\nThe tune_grid function performs a grid search over a range of mtry and trees values to find the best parameter combination that minimizes the RMSE metric. We then finalize the model with the optimal parameters and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_rf_workflow = finalize_workflow(tune_rf_workflow, best_params)\n\n# Fit the finalized model\nfinal_rf_fit = final_rf_workflow %&gt;%\n  last_fit(data_split)"
   },
   {
     "objectID": "random_forest/random_forest.html#evaluating-the-final-model",
     "href": "random_forest/random_forest.html#evaluating-the-final-model",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "Evaluating the Final Model",
-    "text": "Evaluating the Final Model\nFinally, we evaluate the performance of the tuned Random Forest model using RMSE on the test set predictions.\n\nfinal_rf_fit %&gt;% \n  collect_metrics()\n\n# A tibble: 2 × 4\n  .metric .estimator .estimate .config             \n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               \n1 rmse    standard       3.97  Preprocessor1_Model1\n2 rsq     standard       0.802 Preprocessor1_Model1"
+    "text": "Evaluating the Final Model\nFinally, we evaluate the performance of the tuned Random Forest model using RMSE on the test set predictions.\n\nfinal_rf_fit %&gt;% \n  collect_metrics()\n\n# A tibble: 2 × 4\n  .metric .estimator .estimate .config             \n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               \n1 rmse    standard       3.33  Preprocessor1_Model1\n2 rsq     standard       0.870 Preprocessor1_Model1"
   },
   {
     "objectID": "random_forest/random_forest.html#conclusion",
     "href": "random_forest/random_forest.html#conclusion",
-    "title": "Introduction to Random Forest Regression with Boston data",
+    "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "Conclusion",
     "text": "Conclusion\nThis tutorial has provided an in-depth look at Random Forest regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and evaluating feature importance, we have demonstrated the entire process of Random Forest regression analysis. Additionally, we have shown how to tune a Random Forest model using the tidymodels framework to improve its performance. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
   },
@@ -872,7 +872,7 @@
     "href": "tree_classification/tree_classification.html#making-predictions",
     "title": "Introduction to Tree Classification with Default data",
     "section": "Making Predictions",
-    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using a confusion matrix to compare the predicted classes against the true classes.\n\npredictions = tree_model_fit %&gt;% \n  predict(test_set)\n\ntest_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)\n\n          Truth\nPrediction   No  Yes\n       No  2400   64\n       Yes   11   25"
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using a confusion matrix to compare the predicted classes against the true classes.\n\npredictions = tree_model_fit %&gt;% \n  predict(test_set)\n\ntest_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)\n\n          Truth\nPrediction   No  Yes\n       No  2408   48\n       Yes   19   25"
   },
   {
     "objectID": "tree_classification/tree_classification.html#visualizing-the-tree",
@@ -886,7 +886,7 @@
     "href": "tree_classification/tree_classification.html#pruning-the-tree",
     "title": "Introduction to Tree Classification with Default data",
     "section": "Pruning the Tree",
-    "text": "Pruning the Tree\nTree pruning is a technique used to reduce the size of a decision tree by removing sections that provide little predictive power. Pruning helps improve the model’s generalizability by reducing overfitting. We use cross-validation to determine the optimal complexity parameter (cost_complexity) value.\nWe define a tree model with tunable cost_complexity and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with vfold_cv. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.\n\n# Define the tree model with tunable cost complexity\ntree_tune_model = decision_tree(\n  cost_complexity = tune(),\n  tree_depth = 5,\n  mode = \"classification\",\n  min_n = 5\n) %&gt;% \n  set_engine(\"rpart\")\n\n# Update the workflow\ntree_workflow = tree_workflow %&gt;% \n  update_model(tree_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tree_workflow,\n  resamples = cv_splits,\n  grid = 20\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"accuracy\")\n\nThe tune_grid function performs a grid search over a range of cost_complexity values to find the best parameter that maximizes the accuracy metric. We then finalize the model with the optimal cost_complexity parameter and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_tree_workflow = finalize_workflow(tree_workflow, best_params)\n\n# Fit the finalized model\nfinal_tree_fit = final_tree_workflow %&gt;%\n  last_fit(data_split)\n\nWe can visualize the pruned tree to compare it with the original tree.\n\n# Visualize the pruned tree\nfinal_tree_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)\n\n\n\n\n\n\n\n\nFinally, we evaluate the performance of the pruned tree using a confusion matrix on the test set predictions.\n\nfinal_tree_fit %&gt;% \n  collect_predictions() %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)\n\n          Truth\nPrediction   No  Yes\n       No  2400   63\n       Yes   11   26"
+    "text": "Pruning the Tree\nTree pruning is a technique used to reduce the size of a decision tree by removing sections that provide little predictive power. Pruning helps improve the model’s generalizability by reducing overfitting. We use cross-validation to determine the optimal complexity parameter (cost_complexity) value.\nWe define a tree model with tunable cost_complexity and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with vfold_cv. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.\n\n# Define the tree model with tunable cost complexity\ntree_tune_model = decision_tree(\n  cost_complexity = tune(),\n  tree_depth = 5,\n  mode = \"classification\",\n  min_n = 5\n) %&gt;% \n  set_engine(\"rpart\")\n\n# Update the workflow\ntree_workflow = tree_workflow %&gt;% \n  update_model(tree_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tree_workflow,\n  resamples = cv_splits,\n  grid = 20\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"accuracy\")\n\nThe tune_grid function performs a grid search over a range of cost_complexity values to find the best parameter that maximizes the accuracy metric. We then finalize the model with the optimal cost_complexity parameter and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_tree_workflow = finalize_workflow(tree_workflow, best_params)\n\n# Fit the finalized model\nfinal_tree_fit = final_tree_workflow %&gt;%\n  last_fit(data_split)\n\nWe can visualize the pruned tree to compare it with the original tree.\n\n# Visualize the pruned tree\nfinal_tree_fit %&gt;% \n  extract_fit_engine() %&gt;% \n  rpart.plot(roundint = FALSE)\n\n\n\n\n\n\n\n\nFinally, we evaluate the performance of the pruned tree using a confusion matrix on the test set predictions.\n\nfinal_tree_fit %&gt;% \n  collect_predictions() %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)\n\n          Truth\nPrediction   No  Yes\n       No  2407   44\n       Yes   20   29"
   },
   {
     "objectID": "tree_classification/tree_classification.html#conclusion",

@@ -1,5 +1,5 @@
 ---
-title: "Introduction to Tree Regression with [Boston](../datasets/boston.qmd) data"
+title: "Introduction to Tree Regression with [Boston Housing Data](../datasets/boston.qmd)"
 format: html
 execute: 
   cache: true
@@ -100,9 +100,9 @@ tree_tune_model = decision_tree(
   cost_complexity = tune(),
   tree_depth = 5,
   mode = "regression",
+  engine = "rpart",
   min_n = 5
-) %>% 
-  set_engine("rpart")
+)
 
 # Update the workflow
 tune_tree_workflow = tree_workflow %>% 

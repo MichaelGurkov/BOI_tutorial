@@ -77,4 +77,3 @@ default_data %>%
 In this tutorial, we demonstrated how to perform KNN classification using the Default dataset. We went through loading the data, fitting a KNN classification model, making predictions, and evaluating the model using a confusion matrix. KNN classification is a versatile technique that can capture complex relationships in data and is useful for various classification tasks.
 
 Feel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!
-```
