@@ -1,0 +1,96 @@
+---
+title: "Simple Regression - theory"
+output: html
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+# The model
+
+Simple linear regression is a method used to model the relationship
+between a single predictor variable $X$ and a response variable $Y$. The
+relationship is assumed to be linear, which can be represented by the
+equation:
+
+$$
+Y = \beta_{0} + \beta_{1} X + \epsilon
+$$
+
+Here,
+
+-   $Y$ is the response variable
+
+-   $X$ is the predictor variable
+
+-   $\beta_0$ is the intercept
+
+-   $\beta_1$ is the slope of the regression line
+
+-   $\epsilon$ is the error term, representing the deviation of the
+    observed values from the true regression line
+
+The goal of simple linear regression is to estimate the coefficients
+$\beta_0$ and $\beta_1$ such that the predicted values $\hat{Y}$ are as
+close as possible to the actual values of $Y$.
+
+## Loss function
+
+To estimate the coefficients, we need a criterion to measure the fit of
+the model. The most common criterion is the Residual Sum of Squares
+(RSS), which is defined as:
+
+$$
+RSS = \sum_{i=1}^n (y_i - \hat{y}_i)^2 = \sum_{i=1}^n (y_i -
+(\beta_0 + \beta_1 x_i))^2
+$$
+
+Here,
+
+-   $n$ is the number of observations
+
+-   $y_i$ is the actual value of the response variable
+
+-   $\hat{y}_i$ is the predicted value of the response variable based on
+    the model.
+
+The RSS measures the discrepancy between the observed values $y_i$ and
+the values predicted by the linear model $\hat{y}_i$. Our objective is
+to find the values of $\beta_0$ and $\beta_1$ that minimize the RSS.
+
+## Estimating the model - Coefficients
+
+The coefficients $\beta_0$ and $\beta_1$ can be estimated using the
+method of least squares, which minimizes the RSS. The least squares
+estimates, denoted by $\hat{\beta}_0$ and $\hat{\beta}_1$, can be
+calculated using the following formulas:
+
+$$
+\hat{\beta}_1 =
+\frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2}
+$$
+
+$$
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+$$
+
+Here,
+
+-   $\bar{x}$ is the mean of the predictor variable
+
+-   $\bar{y}$ is the mean of the response variable.
+
+The formula for $\hat{\beta}_1$ represents the slope of the regression
+line and can be interpreted as the average change in $Y$ associated with
+a one-unit change in $X$. The formula for $\hat{\beta}_0$ represents the
+intercept, which is the expected value of $Y$ when $X$ is zero.
+
+By plugging these estimates into the regression equation, we obtain the
+estimated regression line:
+
+$$
+\hat{Y} = \hat{\beta}_0 + \hat{\beta}_1 X
+$$
+
+This estimated line can be used to make predictions about the response
+variable based on new values of the predictor variable.

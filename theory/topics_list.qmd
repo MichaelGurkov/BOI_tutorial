@@ -1,0 +1,13 @@
+---
+title: "Topics"
+output: html
+---
+
+-   **Simple Linear Regression**
+-   **Multiple Linear Regression**
+-   **K-Nearest Neighbors Regression**
+-   **Decision Trees**
+    -   **Bagging**
+    -   **Boosting**
+-   **Random Forest**
+-   
