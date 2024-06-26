@@ -1,0 +1,170 @@
+---
+title: "Practice Set: Introduction to Ridge Regression with Boston Housing Data"
+format: html
+execute: 
+  cache: true
+---
+
+## Task 1: Loading Necessary Libraries
+
+Load the required libraries for data manipulation, visualization, model fitting, and visualizing variable importance. The libraries include `tidyverse`, `tidymodels`, `MASS`, and `vip`.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(MASS)
+library(vip)
+```
+
+## Task 2: Loading the Data
+
+Load the `Boston` dataset from the `MASS` package.
+
+```{r load_data}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+boston_data = MASS::Boston
+```
+
+## Task 3: Splitting the Data
+
+Split the data into training and testing sets with a 50-50 split using the `initial_split` function.
+
+```{r split_data}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+
+data_split = initial_split(boston_data, prop = 0.5)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Task 4: Fitting the Ridge Regression Model
+
+Fit a ridge regression model to predict `medv` using all available predictors. Use a `recipe` to preprocess the data and define the model with a `penalty` parameter of 1.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+
+preprocess_recipe = recipe(medv ~ ., data = train_set)
+
+ridge_model = linear_reg(
+  penalty = 1,  # Regularization strength
+  mixture = 0   # Ridge regression (0 for ridge, 1 for lasso, in between for elastic net)
+) %>% 
+  set_engine("glmnet")
+
+ridge_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(ridge_model)
+
+ridge_model_fit = ridge_workflow %>% 
+  fit(train_set)
+```
+
+## Task 5: Making Predictions
+
+Make predictions on the test set using the fitted model and evaluate the model performance using RMSE.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+
+predictions = ridge_model_fit %>% 
+  predict(test_set)
+
+metrics = test_set %>% 
+  bind_cols(predictions) %>% 
+  metrics(truth = medv, estimate = .pred)
+
+metrics
+```
+
+## Task 6: Visualizing Variable Importance
+
+Visualize the importance of each predictor in the ridge regression model using the `vip` package.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+
+ridge_model_fit %>% 
+  pull_workflow_fit() %>% 
+  vip()
+```
+
+## Task 7: Tuning the Penalty Parameter
+
+Tune the penalty parameter using cross-validation to find the optimal level of regularization that minimizes the RMSE metric. Use `vfold_cv` for 5-fold cross-validation and `tune_grid` for grid search.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+
+# Define the ridge regression model with tunable penalty
+ridge_tune_model = linear_reg(
+  penalty = tune(),
+  mixture = 0
+) %>% 
+  set_engine("glmnet")
+
+# Update the workflow
+tune_ridge_workflow = ridge_workflow %>% 
+  update_model(ridge_tune_model)
+
+# Define the resampling method
+set.seed(123)
+cv_splits = vfold_cv(train_set, v = 5)
+
+# Perform tuning
+tune_results = tune_grid(
+  tune_ridge_workflow,
+  resamples = cv_splits,
+  grid = grid_regular(penalty(range = c(0, 1)), levels = 20)
+)
+
+# Extract the best parameters
+best_params = select_best(tune_results, metric = "rmse")
+```
+
+## Task 8: Finalizing and Evaluating the Tuned Model
+
+Finalize the model with the optimal penalty parameter, fit it to the training data, and evaluate its performance on the test set.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+
+# Finalize the model with the best parameters
+final_ridge_workflow = finalize_workflow(tune_ridge_workflow, best_params)
+
+# Fit the finalized model
+final_ridge_fit = final_ridge_workflow %>%
+  last_fit(data_split)
+```
+
+Evaluate the performance of the tuned ridge regression model using RMSE on the test set predictions.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+
+final_ridge_fit %>% 
+  collect_metrics()
+```

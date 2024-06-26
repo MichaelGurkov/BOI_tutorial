@@ -210,6 +210,69 @@
     "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
   },
   {
+    "objectID": "ridge_regression/ridge_regression_practice.html",
+    "href": "ridge_regression/ridge_regression_practice.html",
+    "title": "Practice Set: Introduction to Ridge Regression with Boston Housing Data",
+    "section": "",
+    "text": "Load the required libraries for data manipulation, visualization, model fitting, and visualizing variable importance. The libraries include tidyverse, tidymodels, MASS, and vip.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(vip)"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression_practice.html#task-1-loading-necessary-libraries",
+    "href": "ridge_regression/ridge_regression_practice.html#task-1-loading-necessary-libraries",
+    "title": "Practice Set: Introduction to Ridge Regression with Boston Housing Data",
+    "section": "",
+    "text": "Load the required libraries for data manipulation, visualization, model fitting, and visualizing variable importance. The libraries include tidyverse, tidymodels, MASS, and vip.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(vip)"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression_practice.html#task-2-loading-the-data",
+    "href": "ridge_regression/ridge_regression_practice.html#task-2-loading-the-data",
+    "title": "Practice Set: Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Task 2: Loading the Data",
+    "text": "Task 2: Loading the Data\nLoad the Boston dataset from the MASS package.\n\n\nShow the code\nboston_data = MASS::Boston"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression_practice.html#task-3-splitting-the-data",
+    "href": "ridge_regression/ridge_regression_practice.html#task-3-splitting-the-data",
+    "title": "Practice Set: Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Task 3: Splitting the Data",
+    "text": "Task 3: Splitting the Data\nSplit the data into training and testing sets with a 50-50 split using the initial_split function.\n\n\nShow the code\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression_practice.html#task-4-fitting-the-ridge-regression-model",
+    "href": "ridge_regression/ridge_regression_practice.html#task-4-fitting-the-ridge-regression-model",
+    "title": "Practice Set: Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Task 4: Fitting the Ridge Regression Model",
+    "text": "Task 4: Fitting the Ridge Regression Model\nFit a ridge regression model to predict medv using all available predictors. Use a recipe to preprocess the data and define the model with a penalty parameter of 1.\n\n\nShow the code\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\nridge_model = linear_reg(\n  penalty = 1,  # Regularization strength\n  mixture = 0   # Ridge regression (0 for ridge, 1 for lasso, in between for elastic net)\n) %&gt;% \n  set_engine(\"glmnet\")\n\nridge_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(ridge_model)\n\nridge_model_fit = ridge_workflow %&gt;% \n  fit(train_set)"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression_practice.html#task-5-making-predictions",
+    "href": "ridge_regression/ridge_regression_practice.html#task-5-making-predictions",
+    "title": "Practice Set: Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Task 5: Making Predictions",
+    "text": "Task 5: Making Predictions\nMake predictions on the test set using the fitted model and evaluate the model performance using RMSE.\n\n\nShow the code\npredictions = ridge_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression_practice.html#task-6-visualizing-variable-importance",
+    "href": "ridge_regression/ridge_regression_practice.html#task-6-visualizing-variable-importance",
+    "title": "Practice Set: Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Task 6: Visualizing Variable Importance",
+    "text": "Task 6: Visualizing Variable Importance\nVisualize the importance of each predictor in the ridge regression model using the vip package.\n\n\nShow the code\nridge_model_fit %&gt;% \n  pull_workflow_fit() %&gt;% \n  vip()"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression_practice.html#task-7-tuning-the-penalty-parameter",
+    "href": "ridge_regression/ridge_regression_practice.html#task-7-tuning-the-penalty-parameter",
+    "title": "Practice Set: Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Task 7: Tuning the Penalty Parameter",
+    "text": "Task 7: Tuning the Penalty Parameter\nTune the penalty parameter using cross-validation to find the optimal level of regularization that minimizes the RMSE metric. Use vfold_cv for 5-fold cross-validation and tune_grid for grid search.\n\n\nShow the code\n# Define the ridge regression model with tunable penalty\nridge_tune_model = linear_reg(\n  penalty = tune(),\n  mixture = 0\n) %&gt;% \n  set_engine(\"glmnet\")\n\n# Update the workflow\ntune_ridge_workflow = ridge_workflow %&gt;% \n  update_model(ridge_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_ridge_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(penalty(range = c(0, 1)), levels = 20)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression_practice.html#task-8-finalizing-and-evaluating-the-tuned-model",
+    "href": "ridge_regression/ridge_regression_practice.html#task-8-finalizing-and-evaluating-the-tuned-model",
+    "title": "Practice Set: Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Task 8: Finalizing and Evaluating the Tuned Model",
+    "text": "Task 8: Finalizing and Evaluating the Tuned Model\nFinalize the model with the optimal penalty parameter, fit it to the training data, and evaluate its performance on the test set.\n\n\nShow the code\n# Finalize the model with the best parameters\nfinal_ridge_workflow = finalize_workflow(tune_ridge_workflow, best_params)\n\n# Fit the finalized model\nfinal_ridge_fit = final_ridge_workflow %&gt;%\n  last_fit(data_split)\n\n\nEvaluate the performance of the tuned ridge regression model using RMSE on the test set predictions.\n\n\nShow the code\nfinal_ridge_fit %&gt;% \n  collect_metrics()"
+  },
+  {
     "objectID": "random_forest/random_forest_practice.html",
     "href": "random_forest/random_forest_practice.html",
     "title": "Practice Set: Random Forest Regression with Boston Data",
@@ -385,12 +448,32 @@
     "text": "This website contains tutorials and exercise sets on various topics to help you learn and apply concepts introduced in the course."
   },
   {
-    "objectID": "index.html#topics",
-    "href": "index.html#topics",
+    "objectID": "index.html#regression-models",
+    "href": "index.html#regression-models",
     "title": "Welcome to BOI DS course tutorials",
-    "section": "Topics",
-    "text": "Topics\n\nData Wrangling with dplyr\n\nExercises for “Data Wrangling with dplyr”\n\nSimple linear regression \nMultiple linear regression \nKNN regression \nKNN classification \nBayes classifier simulation\nTree regression\n\nPractice for Tree regression \n\nRandom Forest\n\nPractice for Random Forest \n\nBoosted trees\n\nPractice for Boosted trees\n\nTree classification\n\nPractice for Tree classification \n\n[Cross validation]\n[Data sets]\n\nBoston dataset\nDefault dataset\n\n\nExplore the topics and start learning!"
-
+    "section": "Regression models",
+    "text": "Regression models\n\nSimple linear regression \nMultiple linear regression \nKNN regression \nRidge regression\n\nPractice for Ridge regression\n\nTree regression\n\nPractice for Tree regression \n\nRandom Forest\n\nPractice for Random Forest \n\nBoosted trees\n\nPractice for Boosted trees"
+  },
+  {
+    "objectID": "index.html#classification-models",
+    "href": "index.html#classification-models",
+    "title": "Welcome to BOI DS course tutorials",
+    "section": "Classification models",
+    "text": "Classification models\n\nKNN classification \nBayes classifier simulation\nTree classification\n\nPractice for Tree classification"
+  },
+  {
+    "objectID": "index.html#cross-validation",
+    "href": "index.html#cross-validation",
+    "title": "Welcome to BOI DS course tutorials",
+    "section": "Cross validation",
+    "text": "Cross validation\n\nCross validation"
+  },
+  {
+    "objectID": "index.html#data",
+    "href": "index.html#data",
+    "title": "Welcome to BOI DS course tutorials",
+    "section": "Data",
+    "text": "Data\n\nData sets\n\nBoston dataset\nDefault dataset\n\n\nExplore the topics and start learning!"
   },
   {
     "objectID": "dplyr/dplyr.html",
@@ -811,6 +894,76 @@
     "title": "Introduction to Random Forest Regression with Boston Housing Data",
     "section": "Conclusion",
     "text": "Conclusion\nThis tutorial has provided an in-depth look at Random Forest regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and evaluating feature importance, we have demonstrated the entire process of Random Forest regression analysis. Additionally, we have shown how to tune a Random Forest model using the tidymodels framework to improve its performance. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression.html",
+    "href": "ridge_regression/ridge_regression.html",
+    "title": "Introduction to Ridge Regression with Boston Housing Data",
+    "section": "",
+    "text": "Welcome to this tutorial on ridge regression. This tutorial aims to introduce the concept of ridge regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Ridge regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields."
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression.html#what-is-ridge-regression",
+    "href": "ridge_regression/ridge_regression.html#what-is-ridge-regression",
+    "title": "Introduction to Ridge Regression with Boston Housing Data",
+    "section": "What is Ridge Regression?",
+    "text": "What is Ridge Regression?\nRidge regression is a type of linear regression that includes a regularization term to penalize large coefficients, aiming to prevent overfitting. It is particularly useful when dealing with multicollinearity or when you want to shrink the coefficients to achieve a more stable model."
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression.html#loading-necessary-libraries",
+    "href": "ridge_regression/ridge_regression.html#loading-necessary-libraries",
+    "title": "Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Loading Necessary Libraries",
+    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, MASS for accessing the dataset, and vip for visualizing variable importance.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(MASS)\nlibrary(vip)"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression.html#loading-the-data",
+    "href": "ridge_regression/ridge_regression.html#loading-the-data",
+    "title": "Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Loading the Data",
+    "text": "Loading the Data\nWe load and prepare the Boston dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (medv), which we will predict using the other attributes.\n\nboston_data = MASS::Boston"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression.html#splitting-the-data",
+    "href": "ridge_regression/ridge_regression.html#splitting-the-data",
+    "title": "Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Splitting the Data",
+    "text": "Splitting the Data\nWe split the data into training and testing sets using the initial_split function. We set a 50-50 split by setting the prop argument.\n\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression.html#fitting-the-ridge-regression-model",
+    "href": "ridge_regression/ridge_regression.html#fitting-the-ridge-regression-model",
+    "title": "Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Fitting the Ridge Regression Model",
+    "text": "Fitting the Ridge Regression Model\nNext, we fit a ridge regression model to predict medv using all available predictors. We use a recipe to preprocess the data and define the model using linear_reg with a penalty parameter. The workflow function combines the recipe and model for fitting.\n\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\nridge_model = linear_reg(\n  penalty = 1,  # Regularization strength\n  mixture = 0   # Ridge regression (0 for ridge, 1 for lasso, in between for elastic net)\n) %&gt;% \n  set_engine(\"glmnet\")\n\nridge_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(ridge_model)\n\nridge_model_fit = ridge_workflow %&gt;% \n  fit(train_set)"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression.html#making-predictions",
+    "href": "ridge_regression/ridge_regression.html#making-predictions",
+    "title": "Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Making Predictions",
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).\n\npredictions = ridge_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics\n\n# A tibble: 3 × 3\n  .metric .estimator .estimate\n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;\n1 rmse    standard       5.43 \n2 rsq     standard       0.679\n3 mae     standard       3.56"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression.html#visualizing-variable-importance",
+    "href": "ridge_regression/ridge_regression.html#visualizing-variable-importance",
+    "title": "Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Visualizing Variable Importance",
+    "text": "Visualizing Variable Importance\nTo understand the importance of each predictor in the model, we visualize the variable importance using the vip package. This helps in identifying which variables have the most influence on the prediction.\n\nridge_model_fit %&gt;% \n  pull_workflow_fit() %&gt;% \n  vip()"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression.html#tuning-the-penalty-parameter",
+    "href": "ridge_regression/ridge_regression.html#tuning-the-penalty-parameter",
+    "title": "Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Tuning the Penalty Parameter",
+    "text": "Tuning the Penalty Parameter\nTuning the penalty parameter is essential to find the optimal level of regularization. We use cross-validation to determine the best penalty value that minimizes the RMSE metric.\nWe define a ridge regression model with a tunable penalty parameter and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with vfold_cv. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.\n\n# Define the ridge regression model with tunable penalty\nridge_tune_model = linear_reg(\n  penalty = tune(),\n  mixture = 0\n) %&gt;% \n  set_engine(\"glmnet\")\n\n# Update the workflow\ntune_ridge_workflow = ridge_workflow %&gt;% \n  update_model(ridge_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_ridge_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(penalty(range = c(0, 1)), levels = 20)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\nThe tune_grid function performs a grid search over a range of penalty values to find the best parameter that minimizes the RMSE metric. We then finalize the model with the optimal penalty parameter and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_ridge_workflow = finalize_workflow(tune_ridge_workflow, best_params)\n\n# Fit the finalized model\nfinal_ridge_fit = final_ridge_workflow %&gt;%\n  last_fit(data_split)\n\nFinally, we evaluate the performance of the tuned ridge regression model using RMSE on the test set predictions.\n\nfinal_ridge_fit %&gt;% \n  collect_metrics()\n\n# A tibble: 2 × 4\n  .metric .estimator .estimate .config             \n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               \n1 rmse    standard       5.43  Preprocessor1_Model1\n2 rsq     standard       0.679 Preprocessor1_Model1"
+  },
+  {
+    "objectID": "ridge_regression/ridge_regression.html#conclusion",
+    "href": "ridge_regression/ridge_regression.html#conclusion",
+    "title": "Introduction to Ridge Regression with Boston Housing Data",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis tutorial has provided an in-depth look at ridge regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing variable importance, we have demonstrated the entire process of ridge regression analysis. Additionally, we have shown how to tune the penalty parameter using the tidymodels framework to improve the model’s performance by reducing overfitting. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
   },
   {
     "objectID": "simple_regression/simple_regression.html",

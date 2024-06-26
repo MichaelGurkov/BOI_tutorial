@@ -108,7 +108,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#topics" id="toc-topics" class="nav-link active" data-scroll-target="#topics">Topics</a></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link active" data-scroll-target="#data-wrangling">Data Wrangling</a>
+  <ul class="collapse">
+  <li><a href="#regression-models" id="toc-regression-models" class="nav-link" data-scroll-target="#regression-models">Regression models</a></li>
+  <li><a href="#classification-models" id="toc-classification-models" class="nav-link" data-scroll-target="#classification-models">Classification models</a></li>
+  <li><a href="#cross-validation" id="toc-cross-validation" class="nav-link" data-scroll-target="#cross-validation">Cross validation</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -135,18 +141,24 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p>This website contains tutorials and exercise sets on various topics to help you learn and apply concepts introduced in the course.</p>
-<section id="topics" class="level2">
-<h2 class="anchored" data-anchor-id="topics">Topics</h2>
+<section id="data-wrangling" class="level1">
+<h1>Data Wrangling</h1>
 <ul>
-<li><p><strong><a href="./dplyr/dplyr.html">Data Wrangling with dplyr</a></strong></p>
+<li><strong><a href="./dplyr/dplyr.html">Data Wrangling with dplyr</a></strong>
 <ul>
 <li><a href="./dplyr/dplyr_exercises.html">Exercises for “Data Wrangling with dplyr”</a></li>
 </ul></li>
+</ul>
+<section id="regression-models" class="level2">
+<h2 class="anchored" data-anchor-id="regression-models">Regression models</h2>
+<ul>
 <li><p><strong><a href="./simple_regression/simple_regression.html">Simple linear regression</a></strong> <!-- - [Exercises for Simple linear regression](simple_regression/simple_regression_exercise_set.qmd) --></p></li>
 <li><p><strong><a href="./multiple_regression/multiple_regression.html">Multiple linear regression</a></strong> <!-- - [Exercises for Multiple linear regression](multiple_regression/multiple_regression_exercise_set.qmd) --></p></li>
 <li><p><strong><a href="./knn_regression/knn_regression.html">KNN regression</a></strong> <!-- - [Exercises for KNN regression](knn_regression/knn_regression_exercise_set.qmd) --></p></li>
-<li><p><strong><a href="./knn_classification/knn_classification.html">KNN classification</a></strong> <!-- - [Exercises for KNN classification](knn_classification/knn_classification_exercise_set.qmd) --></p></li>
-<li><p><strong><a href="./bayes_classifier_simulation/bayes_classifier_simulation.html">Bayes classifier simulation</a></strong></p></li>
+<li><p><strong><a href="./ridge_regression/ridge_regression.html">Ridge regression</a></strong></p>
+<ul>
+<li><a href="./ridge_regression/ridge_regression_practice.html">Practice for Ridge regression</a></li>
+</ul></li>
 <li><p><strong><a href="./tree_regression/tree_regression.html">Tree regression</a></strong></p>
 <ul>
 <li><a href="./tree_regression/tree_regression_practice.html">Practice for Tree regression</a> <!-- - [Exercises for Tree regression](tree_regression/tree_regression_exercise_set.qmd) --></li>
@@ -159,12 +171,29 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li><a href="./boosting/boosting_practice.html">Practice for Boosted trees</a></li>
 </ul></li>
+</ul>
+</section>
+<section id="classification-models" class="level2">
+<h2 class="anchored" data-anchor-id="classification-models">Classification models</h2>
+<ul>
+<li><p><strong><a href="./knn_classification/knn_classification.html">KNN classification</a></strong> <!-- - [Exercises for KNN classification](knn_classification/knn_classification_exercise_set.qmd) --></p></li>
+<li><p><strong><a href="./bayes_classifier_simulation/bayes_classifier_simulation.html">Bayes classifier simulation</a></strong></p></li>
 <li><p><strong><a href="./tree_classification/tree_classification.html">Tree classification</a></strong></p>
 <ul>
 <li><a href="./tree_classification/tree_classification_practice.html">Practice for Tree classification</a> <!-- - [Exercises for Tree classification](tree_classification/tree_classification_exercise_set.qmd) --></li>
 </ul></li>
-<li><p><strong>Cross validation</strong></p></li>
-<li><p><strong>Data sets</strong></p>
+</ul>
+</section>
+<section id="cross-validation" class="level2">
+<h2 class="anchored" data-anchor-id="cross-validation">Cross validation</h2>
+<ul>
+<li><strong>Cross validation</strong></li>
+</ul>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<ul>
+<li><strong>Data sets</strong>
 <ul>
 <li><a href="./datasets/boston.html">Boston dataset</a></li>
 <li><a href="./datasets/default.html">Default dataset</a></li>
@@ -173,6 +202,7 @@ ul.task-list li input[type="checkbox"] {
 <p>Explore the topics and start learning!</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
