@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Tutorials for DS course materials - Introduction to Ridge Regression with Boston Housing Data</title>
+<title>Tutorials for DS course materials - Principal Component Analysis with Boston Housing Data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -142,14 +142,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#what-is-ridge-regression" id="toc-what-is-ridge-regression" class="nav-link active" data-scroll-target="#what-is-ridge-regression">What is Ridge Regression?</a></li>
-  <li><a href="#loading-necessary-libraries" id="toc-loading-necessary-libraries" class="nav-link" data-scroll-target="#loading-necessary-libraries">Loading Necessary Libraries</a></li>
-  <li><a href="#loading-the-data" id="toc-loading-the-data" class="nav-link" data-scroll-target="#loading-the-data">Loading the Data</a></li>
-  <li><a href="#splitting-the-data" id="toc-splitting-the-data" class="nav-link" data-scroll-target="#splitting-the-data">Splitting the Data</a></li>
-  <li><a href="#fitting-the-ridge-regression-model" id="toc-fitting-the-ridge-regression-model" class="nav-link" data-scroll-target="#fitting-the-ridge-regression-model">Fitting the Ridge Regression Model</a></li>
-  <li><a href="#making-predictions" id="toc-making-predictions" class="nav-link" data-scroll-target="#making-predictions">Making Predictions</a></li>
-  <li><a href="#visualizing-variable-importance" id="toc-visualizing-variable-importance" class="nav-link" data-scroll-target="#visualizing-variable-importance">Visualizing Variable Importance</a></li>
-  <li><a href="#tuning-the-penalty-parameter" id="toc-tuning-the-penalty-parameter" class="nav-link" data-scroll-target="#tuning-the-penalty-parameter">Tuning the Penalty Parameter</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#load-necessary-libraries" id="toc-load-necessary-libraries" class="nav-link" data-scroll-target="#load-necessary-libraries">Load Necessary Libraries</a></li>
+  <li><a href="#load-the-data" id="toc-load-the-data" class="nav-link" data-scroll-target="#load-the-data">Load the Data</a></li>
+  <li><a href="#perform-pca" id="toc-perform-pca" class="nav-link" data-scroll-target="#perform-pca">Perform PCA</a></li>
+  <li><a href="#visualize-the-pca-results" id="toc-visualize-the-pca-results" class="nav-link" data-scroll-target="#visualize-the-pca-results">Visualize the PCA Results</a></li>
+  <li><a href="#interpret-the-pca-results" id="toc-interpret-the-pca-results" class="nav-link" data-scroll-target="#interpret-the-pca-results">Interpret the PCA Results</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
@@ -159,7 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Introduction to Ridge Regression with <a href="../datasets/boston.html">Boston Housing Data</a></h1>
+<h1 class="title">Principal Component Analysis with <a href="../datasets/boston.html">Boston Housing Data</a></h1>
 </div>
 
 
@@ -176,151 +174,113 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Welcome to this tutorial on ridge regression. This tutorial aims to introduce the concept of ridge regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Ridge regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields. Ridge regression is an example of a shrinkage technique where we shrink the coefficients towards zero in order to ensure greater stability.</p>
-<section id="what-is-ridge-regression" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-ridge-regression">What is Ridge Regression?</h2>
-<p>Ridge regression is a type of linear regression that includes a regularization term to penalize large coefficients, aiming to prevent overfitting. It is particularly useful when dealing with multicollinearity or when you want to shrink the coefficients to achieve a more stable model.</p>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>In this tutorial, we’ll explore how to perform Principal Component Analysis (PCA) using the Boston housing dataset. PCA is a powerful technique for dimensionality reduction and visualization, helping us to uncover the underlying structure of the data. We’ll use the <code>tidyverse</code> for data manipulation and visualization, and <code>tidymodels</code> for applying PCA. Let’s dive in!</p>
 </section>
-<section id="loading-necessary-libraries" class="level2">
-<h2 class="anchored" data-anchor-id="loading-necessary-libraries">Loading Necessary Libraries</h2>
-<p>First, we need to load the required libraries for our analysis. We will use <code>tidyverse</code> for data manipulation and visualization, <code>tidymodels</code> for model fitting, <code>MASS</code> for accessing the dataset, and <code>vip</code> for visualizing variable importance.</p>
+<section id="load-necessary-libraries" class="level1">
+<h1>Load Necessary Libraries</h1>
+<p>First, we’ll load the required libraries. The <code>tidyverse</code> package provides tools for data manipulation and visualization, while <code>tidymodels</code> offers a suite of packages for modeling.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vip)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="loading-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="loading-the-data">Loading the Data</h2>
-<p>We load and prepare the <code>Boston</code> dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (<code>medv</code>), which we will predict using the other attributes.</p>
+<section id="load-the-data" class="level1">
+<h1>Load the Data</h1>
+<p>Next, we’ll load the Boston housing dataset and convert it into a tibble for easier manipulation.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>boston_data <span class="ot">=</span> MASS<span class="sc">::</span>Boston</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="splitting-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="splitting-the-data">Splitting the Data</h2>
-<p>We split the data into training and testing sets using the <code>initial_split</code> function. We set a 50-50 split by setting the <code>prop</code> argument.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_split <span class="ot">=</span> <span class="fu">initial_split</span>(boston_data, <span class="at">prop =</span> <span class="fl">0.5</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>train_set <span class="ot">=</span> <span class="fu">training</span>(data_split)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>test_set <span class="ot">=</span> <span class="fu">testing</span>(data_split)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="fitting-the-ridge-regression-model" class="level2">
-<h2 class="anchored" data-anchor-id="fitting-the-ridge-regression-model">Fitting the Ridge Regression Model</h2>
-<p>Next, we fit a ridge regression model to predict <code>medv</code> using all available predictors. We use a <code>recipe</code> to preprocess the data and define the model using <code>linear_reg</code> with a <code>penalty</code> parameter. In our preprocessing step, we include <code>step_normalize</code> to normalize all predictors. Normalization is essential in penalized regressions like ridge because it ensures that all features contribute equally to the penalty term, avoiding the dominance of features with larger scales.The <code>workflow</code> function combines the recipe and model for fitting.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>preprocess_recipe <span class="ot">=</span> <span class="fu">recipe</span>(medv <span class="sc">~</span> ., <span class="at">data =</span> train_set) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_predictors</span>())</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ridge_model <span class="ot">=</span> <span class="fu">linear_reg</span>(</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">penalty =</span> <span class="dv">1</span>,  <span class="co"># Regularization strength</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">mixture =</span> <span class="dv">0</span>   <span class="co"># Ridge regression (0 for ridge, 1 for lasso, in between for elastic net)</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>ridge_workflow <span class="ot">=</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(preprocess_recipe) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(ridge_model)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>ridge_model_fit <span class="ot">=</span> ridge_workflow <span class="sc">%&gt;%</span> </span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train_set)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="making-predictions" class="level2">
-<h2 class="anchored" data-anchor-id="making-predictions">Making Predictions</h2>
-<p>Once the model is fitted, we use it to make predictions on the test set. The <code>predict</code> function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">=</span> ridge_model_fit <span class="sc">%&gt;%</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(test_set)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>metrics <span class="ot">=</span> test_set <span class="sc">%&gt;%</span> </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(predictions) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">metrics</span>(<span class="at">truth =</span> medv, <span class="at">estimate =</span> .pred)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>metrics</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>boston_data <span class="ot">=</span> MASS<span class="sc">::</span>Boston</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># View the first few rows of the dataset</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 3
-  .metric .estimator .estimate
-  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-1 rmse    standard       5.43 
-2 rsq     standard       0.679
-3 mae     standard       3.56 </code></pre>
+<pre><code>     crim zn indus chas   nox    rm  age    dis rad tax ptratio  black lstat
+1 0.00632 18  2.31    0 0.538 6.575 65.2 4.0900   1 296    15.3 396.90  4.98
+2 0.02731  0  7.07    0 0.469 6.421 78.9 4.9671   2 242    17.8 396.90  9.14
+3 0.02729  0  7.07    0 0.469 7.185 61.1 4.9671   2 242    17.8 392.83  4.03
+4 0.03237  0  2.18    0 0.458 6.998 45.8 6.0622   3 222    18.7 394.63  2.94
+5 0.06905  0  2.18    0 0.458 7.147 54.2 6.0622   3 222    18.7 396.90  5.33
+6 0.02985  0  2.18    0 0.458 6.430 58.7 6.0622   3 222    18.7 394.12  5.21
+  medv
+1 24.0
+2 21.6
+3 34.7
+4 33.4
+5 36.2
+6 28.7</code></pre>
 </div>
 </div>
 </section>
-<section id="visualizing-variable-importance" class="level2">
-<h2 class="anchored" data-anchor-id="visualizing-variable-importance">Visualizing Variable Importance</h2>
-<p>To understand the importance of each predictor in the model, we visualize the variable importance using the <code>vip</code> package. This helps in identifying which variables have the most influence on the prediction.</p>
+<section id="perform-pca" class="level1">
+<h1>Perform PCA</h1>
+<p>PCA is sensitive to the scale of the data, so we need to standardize the variables. We’ll exclude the target variable <code>medv</code> from the standardization process by specifiyng it as target variable. We’ll use the <code>recipe</code> function from <code>tidymodels</code> to specify the PCA preprocessing steps, and then apply it using the <code>prep</code> and <code>bake</code> functions.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ridge_model_fit <span class="sc">%&gt;%</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull_workflow_fit</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a PCA recipe</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pca_recipe <span class="ot">=</span> <span class="fu">recipe</span>(medv<span class="sc">~</span>., <span class="at">data =</span> boston_data) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_predictors</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_pca</span>(<span class="fu">all_predictors</span>(), <span class="at">num_comp =</span> <span class="dv">2</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>pca_prep <span class="ot">=</span> pca_recipe <span class="sc">%&gt;%</span> </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>()</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>pca_baked <span class="ot">=</span> pca_prep <span class="sc">%&gt;%</span> </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="visualize-the-pca-results" class="level1">
+<h1>Visualize the PCA Results</h1>
+<p>To understand the distribution of the data in the new principal component space, we’ll visualize the PCA results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the PCA results</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>pca_baked <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(PC1, PC2, <span class="at">color =</span> medv)) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"PCA of Boston Dataset"</span>, <span class="at">x =</span> <span class="st">"Principal Component 1"</span>, <span class="at">y =</span> <span class="st">"Principal Component 2"</span>) <span class="sc">+</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="ridge_regression_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="pca_files/figure-html/visualize_pca-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="tuning-the-penalty-parameter" class="level2">
-<h2 class="anchored" data-anchor-id="tuning-the-penalty-parameter">Tuning the Penalty Parameter</h2>
-<p>Tuning the penalty parameter is essential to find the optimal level of regularization. We use cross-validation to determine the best penalty value that minimizes the RMSE metric.</p>
-<p>We define a ridge regression model with a tunable <code>penalty</code> parameter and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with <code>vfold_cv</code>. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.</p>
+<section id="interpret-the-pca-results" class="level1">
+<h1>Interpret the PCA Results</h1>
+<p>PCA transforms the original variables into new, uncorrelated variables called principal components. We’ll examine the contribution of each original variable to the principal components by looking at the loadings.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the ridge regression model with tunable penalty</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ridge_tune_model <span class="ot">=</span> <span class="fu">linear_reg</span>(</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">penalty =</span> <span class="fu">tune</span>(),</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mixture =</span> <span class="dv">0</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Update the workflow</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>tune_ridge_workflow <span class="ot">=</span> ridge_workflow <span class="sc">%&gt;%</span> </span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_model</span>(ridge_tune_model)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the resampling method</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>cv_splits <span class="ot">=</span> <span class="fu">vfold_cv</span>(train_set, <span class="at">v =</span> <span class="dv">5</span>)</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform tuning</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>tune_results <span class="ot">=</span> <span class="fu">tune_grid</span>(</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  tune_ridge_workflow,</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">resamples =</span> cv_splits,</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">grid =</span> <span class="fu">grid_regular</span>(<span class="fu">penalty</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)), <span class="at">levels =</span> <span class="dv">20</span>)</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the best parameters</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>best_params <span class="ot">=</span> <span class="fu">select_best</span>(tune_results, <span class="at">metric =</span> <span class="st">"rmse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>The <code>tune_grid</code> function performs a grid search over a range of <code>penalty</code> values to find the best parameter that minimizes the RMSE metric. We then finalize the model with the optimal <code>penalty</code> parameter and fit it to the training data using <code>last_fit</code>, which refits the model on the entire training set and evaluates it on the test set.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Finalize the model with the best parameters</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>final_ridge_workflow <span class="ot">=</span> <span class="fu">finalize_workflow</span>(tune_ridge_workflow, best_params)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the finalized model</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>final_ridge_fit <span class="ot">=</span> final_ridge_workflow <span class="sc">%&gt;%</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">last_fit</span>(data_split)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Finally, we evaluate the performance of the tuned ridge regression model using RMSE on the test set predictions.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>final_ridge_fit <span class="sc">%&gt;%</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the PCA loadings</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>pca_loadings <span class="ot">=</span> pca_prep <span class="sc">%&gt;%</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(<span class="dv">1</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># View the PCA loadings</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>pca_loadings</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 4
-  .metric .estimator .estimate .config             
-  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-1 rmse    standard       5.43  Preprocessor1_Model1
-2 rsq     standard       0.679 Preprocessor1_Model1</code></pre>
+<pre><code># A tibble: 26 × 4
+   terms statistic    value id             
+   &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;          
+ 1 crim  mean        3.61   normalize_6lxrz
+ 2 zn    mean       11.4    normalize_6lxrz
+ 3 indus mean       11.1    normalize_6lxrz
+ 4 chas  mean        0.0692 normalize_6lxrz
+ 5 nox   mean        0.555  normalize_6lxrz
+ 6 rm    mean        6.28   normalize_6lxrz
+ 7 age   mean       68.6    normalize_6lxrz
+ 8 dis   mean        3.80   normalize_6lxrz
+ 9 rad   mean        9.55   normalize_6lxrz
+10 tax   mean      408.     normalize_6lxrz
+# ℹ 16 more rows</code></pre>
 </div>
 </div>
+<p>The loadings indicate the weight of each original variable in the principal components. Higher absolute values suggest a stronger contribution to the corresponding principal component.</p>
 </section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This tutorial has provided an in-depth look at ridge regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing variable importance, we have demonstrated the entire process of ridge regression analysis. Additionally, we have shown how to tune the penalty parameter using the <code>tidymodels</code> framework to improve the model’s performance by reducing overfitting. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively.</p>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>In this tutorial, we performed PCA on the Boston dataset using the Tidyverse and Tidymodels frameworks. We standardized the data, applied PCA, and visualized the results. PCA is a valuable technique for reducing dimensionality and uncovering patterns in high-dimensional data. By following these steps, you can apply PCA to other datasets and gain insights into the underlying structure of your data.</p>
+<p>Feel free to explore further by adjusting the number of components or applying PCA to different datasets. Happy coding!</p>
 
 
 </section>

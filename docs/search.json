@@ -336,39 +336,18 @@
     "text": "Evaluating the Final Model\nTask: Evaluate the performance of the tuned Random Forest model using RMSE on the test set predictions.\n\n\nShow the code\nfinal_rf_fit %&gt;% \n  collect_metrics()\n\n\n```"
   },
   {
-    "objectID": "multiple_regression/multiple_regression_exercise_set.html",
-    "href": "multiple_regression/multiple_regression_exercise_set.html",
-    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "objectID": "pca/pca.html",
+    "href": "pca/pca.html",
+    "title": "Principal Component Analysis with Boston Housing Data",
     "section": "",
-    "text": "This exercise set is designed to help you practice the steps involved in performing K-Nearest Neighbors (KNN) regression using the Boston housing dataset. Each task is followed by a chunk of code that presents the solution.\n\n\nTask: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nTask: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nTask: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nTask: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+    "text": "Introduction\nIn this tutorial, we’ll explore how to perform Principal Component Analysis (PCA) using the Boston housing dataset. PCA is a powerful technique for dimensionality reduction and visualization, helping us to uncover the underlying structure of the data. We’ll use the tidyverse for data manipulation and visualization, and tidymodels for applying PCA. Let’s dive in!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels offers a suite of packages for modeling.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll load the Boston housing dataset and convert it into a tibble for easier manipulation.\n\nboston_data = MASS::Boston\n\n# View the first few rows of the dataset\nhead(boston_data)\n\n     crim zn indus chas   nox    rm  age    dis rad tax ptratio  black lstat\n1 0.00632 18  2.31    0 0.538 6.575 65.2 4.0900   1 296    15.3 396.90  4.98\n2 0.02731  0  7.07    0 0.469 6.421 78.9 4.9671   2 242    17.8 396.90  9.14\n3 0.02729  0  7.07    0 0.469 7.185 61.1 4.9671   2 242    17.8 392.83  4.03\n4 0.03237  0  2.18    0 0.458 6.998 45.8 6.0622   3 222    18.7 394.63  2.94\n5 0.06905  0  2.18    0 0.458 7.147 54.2 6.0622   3 222    18.7 396.90  5.33\n6 0.02985  0  2.18    0 0.458 6.430 58.7 6.0622   3 222    18.7 394.12  5.21\n  medv\n1 24.0\n2 21.6\n3 34.7\n4 33.4\n5 36.2\n6 28.7\n\n\n\n\nPerform PCA\nPCA is sensitive to the scale of the data, so we need to standardize the variables. We’ll exclude the target variable medv from the standardization process by specifiyng it as target variable. We’ll use the recipe function from tidymodels to specify the PCA preprocessing steps, and then apply it using the prep and bake functions.\n\n# Create a PCA recipe\npca_recipe = recipe(medv~., data = boston_data) %&gt;%\n  step_normalize(all_predictors()) %&gt;% \n  step_pca(all_predictors(), num_comp = 2)\n\npca_prep = pca_recipe %&gt;% \n  prep()\n\npca_baked = pca_prep %&gt;% \n  bake(new_data = boston_data)\n\n\n\nVisualize the PCA Results\nTo understand the distribution of the data in the new principal component space, we’ll visualize the PCA results.\n\n# Plot the PCA results\n\npca_baked %&gt;%\n  ggplot(aes(PC1, PC2, color = medv)) +\n  geom_point() +\n  labs(title = \"PCA of Boston Dataset\", x = \"Principal Component 1\", y = \"Principal Component 2\") +\n  theme_minimal()\n\n\n\n\n\n\n\n\n\n\nInterpret the PCA Results\nPCA transforms the original variables into new, uncorrelated variables called principal components. We’ll examine the contribution of each original variable to the principal components by looking at the loadings.\n\n# Extract the PCA loadings\npca_loadings = pca_prep %&gt;% \n  tidy(1)\n\n# View the PCA loadings\npca_loadings\n\n# A tibble: 26 × 4\n   terms statistic    value id             \n   &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;          \n 1 crim  mean        3.61   normalize_6lxrz\n 2 zn    mean       11.4    normalize_6lxrz\n 3 indus mean       11.1    normalize_6lxrz\n 4 chas  mean        0.0692 normalize_6lxrz\n 5 nox   mean        0.555  normalize_6lxrz\n 6 rm    mean        6.28   normalize_6lxrz\n 7 age   mean       68.6    normalize_6lxrz\n 8 dis   mean        3.80   normalize_6lxrz\n 9 rad   mean        9.55   normalize_6lxrz\n10 tax   mean      408.     normalize_6lxrz\n# ℹ 16 more rows\n\n\nThe loadings indicate the weight of each original variable in the principal components. Higher absolute values suggest a stronger contribution to the corresponding principal component.\n\n\nConclusion\nIn this tutorial, we performed PCA on the Boston dataset using the Tidyverse and Tidymodels frameworks. We standardized the data, applied PCA, and visualized the results. PCA is a valuable technique for reducing dimensionality and uncovering patterns in high-dimensional data. By following these steps, you can apply PCA to other datasets and gain insights into the underlying structure of your data.\nFeel free to explore further by adjusting the number of components or applying PCA to different datasets. Happy coding!"
   },
   {
-    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-1-load-necessary-libraries",
-    "href": "multiple_regression/multiple_regression_exercise_set.html#task-1-load-necessary-libraries",
-    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "objectID": "multiple_regression/multiple_regression.html",
+    "href": "multiple_regression/multiple_regression.html",
+    "title": "Multiple Linear Regression with Boston Housing Data",
     "section": "",
-    "text": "Task: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
-  },
-  {
-    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-2-load-the-data",
-    "href": "multiple_regression/multiple_regression_exercise_set.html#task-2-load-the-data",
-    "title": "KNN Regression with Boston Housing Data - Exercise Set",
-    "section": "",
-    "text": "Task: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
-  },
-  {
-    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
-    "href": "multiple_regression/multiple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
-    "title": "KNN Regression with Boston Housing Data - Exercise Set",
-    "section": "",
-    "text": "Task: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
-  },
-  {
-    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-4-make-predictions",
-    "href": "multiple_regression/multiple_regression_exercise_set.html#task-4-make-predictions",
-    "title": "KNN Regression with Boston Housing Data - Exercise Set",
-    "section": "",
-    "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+    "text": "Introduction\nIn this tutorial, we’ll explore how to perform a multiple linear regression using the Boston housing dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) and the proportion of owner-occupied units built before 1940 (age).\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll load the Boston housing dataset and select the relevant columns.\n\nboston_data = MASS::Boston %&gt;%\n  select(rm, age, medv)\n\n\n\nFit the Multiple Linear Regression Model\nNow, we’ll fit a multiple linear regression model. Our goal is to predict medv using rm and age. We will create a preprocessing recipe to handle interactions.\nThe recipe package, part of the tidymodels ecosystem, provides a way to preprocess data before modeling. We define the transformations to apply to our data in a consistent and reusable manner using “steps”.\n\nstep_interact(): Creates interaction terms between variables.\n\n\npreprocess_recipe = recipe(medv ~ ., data = boston_data) %&gt;% \n  step_interact(terms = ~rm:age)\n\nWe then define our model specification using linear_reg().\n\nmodel_spec = linear_reg()\n\nNext, we use a workflow, a concept from the tidymodels package that helps streamline the modeling process by bundling together the preprocessing and modeling steps. This makes the workflow easier to manage and ensures that all steps are consistently applied.\n\nadd_recipe(): Adds the preprocessing recipe to the workflow.\nadd_model(): Adds the model specification to the workflow.\n\nFinally, we fit the workflow to the data.\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec) %&gt;% \n  fit(boston_data)\n\nAlternatively, we can specify a model without an intercept.\n\npreprocess_recipe = recipe(medv ~ ., data = boston_data) %&gt;% \n  step_interact(terms = ~rm:age)\n\nmodel_spec = linear_reg() %&gt;% \n  set_engine(\"lm\")\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec, formula = medv ~ 0 + . -rm) %&gt;% \n  fit(boston_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_workflow %&gt;% \n  tidy()\n\n# A tibble: 4 × 5\n  term        estimate std.error statistic  p.value\n  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept) -59.6       7.79       -7.65 1.01e-13\n2 rm           13.7       1.20       11.4  4.39e-27\n3 age           0.382     0.0967      3.94 9.15e- 5\n4 rm_x_age     -0.0714    0.0151     -4.72 3.03e- 6\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_workflow %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a multiple linear regression using the Boston housing dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
   },
   {
     "objectID": "knn_regression/knn_regression_exercise_set.html",
@@ -460,6 +439,13 @@
     "title": "Welcome to BOI DS course tutorials",
     "section": "Classification models",
     "text": "Classification models\n\nKNN classification \nBayes classifier simulation\nTree classification\n\nPractice for Tree classification"
+  },
+  {
+    "objectID": "index.html#dimension-reduction",
+    "href": "index.html#dimension-reduction",
+    "title": "Welcome to BOI DS course tutorials",
+    "section": "Dimension reduction",
+    "text": "Dimension reduction\n\nPrincipal Component Analysis"
   },
   {
     "objectID": "index.html#cross-validation",
@@ -812,11 +798,109 @@
     "text": "Introduction\nIn this tutorial, we’ll explore how to perform K-Nearest Neighbors (KNN) regression using the Boston housing dataset. KNN regression is a non-parametric method that makes predictions based on the k-nearest neighbors to a data point. This method is particularly useful when the relationship between variables is complex and nonlinear. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) using KNN regression.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the MASS package which contains the Boston dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll select the relevant columns from the Boston housing dataset. We’ll ensure there are no duplicate rows.\n\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\nFit the KNN Regression Model\nNow, we’ll fit a K-Nearest Neighbors (KNN) regression model. Our goal is to predict medv using rm. We set the number of neighbors to 100.\nThe nearest_neighbor() function from parsnip is used to specify the KNN model. Here, we set the mode to “regression” and specify the number of neighbors. We then fit the model to our data.\n\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n  ) %&gt;%\n  fit(medv ~ rm, data = boston_data)\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform KNN regression using the Boston housing dataset. We went through loading the data, fitting a KNN model, and making predictions. KNN regression is a versatile technique that can capture complex relationships in data without assuming a specific functional form.\nFeel free to explore further by adjusting the number of neighbors or trying different predictors. This method can be a powerful tool in your machine learning toolkit. Happy coding!"
   },
   {
-    "objectID": "multiple_regression/multiple_regression.html",
-    "href": "multiple_regression/multiple_regression.html",
-    "title": "Multiple Linear Regression with Boston Housing Data",
+    "objectID": "lasso_regression/lasso_regression.html",
+    "href": "lasso_regression/lasso_regression.html",
+    "title": "Introduction to LASSO Regression with Boston Housing Data",
     "section": "",
-    "text": "Introduction\nIn this tutorial, we’ll explore how to perform a multiple linear regression using the Boston housing dataset. Multiple linear regression is an extension of simple linear regression that allows us to model the relationship between a dependent variable and multiple independent variables. Here, we’ll investigate how the median value of owner-occupied homes (medv) is influenced by the average number of rooms per dwelling (rm) and the proportion of owner-occupied units built before 1940 (age).\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll load the Boston housing dataset and select the relevant columns.\n\nboston_data = MASS::Boston %&gt;%\n  select(rm, age, medv)\n\n\n\nFit the Multiple Linear Regression Model\nNow, we’ll fit a multiple linear regression model. Our goal is to predict medv using rm and age. We will create a preprocessing recipe to handle interactions.\nThe recipe package, part of the tidymodels ecosystem, provides a way to preprocess data before modeling. We define the transformations to apply to our data in a consistent and reusable manner using “steps”.\n\nstep_interact(): Creates interaction terms between variables.\n\n\npreprocess_recipe = recipe(medv ~ ., data = boston_data) %&gt;% \n  step_interact(terms = ~rm:age)\n\nWe then define our model specification using linear_reg().\n\nmodel_spec = linear_reg()\n\nNext, we use a workflow, a concept from the tidymodels package that helps streamline the modeling process by bundling together the preprocessing and modeling steps. This makes the workflow easier to manage and ensures that all steps are consistently applied.\n\nadd_recipe(): Adds the preprocessing recipe to the workflow.\nadd_model(): Adds the model specification to the workflow.\n\nFinally, we fit the workflow to the data.\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec) %&gt;% \n  fit(boston_data)\n\nAlternatively, we can specify a model without an intercept.\n\npreprocess_recipe = recipe(medv ~ ., data = boston_data) %&gt;% \n  step_interact(terms = ~rm:age)\n\nmodel_spec = linear_reg() %&gt;% \n  set_engine(\"lm\")\n\nlinear_model_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(model_spec, formula = medv ~ 0 + . -rm) %&gt;% \n  fit(boston_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_workflow %&gt;% \n  tidy()\n\n# A tibble: 4 × 5\n  term        estimate std.error statistic  p.value\n  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept) -59.6       7.79       -7.65 1.01e-13\n2 rm           13.7       1.20       11.4  4.39e-27\n3 age           0.382     0.0967      3.94 9.15e- 5\n4 rm_x_age     -0.0714    0.0151     -4.72 3.03e- 6\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_workflow %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a multiple linear regression using the Boston housing dataset. We went through loading the data, fitting a model with preprocessing steps, inspecting the coefficients, and making predictions. This technique can be extended to include more variables and interactions, providing a robust tool for understanding complex relationships in your data.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
+    "text": "Welcome to this tutorial on LASSO regression. This tutorial aims to introduce the concept of LASSO regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. LASSO regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields. The LASSO is an example of subset selection technique where we keep only the predictors that we believe to be related to the target and discard the other predictors."
+  },
+  {
+    "objectID": "lasso_regression/lasso_regression.html#what-is-lasso-regression",
+    "href": "lasso_regression/lasso_regression.html#what-is-lasso-regression",
+    "title": "Introduction to LASSO Regression with Boston Housing Data",
+    "section": "What is LASSO Regression?",
+    "text": "What is LASSO Regression?\nLASSO regression is a type of linear regression that includes a regularization term to penalize large coefficients, aiming to prevent overfitting. It is particularly useful when dealing with multicollinearity or when you want to shrink some coefficients to zero, effectively performing variable selection."
+  },
+  {
+    "objectID": "lasso_regression/lasso_regression.html#loading-necessary-libraries",
+    "href": "lasso_regression/lasso_regression.html#loading-necessary-libraries",
+    "title": "Introduction to LASSO Regression with Boston Housing Data",
+    "section": "Loading Necessary Libraries",
+    "text": "Loading Necessary Libraries\nFirst, we need to load the required libraries for our analysis. We will use tidyverse for data manipulation and visualization, tidymodels for model fitting, MASS for accessing the dataset, and vip for visualizing variable importance.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(vip)"
+  },
+  {
+    "objectID": "lasso_regression/lasso_regression.html#loading-the-data",
+    "href": "lasso_regression/lasso_regression.html#loading-the-data",
+    "title": "Introduction to LASSO Regression with Boston Housing Data",
+    "section": "Loading the Data",
+    "text": "Loading the Data\nWe load and prepare the Boston dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (medv), which we will predict using the other attributes.\n\nboston_data = MASS::Boston"
+  },
+  {
+    "objectID": "lasso_regression/lasso_regression.html#splitting-the-data",
+    "href": "lasso_regression/lasso_regression.html#splitting-the-data",
+    "title": "Introduction to LASSO Regression with Boston Housing Data",
+    "section": "Splitting the Data",
+    "text": "Splitting the Data\nWe split the data into training and testing sets using the initial_split function. We set a 50-50 split by setting the prop argument.\n\ndata_split = initial_split(boston_data, prop = 0.5)\ntrain_set = training(data_split)\ntest_set = testing(data_split)"
+  },
+  {
+    "objectID": "lasso_regression/lasso_regression.html#fitting-the-lasso-regression-model",
+    "href": "lasso_regression/lasso_regression.html#fitting-the-lasso-regression-model",
+    "title": "Introduction to LASSO Regression with Boston Housing Data",
+    "section": "Fitting the LASSO Regression Model",
+    "text": "Fitting the LASSO Regression Model\nNext, we fit a LASSO regression model to predict medv using all available predictors. We use a recipe to preprocess the data and define the model using linear_reg with a penalty parameter. The workflow function combines the recipe and model for fitting. In our preprocessing step, we include step_normalize to normalize all predictors. Normalization is essential in penalized regressions like LASSO because it ensures that all features contribute equally to the penalty term, avoiding the dominance of features with larger scales.\n\npreprocess_recipe = recipe(medv ~ ., data = train_set) %&gt;% \n  step_normalize(all_predictors())\n\nlasso_model = linear_reg(\n  penalty = 1,  # Regularization strength\n  mixture = 1   # LASSO regression (0 for ridge, 1 for lasso, in between for elastic net)\n) %&gt;% \n  set_engine(\"glmnet\")\n\nlasso_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(lasso_model)\n\nlasso_model_fit = lasso_workflow %&gt;% \n  fit(train_set)"
+  },
+  {
+    "objectID": "lasso_regression/lasso_regression.html#making-predictions",
+    "href": "lasso_regression/lasso_regression.html#making-predictions",
+    "title": "Introduction to LASSO Regression with Boston Housing Data",
+    "section": "Making Predictions",
+    "text": "Making Predictions\nOnce the model is fitted, we use it to make predictions on the test set. The predict function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).\n\npredictions = lasso_model_fit %&gt;% \n  predict(test_set)\n\nmetrics = test_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  metrics(truth = medv, estimate = .pred)\n\nmetrics\n\n# A tibble: 3 × 3\n  .metric .estimator .estimate\n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;\n1 rmse    standard       5.52 \n2 rsq     standard       0.645\n3 mae     standard       3.85"
+  },
+  {
+    "objectID": "lasso_regression/lasso_regression.html#visualizing-variable-importance",
+    "href": "lasso_regression/lasso_regression.html#visualizing-variable-importance",
+    "title": "Introduction to LASSO Regression with Boston Housing Data",
+    "section": "Visualizing Variable Importance",
+    "text": "Visualizing Variable Importance\nTo understand the importance of each predictor in the model, we visualize the variable importance using the vip package. This helps in identifying which variables have the most influence on the prediction.\n\nlasso_model_fit %&gt;% \n  pull_workflow_fit() %&gt;% \n  vip()"
+  },
+  {
+    "objectID": "lasso_regression/lasso_regression.html#tuning-the-penalty-parameter",
+    "href": "lasso_regression/lasso_regression.html#tuning-the-penalty-parameter",
+    "title": "Introduction to LASSO Regression with Boston Housing Data",
+    "section": "Tuning the Penalty Parameter",
+    "text": "Tuning the Penalty Parameter\nTuning the penalty parameter is essential to find the optimal level of regularization. We use cross-validation to determine the best penalty value that minimizes the RMSE metric.\nWe define a LASSO regression model with a tunable penalty parameter and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with vfold_cv. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.\n\n# Define the LASSO regression model with tunable penalty\nlasso_tune_model = linear_reg(\n  penalty = tune(),\n  mixture = 1\n) %&gt;% \n  set_engine(\"glmnet\")\n\n# Update the workflow\ntune_lasso_workflow = lasso_workflow %&gt;% \n  update_model(lasso_tune_model)\n\n# Define the resampling method\nset.seed(123)\ncv_splits = vfold_cv(train_set, v = 5)\n\n# Perform tuning\ntune_results = tune_grid(\n  tune_lasso_workflow,\n  resamples = cv_splits,\n  grid = grid_regular(penalty(range = c(0, 1)), levels = 5)\n)\n\n# Extract the best parameters\nbest_params = select_best(tune_results, metric = \"rmse\")\n\nThe tune_grid function performs a grid search over a range of penalty values to find the best parameter that minimizes the RMSE metric. We then finalize the model with the optimal penalty parameter and fit it to the training data using last_fit, which refits the model on the entire training set and evaluates it on the test set.\n\n# Finalize the model with the best parameters\nfinal_lasso_workflow = finalize_workflow(tune_lasso_workflow, best_params)\n\n# Fit the finalized model\nfinal_lasso_fit = final_lasso_workflow %&gt;%\n  last_fit(data_split)\n\nFinally, we evaluate the performance of the tuned LASSO regression model using RMSE on the test set predictions.\n\nfinal_lasso_fit %&gt;% \n  collect_metrics()\n\n# A tibble: 2 × 4\n  .metric .estimator .estimate .config             \n  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               \n1 rmse    standard       5.52  Preprocessor1_Model1\n2 rsq     standard       0.645 Preprocessor1_Model1"
+  },
+  {
+    "objectID": "lasso_regression/lasso_regression.html#conclusion",
+    "href": "lasso_regression/lasso_regression.html#conclusion",
+    "title": "Introduction to LASSO Regression with Boston Housing Data",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis tutorial has provided an in-depth look at LASSO regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing variable importance, we have demonstrated the entire process of LASSO regression analysis. Additionally, we have shown how to tune the penalty parameter using the tidymodels framework to improve the model’s performance by reducing overfitting. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively."
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html",
+    "href": "multiple_regression/multiple_regression_exercise_set.html",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "This exercise set is designed to help you practice the steps involved in performing K-Nearest Neighbors (KNN) regression using the Boston housing dataset. Each task is followed by a chunk of code that presents the solution.\n\n\nTask: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\n\n\nTask: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()\n\n\n\n\n\nTask: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\n\n\nTask: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-1-load-necessary-libraries",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Load the tidyverse and tidymodels libraries.\n\n\nShow the code\nlibrary(tidyverse)\nlibrary(tidymodels)"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-2-load-the-data",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-2-load-the-data",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Select the relevant columns from the Boston housing dataset and ensure there are no duplicate rows.\n\n\nShow the code\nboston_data = MASS::Boston %&gt;% \n  select(rm, medv) %&gt;% \n  distinct()"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-3-fit-the-knn-regression-model",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Fit a K-Nearest Neighbors (KNN) regression model to predict medv using rm. Set the number of neighbors to 100.\n\n\nShow the code\nknn_model_fit = nearest_neighbor(\n  mode = \"regression\",\n  neighbors = 100\n) %&gt;% \n  fit(medv ~ rm, data = boston_data)"
+  },
+  {
+    "objectID": "multiple_regression/multiple_regression_exercise_set.html#task-4-make-predictions",
+    "href": "multiple_regression/multiple_regression_exercise_set.html#task-4-make-predictions",
+    "title": "KNN Regression with Boston Housing Data - Exercise Set",
+    "section": "",
+    "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
   },
   {
     "objectID": "random_forest/random_forest.html",
@@ -900,7 +984,7 @@
     "href": "ridge_regression/ridge_regression.html",
     "title": "Introduction to Ridge Regression with Boston Housing Data",
     "section": "",
-    "text": "Welcome to this tutorial on ridge regression. This tutorial aims to introduce the concept of ridge regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Ridge regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields."
+    "text": "Welcome to this tutorial on ridge regression. This tutorial aims to introduce the concept of ridge regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Ridge regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields. Ridge regression is an example of a shrinkage technique where we shrink the coefficients towards zero in order to ensure greater stability."
   },
   {
     "objectID": "ridge_regression/ridge_regression.html#what-is-ridge-regression",
@@ -935,7 +1019,7 @@
     "href": "ridge_regression/ridge_regression.html#fitting-the-ridge-regression-model",
     "title": "Introduction to Ridge Regression with Boston Housing Data",
     "section": "Fitting the Ridge Regression Model",
-    "text": "Fitting the Ridge Regression Model\nNext, we fit a ridge regression model to predict medv using all available predictors. We use a recipe to preprocess the data and define the model using linear_reg with a penalty parameter. The workflow function combines the recipe and model for fitting.\n\npreprocess_recipe = recipe(medv ~ ., data = train_set)\n\nridge_model = linear_reg(\n  penalty = 1,  # Regularization strength\n  mixture = 0   # Ridge regression (0 for ridge, 1 for lasso, in between for elastic net)\n) %&gt;% \n  set_engine(\"glmnet\")\n\nridge_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(ridge_model)\n\nridge_model_fit = ridge_workflow %&gt;% \n  fit(train_set)"
+    "text": "Fitting the Ridge Regression Model\nNext, we fit a ridge regression model to predict medv using all available predictors. We use a recipe to preprocess the data and define the model using linear_reg with a penalty parameter. In our preprocessing step, we include step_normalize to normalize all predictors. Normalization is essential in penalized regressions like ridge because it ensures that all features contribute equally to the penalty term, avoiding the dominance of features with larger scales.The workflow function combines the recipe and model for fitting.\n\npreprocess_recipe = recipe(medv ~ ., data = train_set) %&gt;% \n  step_normalize(all_predictors())\n\nridge_model = linear_reg(\n  penalty = 1,  # Regularization strength\n  mixture = 0   # Ridge regression (0 for ridge, 1 for lasso, in between for elastic net)\n) %&gt;% \n  set_engine(\"glmnet\")\n\nridge_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(ridge_model)\n\nridge_model_fit = ridge_workflow %&gt;% \n  fit(train_set)"
   },
   {
     "objectID": "ridge_regression/ridge_regression.html#making-predictions",

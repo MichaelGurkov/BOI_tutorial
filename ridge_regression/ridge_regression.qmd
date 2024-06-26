@@ -5,7 +5,7 @@ execute:
   cache: true
 ---
 
-Welcome to this tutorial on ridge regression. This tutorial aims to introduce the concept of ridge regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Ridge regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields.
+Welcome to this tutorial on ridge regression. This tutorial aims to introduce the concept of ridge regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Ridge regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields. Ridge regression is an example of a shrinkage technique where we shrink the coefficients towards zero in order to ensure greater stability.
 
 ## What is Ridge Regression?
 
@@ -42,10 +42,11 @@ test_set = testing(data_split)
 
 ## Fitting the Ridge Regression Model
 
-Next, we fit a ridge regression model to predict `medv` using all available predictors. We use a `recipe` to preprocess the data and define the model using `linear_reg` with a `penalty` parameter. The `workflow` function combines the recipe and model for fitting.
+Next, we fit a ridge regression model to predict `medv` using all available predictors. We use a `recipe` to preprocess the data and define the model using `linear_reg` with a `penalty` parameter. In our preprocessing step, we include `step_normalize` to normalize all predictors. Normalization is essential in penalized regressions like ridge because it ensures that all features contribute equally to the penalty term, avoiding the dominance of features with larger scales.The `workflow` function combines the recipe and model for fitting.
 
 ```{r}
-preprocess_recipe = recipe(medv ~ ., data = train_set)
+preprocess_recipe = recipe(medv ~ ., data = train_set) %>% 
+  step_normalize(all_predictors())
 
 ridge_model = linear_reg(
   penalty = 1,  # Regularization strength

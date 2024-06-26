@@ -55,6 +55,11 @@ learn and apply concepts introduced in the course.
   - [Practice for Tree classification](tree_classification/tree_classification_practice.qmd)
   <!-- - [Exercises for Tree classification](tree_classification/tree_classification_exercise_set.qmd) -->
 
+
+## Dimension reduction
+
+- **[Principal Component Analysis](pca/pca.qmd)**
+
 ## Cross validation
 
 - **Cross validation**
