@@ -1,0 +1,87 @@
+---
+title: "Principal Component Analysis with [Boston Housing Data](../datasets/boston.qmd)"
+format: html
+execute:
+  cache: true
+---
+
+# Introduction
+
+In this tutorial, we'll explore how to perform Principal Component Analysis (PCA) using the Boston housing dataset. PCA is a powerful technique for dimensionality reduction and visualization, helping us to uncover the underlying structure of the data. We'll use the `tidyverse` for data manipulation and visualization, and `tidymodels` for applying PCA. Let's dive in!
+
+# Load Necessary Libraries
+
+First, we'll load the required libraries. The `tidyverse` package provides tools for data manipulation and visualization, while `tidymodels` offers a suite of packages for modeling.
+
+```{r load_libraries}
+library(tidyverse)
+library(tidymodels)
+```
+
+# Load the Data
+
+Next, we'll load the Boston housing dataset and convert it into a tibble for easier manipulation.
+
+```{r load_data}
+boston_data = MASS::Boston
+
+# View the first few rows of the dataset
+head(boston_data)
+```
+
+
+# Perform PCA
+PCA is sensitive to the scale of the data, so we need to standardize the variables. We'll exclude the target variable `medv` from the standardization process by specifiyng it as target variable.
+We'll use the `recipe` function from `tidymodels` to specify the PCA preprocessing steps, and then apply it using the `prep` and `bake` functions.
+
+```{r perform_pca}
+# Create a PCA recipe
+pca_recipe = recipe(medv~., data = boston_data) %>%
+  step_normalize(all_predictors()) %>% 
+  step_pca(all_predictors(), num_comp = 2)
+
+pca_prep = pca_recipe %>% 
+  prep()
+
+pca_baked = pca_prep %>% 
+  bake(new_data = boston_data)
+
+
+
+```
+
+# Visualize the PCA Results
+
+To understand the distribution of the data in the new principal component space, we'll visualize the PCA results.
+
+```{r visualize_pca}
+# Plot the PCA results
+
+pca_baked %>%
+  ggplot(aes(PC1, PC2, color = medv)) +
+  geom_point() +
+  labs(title = "PCA of Boston Dataset", x = "Principal Component 1", y = "Principal Component 2") +
+  theme_minimal()
+
+```
+
+# Interpret the PCA Results
+
+PCA transforms the original variables into new, uncorrelated variables called principal components. We'll examine the contribution of each original variable to the principal components by looking at the loadings.
+
+```{r pca_loadings}
+# Extract the PCA loadings
+pca_loadings = pca_prep %>% 
+  tidy(1)
+
+# View the PCA loadings
+pca_loadings
+```
+
+The loadings indicate the weight of each original variable in the principal components. Higher absolute values suggest a stronger contribution to the corresponding principal component.
+
+# Conclusion
+
+In this tutorial, we performed PCA on the Boston dataset using the Tidyverse and Tidymodels frameworks. We standardized the data, applied PCA, and visualized the results. PCA is a valuable technique for reducing dimensionality and uncovering patterns in high-dimensional data. By following these steps, you can apply PCA to other datasets and gain insights into the underlying structure of your data.
+
+Feel free to explore further by adjusting the number of components or applying PCA to different datasets. Happy coding!

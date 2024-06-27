@@ -1,0 +1,143 @@
+---
+title: "Introduction to Ridge Regression with [Boston Housing Data](../datasets/boston.qmd)"
+format: html
+execute: 
+  cache: true
+---
+
+Welcome to this tutorial on ridge regression. This tutorial aims to introduce the concept of ridge regression, provide a detailed explanation of the code involved, and demonstrate its implementation using R. Ridge regression is a powerful tool for predicting continuous outcomes based on input features, and it is widely used in various fields. Ridge regression is an example of a shrinkage technique where we shrink the coefficients towards zero in order to ensure greater stability.
+
+## What is Ridge Regression?
+
+Ridge regression is a type of linear regression that includes a regularization term to penalize large coefficients, aiming to prevent overfitting. It is particularly useful when dealing with multicollinearity or when you want to shrink the coefficients to achieve a more stable model.
+
+## Loading Necessary Libraries
+
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, `MASS` for accessing the dataset, and `vip` for visualizing variable importance.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(MASS)
+library(vip)
+```
+
+## Loading the Data
+
+We load and prepare the `Boston` dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (`medv`), which we will predict using the other attributes.
+
+```{r load_data}
+boston_data = MASS::Boston
+```
+
+## Splitting the Data
+
+We split the data into training and testing sets using the `initial_split` function. We set a 50-50 split by setting the `prop` argument.
+
+```{r split_data}
+data_split = initial_split(boston_data, prop = 0.5)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Fitting the Ridge Regression Model
+
+Next, we fit a ridge regression model to predict `medv` using all available predictors. We use a `recipe` to preprocess the data and define the model using `linear_reg` with a `penalty` parameter. In our preprocessing step, we include `step_normalize` to normalize all predictors. Normalization is essential in penalized regressions like ridge because it ensures that all features contribute equally to the penalty term, avoiding the dominance of features with larger scales.The `workflow` function combines the recipe and model for fitting.
+
+```{r}
+preprocess_recipe = recipe(medv ~ ., data = train_set) %>% 
+  step_normalize(all_predictors())
+
+ridge_model = linear_reg(
+  penalty = 1,  # Regularization strength
+  mixture = 0   # Ridge regression (0 for ridge, 1 for lasso, in between for elastic net)
+) %>% 
+  set_engine("glmnet")
+
+ridge_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(ridge_model)
+
+ridge_model_fit = ridge_workflow %>% 
+  fit(train_set)
+```
+
+## Making Predictions
+
+Once the model is fitted, we use it to make predictions on the test set. The `predict` function from the workflow provides these predictions. We then evaluate the model performance using metrics such as RMSE (Root Mean Squared Error).
+
+```{r}
+predictions = ridge_model_fit %>% 
+  predict(test_set)
+
+metrics = test_set %>% 
+  bind_cols(predictions) %>% 
+  metrics(truth = medv, estimate = .pred)
+
+metrics
+```
+
+## Visualizing Variable Importance
+
+To understand the importance of each predictor in the model, we visualize the variable importance using the `vip` package. This helps in identifying which variables have the most influence on the prediction.
+
+```{r}
+ridge_model_fit %>% 
+  pull_workflow_fit() %>% 
+  vip()
+```
+
+## Tuning the Penalty Parameter
+
+Tuning the penalty parameter is essential to find the optimal level of regularization. We use cross-validation to determine the best penalty value that minimizes the RMSE metric. 
+
+We define a ridge regression model with a tunable `penalty` parameter and update the workflow to include this tunable parameter. We then define the resampling method using 5-fold cross-validation with `vfold_cv`. This function splits the data into 5 folds and performs cross-validation to evaluate the model performance.
+
+```{r}
+# Define the ridge regression model with tunable penalty
+ridge_tune_model = linear_reg(
+  penalty = tune(),
+  mixture = 0
+) %>% 
+  set_engine("glmnet")
+
+# Update the workflow
+tune_ridge_workflow = ridge_workflow %>% 
+  update_model(ridge_tune_model)
+
+# Define the resampling method
+set.seed(123)
+cv_splits = vfold_cv(train_set, v = 5)
+
+# Perform tuning
+tune_results = tune_grid(
+  tune_ridge_workflow,
+  resamples = cv_splits,
+  grid = grid_regular(penalty(range = c(0, 1)), levels = 20)
+)
+
+# Extract the best parameters
+best_params = select_best(tune_results, metric = "rmse")
+```
+
+The `tune_grid` function performs a grid search over a range of `penalty` values to find the best parameter that minimizes the RMSE metric. We then finalize the model with the optimal `penalty` parameter and fit it to the training data using `last_fit`, which refits the model on the entire training set and evaluates it on the test set.
+
+```{r}
+# Finalize the model with the best parameters
+final_ridge_workflow = finalize_workflow(tune_ridge_workflow, best_params)
+
+# Fit the finalized model
+final_ridge_fit = final_ridge_workflow %>%
+  last_fit(data_split)
+```
+
+Finally, we evaluate the performance of the tuned ridge regression model using RMSE on the test set predictions.
+
+```{r}
+final_ridge_fit %>% 
+  collect_metrics()
+```
+
+## Conclusion
+
+This tutorial has provided an in-depth look at ridge regression, from concept to implementation in R. By visualizing the data, fitting the model, making predictions, and visualizing variable importance, we have demonstrated the entire process of ridge regression analysis. Additionally, we have shown how to tune the penalty parameter using the `tidymodels` framework to improve the model's performance by reducing overfitting. Understanding these methods and their applications will enhance your ability to analyze and interpret continuous data effectively.

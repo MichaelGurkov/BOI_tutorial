@@ -7,24 +7,31 @@ format: html
 This website contains tutorials and exercise sets on various topics to help you
 learn and apply concepts introduced in the course.
 
-## Topics
+# Data Wrangling
 
 - **[Data Wrangling with dplyr](dplyr/dplyr.qmd)**
   - [Exercises for "Data Wrangling with dplyr"](dplyr/dplyr_exercises.qmd)
+
+
+## Regression models
+
 
 - **[Simple linear regression](simple_regression/simple_regression.qmd)**
   <!-- - [Exercises for Simple linear regression](simple_regression/simple_regression_exercise_set.qmd) -->
 
 - **[Multiple linear regression](multiple_regression/multiple_regression.qmd)**
   <!-- - [Exercises for Multiple linear regression](multiple_regression/multiple_regression_exercise_set.qmd) -->
-
+  
 - **[KNN regression](knn_regression/knn_regression.qmd)**
   <!-- - [Exercises for KNN regression](knn_regression/knn_regression_exercise_set.qmd) -->
+  
+- **[Ridge regression](ridge_regression/ridge_regression.qmd)**
+  - [Practice for Ridge regression](ridge_regression/ridge_regression_practice.qmd)
+  
+- **[LASSO regression](lasso_regression/lasso_regression.qmd)**
+  - [Practice for LASSO regression](ridge_regression/ridge_regression_practice.qmd)
 
-- **[KNN classification](knn_classification/knn_classification.qmd)**
-  <!-- - [Exercises for KNN classification](knn_classification/knn_classification_exercise_set.qmd) -->
 
-- **[Bayes classifier simulation](bayes_classifier_simulation/bayes_classifier_simulation.qmd)**
 
 - **[Tree regression](tree_regression/tree_regression.qmd)**
   - [Practice for Tree regression](tree_regression/tree_regression_practice.qmd)
@@ -37,11 +44,32 @@ learn and apply concepts introduced in the course.
 - **[Boosted trees](boosting/boosting.qmd)**
   - [Practice for Boosted trees](boosting/boosting_practice.qmd)
 
+
+
+
+## Classification models
+
+
+- **[KNN classification](knn_classification/knn_classification.qmd)**
+  <!-- - [Exercises for KNN classification](knn_classification/knn_classification_exercise_set.qmd) -->
+
+- **[Bayes classifier simulation](bayes_classifier_simulation/bayes_classifier_simulation.qmd)**
+
+
 - **[Tree classification](tree_classification/tree_classification.qmd)**
   - [Practice for Tree classification](tree_classification/tree_classification_practice.qmd)
   <!-- - [Exercises for Tree classification](tree_classification/tree_classification_exercise_set.qmd) -->
 
+
+## Dimension reduction
+
+- **[Principal Component Analysis](pca/pca.qmd)**
+
+## Cross validation
+
 - **Cross validation**
+
+## Data
 
 - **Data sets**
   - [Boston dataset](datasets/boston.qmd)

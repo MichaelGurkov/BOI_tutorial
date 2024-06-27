@@ -1,0 +1,166 @@
+---
+title: "LASSO Regression Practice Exercises"
+format: html
+---
+
+## Task 1: Load Necessary Libraries
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+library(tidyverse)
+library(tidymodels)
+library(vip)
+```
+
+## Task 2: Load the Boston Dataset
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+boston_data = MASS::Boston
+```
+
+## Task 3: Split the Data into Training and Testing Sets
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+data_split = initial_split(boston_data, prop = 0.5)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Task 4: Preprocess the Data and Define the LASSO Model
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+preprocess_recipe = recipe(medv ~ ., data = train_set) %>% 
+  step_normalize(all_predictors())
+
+lasso_model = linear_reg(
+  penalty = 1,  # Regularization strength
+  mixture = 1   # LASSO regression (0 for ridge, 1 for lasso, in between for elastic net)
+) %>% 
+  set_engine("glmnet")
+
+lasso_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(lasso_model)
+```
+
+## Task 5: Fit the LASSO Model
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+lasso_model_fit = lasso_workflow %>% 
+  fit(train_set)
+```
+
+## Task 6: Make Predictions on the Test Set
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+predictions = lasso_model_fit %>% 
+  predict(test_set)
+```
+
+## Task 7: Evaluate the Model Performance
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+metrics = test_set %>% 
+  bind_cols(predictions) %>% 
+  metrics(truth = medv, estimate = .pred)
+
+metrics
+```
+
+## Task 8: Visualize Variable Importance
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+lasso_model_fit %>% 
+  pull_workflow_fit() %>% 
+  vip()
+```
+
+## Task 9: Tune the Penalty Parameter using Cross-Validation
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Define the LASSO regression model with tunable penalty
+lasso_tune_model = linear_reg(
+  penalty = tune(),
+  mixture = 1
+) %>% 
+  set_engine("glmnet")
+
+# Update the workflow
+tune_lasso_workflow = lasso_workflow %>% 
+  update_model(lasso_tune_model)
+
+# Define the resampling method
+set.seed(123)
+cv_splits = vfold_cv(train_set, v = 5)
+
+# Perform tuning
+tune_results = tune_grid(
+  tune_lasso_workflow,
+  resamples = cv_splits,
+  grid = grid_regular(penalty(range = c(0, 1)), levels = 5)
+)
+
+# Extract the best parameters
+best_params = select_best(tune_results, metric = "rmse")
+```
+
+## Task 10: Finalize and Fit the Tuned Model
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+# Finalize the model with the best parameters
+final_lasso_workflow = finalize_workflow(tune_lasso_workflow, best_params)
+
+# Fit the finalized model
+final_lasso_fit = final_lasso_workflow %>%
+  last_fit(data_split)
+```
+
+## Task 11: Evaluate the Tuned Model Performance
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+final_lasso_fit %>% 
+  collect_metrics()
+```
