@@ -1,0 +1,13 @@
+---
+title: "Topics"
+output: html
+---
+
+-   **[Simple Linear Regression](simple_regression/simple_regression_theory.qmd)**
+-   **Multiple Linear Regression**
+-   **K-Nearest Neighbors Regression**
+-   **Decision Trees**
+    -   **Bagging**
+    -   **Boosting**
+-   **Random Forest**
+-   

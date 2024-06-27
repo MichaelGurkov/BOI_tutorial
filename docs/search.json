@@ -175,6 +175,13 @@
     "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
   },
   {
+    "objectID": "theory_topics_index.html",
+    "href": "theory_topics_index.html",
+    "title": "Topics",
+    "section": "",
+    "text": "Simple Linear Regression\nMultiple Linear Regression\nK-Nearest Neighbors Regression\nDecision Trees\n\nBagging\nBoosting\n\nRandom Forest"
+  },
+  {
     "objectID": "simple_regression/simple_regression_exercise_set.html",
     "href": "simple_regression/simple_regression_exercise_set.html",
     "title": "KNN Regression with Boston Housing Data - Exercise Set",
@@ -1139,6 +1146,27 @@
     "title": "Simple Linear Regression with Boston Housing Data",
     "section": "",
     "text": "Introduction\nIn this tutorial, we’ll explore how to perform a simple linear regression using the Boston housing dataset. Linear regression is a foundational statistical method that allows us to model the relationship between a dependent variable and one or more independent variables. Here, we’ll investigate the relationship between the median value of owner-occupied homes (medv) and the average number of rooms per dwelling (rm).\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\n\n\n\nLoad the Data\nNext, we’ll load the Boston housing dataset and select the relevant columns.\n\nboston_data = MASS::Boston %&gt;%\n  select(rm, medv)\n\n\n\nFit the Linear Regression Model\nNow, we’ll fit a simple linear regression model. Our goal is to predict medv using rm.\n\nlinear_model_fit = linear_reg() %&gt;% \n  fit(medv ~ rm, data = boston_data)\n\n\n\nInspect the Model Coefficients\nAfter fitting the model, it’s essential to inspect the coefficients to understand the relationship between the variables.\n\nlinear_model_fit %&gt;% \n  tidy()\n\n# A tibble: 2 × 5\n  term        estimate std.error statistic  p.value\n  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept)   -34.7      2.65      -13.1 6.95e-34\n2 rm              9.10     0.419      21.7 2.49e-74\n\n\n\n\nMake Predictions\nFinally, we’ll use our model to make predictions.\n\npredictions = linear_model_fit %&gt;% \n  predict(boston_data)\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform a simple linear regression using the Boston housing dataset. We went through loading the data, fitting a model, inspecting the coefficients, and making predictions. This foundational technique can be applied to various datasets and provides a basis for more complex modeling.\nFeel free to explore further by adding more variables or trying different types of models. Happy coding!"
+  },
+  {
+    "objectID": "simple_regression/simple_regression_theory.html",
+    "href": "simple_regression/simple_regression_theory.html",
+    "title": "Simple Regression - theory",
+    "section": "",
+    "text": "Simple linear regression is a method used to model the relationship between a single predictor variable \\(X\\) and a response variable \\(Y\\). The relationship is assumed to be linear, which can be represented by the equation:\n\\[\nY = \\beta_{0} + \\beta_{1} X + \\epsilon\n\\]\nHere,\n\n\\(Y\\) is the response variable\n\\(X\\) is the predictor variable\n\\(\\beta_0\\) is the intercept\n\\(\\beta_1\\) is the slope of the regression line\n\\(\\epsilon\\) is the error term, representing the deviation of the observed values from the true regression line\n\nThe goal of simple linear regression is to estimate the coefficients \\(\\beta_0\\) and \\(\\beta_1\\) such that the predicted values \\(\\hat{Y}\\) are as close as possible to the actual values of \\(Y\\).\n\n\nTo estimate the coefficients, we need a criterion to measure the fit of the model. The most common criterion is the Residual Sum of Squares (RSS), which is defined as:\n\\[\nRSS = \\sum_{i=1}^n (y_i - \\hat{y}_i)^2 = \\sum_{i=1}^n (y_i -\n(\\beta_0 + \\beta_1 x_i))^2\n\\]\nHere,\n\n\\(n\\) is the number of observations\n\\(y_i\\) is the actual value of the response variable\n\\(\\hat{y}_i\\) is the predicted value of the response variable based on the model.\n\nThe RSS measures the discrepancy between the observed values \\(y_i\\) and the values predicted by the linear model \\(\\hat{y}_i\\). Our objective is to find the values of \\(\\beta_0\\) and \\(\\beta_1\\) that minimize the RSS.\n\n\n\nThe coefficients \\(\\beta_0\\) and \\(\\beta_1\\) can be estimated using the method of least squares, which minimizes the RSS. The least squares estimates, denoted by \\(\\hat{\\beta}_0\\) and \\(\\hat{\\beta}_1\\), can be calculated using the following formulas:\n\\[\n\\hat{\\beta}_1 =\n\\frac{\\sum_{i=1}^n (x_i - \\bar{x})(y_i - \\bar{y})}{\\sum_{i=1}^n (x_i - \\bar{x})^2}\n\\]\n\\[\n\\hat{\\beta}_0 = \\bar{y} - \\hat{\\beta}_1 \\bar{x}\n\\]\nHere,\n\n\\(\\bar{x}\\) is the mean of the predictor variable\n\\(\\bar{y}\\) is the mean of the response variable.\n\nThe formula for \\(\\hat{\\beta}_1\\) represents the slope of the regression line and can be interpreted as the average change in \\(Y\\) associated with a one-unit change in \\(X\\). The formula for \\(\\hat{\\beta}_0\\) represents the intercept, which is the expected value of \\(Y\\) when \\(X\\) is zero.\nBy plugging these estimates into the regression equation, we obtain the estimated regression line:\n\\[\n\\hat{Y} = \\hat{\\beta}_0 + \\hat{\\beta}_1 X\n\\]\nThis estimated line can be used to make predictions about the response variable based on new values of the predictor variable."
+  },
+  {
+    "objectID": "simple_regression/simple_regression_theory.html#loss-function",
+    "href": "simple_regression/simple_regression_theory.html#loss-function",
+    "title": "Simple Regression - theory",
+    "section": "",
+    "text": "To estimate the coefficients, we need a criterion to measure the fit of the model. The most common criterion is the Residual Sum of Squares (RSS), which is defined as:\n\\[\nRSS = \\sum_{i=1}^n (y_i - \\hat{y}_i)^2 = \\sum_{i=1}^n (y_i -\n(\\beta_0 + \\beta_1 x_i))^2\n\\]\nHere,\n\n\\(n\\) is the number of observations\n\\(y_i\\) is the actual value of the response variable\n\\(\\hat{y}_i\\) is the predicted value of the response variable based on the model.\n\nThe RSS measures the discrepancy between the observed values \\(y_i\\) and the values predicted by the linear model \\(\\hat{y}_i\\). Our objective is to find the values of \\(\\beta_0\\) and \\(\\beta_1\\) that minimize the RSS."
+  },
+  {
+    "objectID": "simple_regression/simple_regression_theory.html#estimating-the-model---coefficients",
+    "href": "simple_regression/simple_regression_theory.html#estimating-the-model---coefficients",
+    "title": "Simple Regression - theory",
+    "section": "",
+    "text": "The coefficients \\(\\beta_0\\) and \\(\\beta_1\\) can be estimated using the method of least squares, which minimizes the RSS. The least squares estimates, denoted by \\(\\hat{\\beta}_0\\) and \\(\\hat{\\beta}_1\\), can be calculated using the following formulas:\n\\[\n\\hat{\\beta}_1 =\n\\frac{\\sum_{i=1}^n (x_i - \\bar{x})(y_i - \\bar{y})}{\\sum_{i=1}^n (x_i - \\bar{x})^2}\n\\]\n\\[\n\\hat{\\beta}_0 = \\bar{y} - \\hat{\\beta}_1 \\bar{x}\n\\]\nHere,\n\n\\(\\bar{x}\\) is the mean of the predictor variable\n\\(\\bar{y}\\) is the mean of the response variable.\n\nThe formula for \\(\\hat{\\beta}_1\\) represents the slope of the regression line and can be interpreted as the average change in \\(Y\\) associated with a one-unit change in \\(X\\). The formula for \\(\\hat{\\beta}_0\\) represents the intercept, which is the expected value of \\(Y\\) when \\(X\\) is zero.\nBy plugging these estimates into the regression equation, we obtain the estimated regression line:\n\\[\n\\hat{Y} = \\hat{\\beta}_0 + \\hat{\\beta}_1 X\n\\]\nThis estimated line can be used to make predictions about the response variable based on new values of the predictor variable."
   },
   {
     "objectID": "tree_classification/tree_classification.html",

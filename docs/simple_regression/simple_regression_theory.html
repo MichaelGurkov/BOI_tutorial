@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Tutorials for DS course materials - Welcome to BOI DS course tutorials</title>
+<title>Tutorials for DS course materials - Simple Regression - theory</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,22 +23,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -67,8 +67,37 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<link rel="stylesheet" href="styles.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -78,7 +107,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Tutorials for DS course materials</span>
     </a>
   </div>
@@ -89,11 +118,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Practice</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./theory_topics_index.html"> 
+    <a class="nav-link" href="../theory_topics_index.html"> 
 <span class="menu-text">Theory</span></a>
   </li>  
 </ul>
@@ -112,13 +141,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link active" data-scroll-target="#data-wrangling">Data Wrangling</a>
+  <li><a href="#the-model" id="toc-the-model" class="nav-link active" data-scroll-target="#the-model">The model</a>
   <ul class="collapse">
-  <li><a href="#regression-models" id="toc-regression-models" class="nav-link" data-scroll-target="#regression-models">Regression models</a></li>
-  <li><a href="#classification-models" id="toc-classification-models" class="nav-link" data-scroll-target="#classification-models">Classification models</a></li>
-  <li><a href="#dimension-reduction" id="toc-dimension-reduction" class="nav-link" data-scroll-target="#dimension-reduction">Dimension reduction</a></li>
-  <li><a href="#cross-validation" id="toc-cross-validation" class="nav-link" data-scroll-target="#cross-validation">Cross validation</a></li>
-  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#loss-function" id="toc-loss-function" class="nav-link" data-scroll-target="#loss-function">Loss function</a></li>
+  <li><a href="#estimating-the-model---coefficients" id="toc-estimating-the-model---coefficients" class="nav-link" data-scroll-target="#estimating-the-model---coefficients">Estimating the model - Coefficients</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -128,7 +154,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Welcome to BOI DS course tutorials</h1>
+<h1 class="title">Simple Regression - theory</h1>
 </div>
 
 
@@ -145,76 +171,57 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This website contains tutorials and exercise sets on various topics to help you learn and apply concepts introduced in the course.</p>
-<section id="data-wrangling" class="level1">
-<h1>Data Wrangling</h1>
+<section id="the-model" class="level1">
+<h1>The model</h1>
+<p>Simple linear regression is a method used to model the relationship between a single predictor variable <span class="math inline">\(X\)</span> and a response variable <span class="math inline">\(Y\)</span>. The relationship is assumed to be linear, which can be represented by the equation:</p>
+<p><span class="math display">\[
+Y = \beta_{0} + \beta_{1} X + \epsilon
+\]</span></p>
+<p>Here,</p>
 <ul>
-<li><strong><a href="./dplyr/dplyr.html">Data Wrangling with dplyr</a></strong>
-<ul>
-<li><a href="./dplyr/dplyr_exercises.html">Exercises for “Data Wrangling with dplyr”</a></li>
-</ul></li>
+<li><p><span class="math inline">\(Y\)</span> is the response variable</p></li>
+<li><p><span class="math inline">\(X\)</span> is the predictor variable</p></li>
+<li><p><span class="math inline">\(\beta_0\)</span> is the intercept</p></li>
+<li><p><span class="math inline">\(\beta_1\)</span> is the slope of the regression line</p></li>
+<li><p><span class="math inline">\(\epsilon\)</span> is the error term, representing the deviation of the observed values from the true regression line</p></li>
 </ul>
-<section id="regression-models" class="level2">
-<h2 class="anchored" data-anchor-id="regression-models">Regression models</h2>
+<p>The goal of simple linear regression is to estimate the coefficients <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> such that the predicted values <span class="math inline">\(\hat{Y}\)</span> are as close as possible to the actual values of <span class="math inline">\(Y\)</span>.</p>
+<section id="loss-function" class="level2">
+<h2 class="anchored" data-anchor-id="loss-function">Loss function</h2>
+<p>To estimate the coefficients, we need a criterion to measure the fit of the model. The most common criterion is the Residual Sum of Squares (RSS), which is defined as:</p>
+<p><span class="math display">\[
+RSS = \sum_{i=1}^n (y_i - \hat{y}_i)^2 = \sum_{i=1}^n (y_i -
+(\beta_0 + \beta_1 x_i))^2
+\]</span></p>
+<p>Here,</p>
 <ul>
-<li><p><strong><a href="./simple_regression/simple_regression.html">Simple linear regression</a></strong> <!-- - [Exercises for Simple linear regression](simple_regression/simple_regression_exercise_set.qmd) --></p></li>
-<li><p><strong><a href="./multiple_regression/multiple_regression.html">Multiple linear regression</a></strong> <!-- - [Exercises for Multiple linear regression](multiple_regression/multiple_regression_exercise_set.qmd) --></p></li>
-<li><p><strong><a href="./knn_regression/knn_regression.html">KNN regression</a></strong> <!-- - [Exercises for KNN regression](knn_regression/knn_regression_exercise_set.qmd) --></p></li>
-<li><p><strong><a href="./ridge_regression/ridge_regression.html">Ridge regression</a></strong></p>
-<ul>
-<li><a href="./ridge_regression/ridge_regression_practice.html">Practice for Ridge regression</a></li>
-</ul></li>
-<li><p><strong><a href="./lasso_regression/lasso_regression.html">LASSO regression</a></strong></p>
-<ul>
-<li><a href="./ridge_regression/ridge_regression_practice.html">Practice for LASSO regression</a></li>
-</ul></li>
-<li><p><strong><a href="./tree_regression/tree_regression.html">Tree regression</a></strong></p>
-<ul>
-<li><a href="./tree_regression/tree_regression_practice.html">Practice for Tree regression</a> <!-- - [Exercises for Tree regression](tree_regression/tree_regression_exercise_set.qmd) --></li>
-</ul></li>
-<li><p><strong><a href="./random_forest/random_forest.html">Random Forest</a></strong></p>
-<ul>
-<li><a href="./random_forest/random_forest_practice.html">Practice for Random Forest</a> <!-- - [Exercises for Random Forest](tree_classification/tree_classification_exercise_set.qmd) --></li>
-</ul></li>
-<li><p><strong><a href="./boosting/boosting.html">Boosted trees</a></strong></p>
-<ul>
-<li><a href="./boosting/boosting_practice.html">Practice for Boosted trees</a></li>
-</ul></li>
+<li><p><span class="math inline">\(n\)</span> is the number of observations</p></li>
+<li><p><span class="math inline">\(y_i\)</span> is the actual value of the response variable</p></li>
+<li><p><span class="math inline">\(\hat{y}_i\)</span> is the predicted value of the response variable based on the model.</p></li>
 </ul>
+<p>The RSS measures the discrepancy between the observed values <span class="math inline">\(y_i\)</span> and the values predicted by the linear model <span class="math inline">\(\hat{y}_i\)</span>. Our objective is to find the values of <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> that minimize the RSS.</p>
 </section>
-<section id="classification-models" class="level2">
-<h2 class="anchored" data-anchor-id="classification-models">Classification models</h2>
+<section id="estimating-the-model---coefficients" class="level2">
+<h2 class="anchored" data-anchor-id="estimating-the-model---coefficients">Estimating the model - Coefficients</h2>
+<p>The coefficients <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> can be estimated using the method of least squares, which minimizes the RSS. The least squares estimates, denoted by <span class="math inline">\(\hat{\beta}_0\)</span> and <span class="math inline">\(\hat{\beta}_1\)</span>, can be calculated using the following formulas:</p>
+<p><span class="math display">\[
+\hat{\beta}_1 =
+\frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2}
+\]</span></p>
+<p><span class="math display">\[
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+\]</span></p>
+<p>Here,</p>
 <ul>
-<li><p><strong><a href="./knn_classification/knn_classification.html">KNN classification</a></strong> <!-- - [Exercises for KNN classification](knn_classification/knn_classification_exercise_set.qmd) --></p></li>
-<li><p><strong><a href="./bayes_classifier_simulation/bayes_classifier_simulation.html">Bayes classifier simulation</a></strong></p></li>
-<li><p><strong><a href="./tree_classification/tree_classification.html">Tree classification</a></strong></p>
-<ul>
-<li><a href="./tree_classification/tree_classification_practice.html">Practice for Tree classification</a> <!-- - [Exercises for Tree classification](tree_classification/tree_classification_exercise_set.qmd) --></li>
-</ul></li>
+<li><p><span class="math inline">\(\bar{x}\)</span> is the mean of the predictor variable</p></li>
+<li><p><span class="math inline">\(\bar{y}\)</span> is the mean of the response variable.</p></li>
 </ul>
-</section>
-<section id="dimension-reduction" class="level2">
-<h2 class="anchored" data-anchor-id="dimension-reduction">Dimension reduction</h2>
-<ul>
-<li><strong><a href="./pca/pca.html">Principal Component Analysis</a></strong></li>
-</ul>
-</section>
-<section id="cross-validation" class="level2">
-<h2 class="anchored" data-anchor-id="cross-validation">Cross validation</h2>
-<ul>
-<li><strong>Cross validation</strong></li>
-</ul>
-</section>
-<section id="data" class="level2">
-<h2 class="anchored" data-anchor-id="data">Data</h2>
-<ul>
-<li><strong>Data sets</strong>
-<ul>
-<li><a href="./datasets/boston.html">Boston dataset</a></li>
-<li><a href="./datasets/default.html">Default dataset</a></li>
-</ul></li>
-</ul>
-<p>Explore the topics and start learning!</p>
+<p>The formula for <span class="math inline">\(\hat{\beta}_1\)</span> represents the slope of the regression line and can be interpreted as the average change in <span class="math inline">\(Y\)</span> associated with a one-unit change in <span class="math inline">\(X\)</span>. The formula for <span class="math inline">\(\hat{\beta}_0\)</span> represents the intercept, which is the expected value of <span class="math inline">\(Y\)</span> when <span class="math inline">\(X\)</span> is zero.</p>
+<p>By plugging these estimates into the regression equation, we obtain the estimated regression line:</p>
+<p><span class="math display">\[
+\hat{Y} = \hat{\beta}_0 + \hat{\beta}_1 X
+\]</span></p>
+<p>This estimated line can be used to make predictions about the response variable based on new values of the predictor variable.</p>
 
 
 </section>
