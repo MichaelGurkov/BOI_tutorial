@@ -7,12 +7,11 @@ execute:
 
 ## Task 1: Loading Necessary Libraries
 
-Load the required libraries for data manipulation, visualization, model fitting, and visualizing variable importance. The libraries include `tidyverse`, `tidymodels`, `MASS`, and `vip`.
+Load the required libraries for data manipulation, visualization, model fitting, and visualizing variable importance. The libraries include `tidyverse`, `tidymodels`, and `vip`.
 
 ```{r}
 library(tidyverse)
 library(tidymodels)
-
 library(vip)
 ```
 
