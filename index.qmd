@@ -28,6 +28,11 @@ learn and apply concepts introduced in the course.
 - **[Ridge regression](ridge_regression/ridge_regression.qmd)**
   - [Practice for Ridge regression](ridge_regression/ridge_regression_practice.qmd)
   
+- **[LASSO regression](lasso_regression/lasso_regression.qmd)**
+  - [Practice for LASSO regression](ridge_regression/ridge_regression_practice.qmd)
+
+
+
 - **[Tree regression](tree_regression/tree_regression.qmd)**
   - [Practice for Tree regression](tree_regression/tree_regression_practice.qmd)
   <!-- - [Exercises for Tree regression](tree_regression/tree_regression_exercise_set.qmd) -->
