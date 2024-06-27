@@ -9,12 +9,12 @@ Welcome to this practice set on Boosted Tree regression. This set will guide you
 
 ## Task 1: Loading Necessary Libraries
 
-Load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, `MASS` for accessing the dataset, and `xgboost` for the Boosted Tree model.
+Load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, and `xgboost` for the Boosted Tree model.
 
 ```{r}
 library(tidyverse)
 library(tidymodels)
-library(MASS)
+
 library(xgboost)
 ```
 

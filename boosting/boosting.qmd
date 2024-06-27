@@ -13,12 +13,12 @@ Boosted Tree regression is an ensemble learning method that combines the predict
 
 ## Loading Necessary Libraries
 
-First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, `MASS` for accessing the dataset, and `xgboost` for the Boosted Tree model.
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, and `xgboost` for the Boosted Tree model.
 
 ```{r}
 library(tidyverse)
 library(tidymodels)
-library(MASS)
+
 library(xgboost)
 ```
 

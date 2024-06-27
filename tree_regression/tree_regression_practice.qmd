@@ -14,7 +14,7 @@ Welcome to this practice set on tree regression. This set aims to test your unde
 ```{r}
 library(tidyverse)
 library(tidymodels)
-library(MASS)
+
 library(rpart.plot)
 ```
 

@@ -12,7 +12,7 @@ Load the required libraries for data manipulation, visualization, model fitting,
 ```{r}
 library(tidyverse)
 library(tidymodels)
-library(MASS)
+
 library(vip)
 ```
 

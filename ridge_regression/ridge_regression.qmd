@@ -13,12 +13,11 @@ Ridge regression is a type of linear regression that includes a regularization t
 
 ## Loading Necessary Libraries
 
-First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, `MASS` for accessing the dataset, and `vip` for visualizing variable importance.
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, and `vip` for visualizing variable importance.
 
 ```{r}
 library(tidyverse)
 library(tidymodels)
-library(MASS)
 library(vip)
 ```
 
@@ -45,8 +44,11 @@ test_set = testing(data_split)
 Next, we fit a ridge regression model to predict `medv` using all available predictors. We use a `recipe` to preprocess the data and define the model using `linear_reg` with a `penalty` parameter. In our preprocessing step, we include `step_normalize` to normalize all predictors. Normalization is essential in penalized regressions like ridge because it ensures that all features contribute equally to the penalty term, avoiding the dominance of features with larger scales.The `workflow` function combines the recipe and model for fitting.
 
 ```{r}
-preprocess_recipe = recipe(medv ~ ., data = train_set) %>% 
-  step_normalize(all_predictors())
+
+preprocess_recipe = recipe(medv ~ ., data = train_set) %>%
+  step_normalize(all_predictors()) %>%
+  step_interact(terms = ~ all_predictors() * all_predictors()) %>%
+  step_poly(all_predictors(), degree = 2, options = list(raw = TRUE))
 
 ridge_model = linear_reg(
   penalty = 1,  # Regularization strength
@@ -118,6 +120,7 @@ tune_results = tune_grid(
 
 # Extract the best parameters
 best_params = select_best(tune_results, metric = "rmse")
+
 ```
 
 The `tune_grid` function performs a grid search over a range of `penalty` values to find the best parameter that minimizes the RMSE metric. We then finalize the model with the optimal `penalty` parameter and fit it to the training data using `last_fit`, which refits the model on the entire training set and evaluates it on the test set.

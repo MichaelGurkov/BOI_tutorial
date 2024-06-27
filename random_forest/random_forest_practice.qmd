@@ -12,7 +12,7 @@ execute:
 ```{r}
 library(tidyverse)
 library(tidymodels)
-library(MASS)
+
 library(randomForest)
 ```
 

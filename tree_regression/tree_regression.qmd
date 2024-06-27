@@ -13,12 +13,12 @@ Tree regression is a type of decision tree that is used for predicting continuou
 
 ## Loading Necessary Libraries
 
-First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, `MASS` for accessing the dataset, and `rpart.plot` for visualizing the tree.
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, and `rpart.plot` for visualizing the tree.
 
 ```{r}
 library(tidyverse)
 library(tidymodels)
-library(MASS)
+
 library(rpart.plot)
 ```
 
