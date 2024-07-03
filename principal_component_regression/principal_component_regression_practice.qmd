@@ -1,0 +1,184 @@
+---
+title: "Exercise Set for Principal Component Regression with Boston Housing Data"
+format: html
+execute: 
+  cache: true
+---
+
+## Exercise 1: Load Necessary Libraries
+
+Task: Load the `tidyverse`, `tidymodels`, and `vip` libraries.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+
+library(tidyverse)
+library(tidymodels)
+library(vip)
+```
+
+## Exercise 2: Load the Data
+
+Task: Load the `Boston` dataset from the `MASS` package.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+boston_data = MASS::Boston
+```
+
+## Exercise 3: Split the Data
+
+Task: Split the `Boston` dataset into training and testing sets with a 50-50 split.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+data_split = initial_split(boston_data, prop = 0.5)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Exercise 4: Create Linear Regression Recipe
+
+Task: Create a recipe for linear regression using all predictors.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+lin_reg_recipe = recipe(medv ~., data = train_set)
+```
+
+## Exercise 5: Create PCR Recipe
+
+Task: Create a recipe for Principal Component Regression (PCR) that normalizes numeric predictors and applies PCA with 3 components.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+pcr_recipe = recipe(medv ~., data = train_set) %>% 
+  step_normalize(all_numeric_predictors()) %>%  
+  step_pca(all_numeric_predictors(), num_comp = 3)
+```
+
+## Exercise 6: Specify Linear Regression Model
+
+Task: Specify a linear regression model using `linear_reg` function.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+lin_reg_model = linear_reg(mode = "regression", engine = "lm")
+```
+
+## Exercise 7: Create Workflow for Linear Regression
+
+Task: Create a workflow for the linear regression model by adding the recipe and the model.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+lin_reg_workflow = workflow() %>% 
+  add_recipe(lin_reg_recipe) %>% 
+  add_model(lin_reg_model)
+```
+
+## Exercise 8: Create Workflow for PCR
+
+Task: Create a workflow for the PCR model by adding the PCR recipe and the linear regression model.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+pcr_workflow = workflow() %>% 
+  add_recipe(pcr_recipe) %>% 
+  add_model(lin_reg_model)
+```
+
+## Exercise 9: Fit Linear Regression Model
+
+Task: Fit the linear regression workflow to the training set.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+lin_reg_fit = lin_reg_workflow %>% 
+  fit(train_set)
+```
+
+## Exercise 10: Fit PCR Model
+
+Task: Fit the PCR workflow to the training set.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+pcr_fit = pcr_workflow %>% 
+  fit(train_set)
+```
+
+## Exercise 11: Predictions with Linear Regression Model
+
+Task: Make predictions on the test set using the fitted linear regression model.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+lin_reg_pred = lin_reg_fit %>% 
+  predict(test_set)
+```
+
+## Exercise 12: Predictions with PCR Model
+
+Task: Make predictions on the test set using the fitted PCR model.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+pcr_pred = pcr_fit %>% 
+  predict(test_set)
+```
+
+## Exercise 13: Evaluate Linear Regression Model
+
+Task: Evaluate the linear regression model's performance using RMSE.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+lin_reg_rmse = test_set %>% 
+  select(medv) %>% 
+  bind_cols(lin_reg_pred) %>% 
+  rmse(truth = medv, estimate = .pred)
+lin_reg_rmse
+```
+
+## Exercise 14: Evaluate PCR Model
+
+Task: Evaluate the PCR model's performance using RMSE.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+pcr_rmse = test_set %>% 
+  select(medv) %>% 
+  bind_cols(pcr_pred) %>% 
+  rmse(truth = medv, estimate = .pred)
+pcr_rmse
+```
+```

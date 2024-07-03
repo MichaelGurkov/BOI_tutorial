@@ -1,0 +1,144 @@
+---
+title: "Introduction to Principal Component Regression with [Boston Housing Data](../datasets/boston.qmd)"
+format: html
+execute: 
+  cache: true
+---
+
+## Loading Necessary Libraries
+
+First, we need to load the required libraries for our analysis. We will use `tidyverse` for data manipulation and visualization, `tidymodels` for model fitting, and `vip` for visualizing variable importance.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(vip)
+```
+
+## Loading the Data
+
+We load and prepare the `Boston` dataset. This dataset contains various attributes of houses in Boston, including the median value of owner-occupied homes (`medv`), which we will predict using the other attributes.
+
+```{r load_data}
+boston_data = MASS::Boston
+```
+
+## Splitting the Data
+
+We split the data into training and testing sets using the `initial_split` function. We set a 50-50 split by setting the `prop` argument.
+
+```{r split_data}
+data_split = initial_split(boston_data, prop = 0.5)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+## Preprocessing Data for Two Models
+
+Principal Component Regression (PCR) involves preprocessing the predictors using Principal Component Analysis (PCA) and then proceeding to regular linear regression. We will specify two models (linear regression and PCR) in order to compare the results down the road.
+
+### Linear Regression Recipe
+
+The linear regression recipe simply uses the predictors as they are.
+
+```{r preprocess_recipes}
+lin_reg_recipe = recipe(medv ~., data = train_set)
+```
+
+### PCR Recipe
+
+The PCR recipe normalizes the numeric predictors and then applies PCA to reduce the dimensionality of the data. We specify the number of principal components (`num_comp = 3`) to use in the regression model.
+
+```{r preprocess_recipes}
+pcr_recipe = recipe(medv ~., data = train_set) %>% 
+  step_normalize(all_numeric_predictors()) %>%  
+  step_pca(all_numeric_predictors(), num_comp = 3)
+```
+
+## Specifying the Models
+
+We specify the linear regression model using the `linear_reg` function from `tidymodels` with the engine set to "lm".
+
+### Linear Regression Model
+
+```{r set_model}
+lin_reg_model = linear_reg(mode = "regression", engine = "lm")
+```
+
+We then create a workflow for the linear regression model by adding the linear regression recipe and the linear regression model.
+
+```{r set_model}
+lin_reg_workflow = workflow() %>% 
+  add_recipe(lin_reg_recipe) %>% 
+  add_model(lin_reg_model)
+```
+
+### PCR Model
+
+For the PCR model, we use the same linear regression model but with the PCR recipe.
+
+```{r set_model}
+pcr_workflow = workflow() %>% 
+  add_recipe(pcr_recipe) %>% 
+  add_model(lin_reg_model)
+```
+
+## Fitting the Models
+
+We fit both workflows to the training set.
+
+### Fit Linear Regression Model
+
+```{r fit_models}
+lin_reg_fit = lin_reg_workflow %>% 
+  fit(train_set)
+```
+
+### Fit PCR Model
+
+```{r fit_models}
+pcr_fit = pcr_workflow %>% 
+  fit(train_set)
+```
+
+## Predictions
+
+We make predictions on the test set using both fitted models. It is important to stress that the predictions are made on the test set while the fitting was done on the train set to ensure we are evaluating the model's performance on unseen data.
+
+### Predictions with Linear Regression Model
+
+```{r}
+lin_reg_pred = lin_reg_fit %>% 
+  predict(test_set)
+```
+
+### Predictions with PCR Model
+
+```{r}
+pcr_pred = pcr_fit %>% 
+  predict(test_set)
+```
+
+## Evaluate Performance
+
+We evaluate the performance of both models using the Root Mean Squared Error (RMSE). RMSE is a common metric for regression models that measures the average magnitude of the errors between predicted and observed values. A lower RMSE indicates a better fit.
+
+### Evaluate Linear Regression Model
+
+```{r}
+lin_reg_rmse = test_set %>% 
+  select(medv) %>% 
+  bind_cols(lin_reg_pred) %>% 
+  rmse(truth = medv, estimate = .pred)
+lin_reg_rmse
+```
+
+### Evaluate PCR Model
+
+```{r}
+pcr_rmse = test_set %>% 
+  select(medv) %>% 
+  bind_cols(pcr_pred) %>% 
+  rmse(truth = medv, estimate = .pred)
+pcr_rmse
+```
