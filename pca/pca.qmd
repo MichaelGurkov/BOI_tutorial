@@ -37,7 +37,7 @@ We'll use the `recipe` function from `tidymodels` to specify the PCA preprocessi
 ```{r perform_pca}
 # Create a PCA recipe
 pca_recipe = recipe(medv~., data = boston_data) %>%
-  step_normalize(all_predictors()) %>% 
+  step_normalize(all_predictors()) %>%
   step_pca(all_predictors(), num_comp = 2)
 
 pca_prep = pca_recipe %>% 
