@@ -41,7 +41,7 @@ Principal Component Regression (PCR) involves preprocessing the predictors using
 
 The linear regression recipe simply uses the predictors as they are.
 
-```{r preprocess_recipes}
+```{r }
 lin_reg_recipe = recipe(medv ~., data = train_set)
 ```
 
@@ -49,7 +49,7 @@ lin_reg_recipe = recipe(medv ~., data = train_set)
 
 The PCR recipe normalizes the numeric predictors and then applies PCA to reduce the dimensionality of the data. We specify the number of principal components (`num_comp = 3`) to use in the regression model.
 
-```{r preprocess_recipes}
+```{r }
 pcr_recipe = recipe(medv ~., data = train_set) %>% 
   step_normalize(all_numeric_predictors()) %>%  
   step_pca(all_numeric_predictors(), num_comp = 3)
@@ -67,7 +67,7 @@ lin_reg_model = linear_reg(mode = "regression", engine = "lm")
 
 We then create a workflow for the linear regression model by adding the linear regression recipe and the linear regression model.
 
-```{r set_model}
+```{r set_workflow}
 lin_reg_workflow = workflow() %>% 
   add_recipe(lin_reg_recipe) %>% 
   add_model(lin_reg_model)
@@ -77,7 +77,7 @@ lin_reg_workflow = workflow() %>%
 
 For the PCR model, we use the same linear regression model but with the PCR recipe.
 
-```{r set_model}
+```{r set_model_pcr}
 pcr_workflow = workflow() %>% 
   add_recipe(pcr_recipe) %>% 
   add_model(lin_reg_model)
@@ -96,7 +96,7 @@ lin_reg_fit = lin_reg_workflow %>%
 
 ### Fit PCR Model
 
-```{r fit_models}
+```{r fit_models_pcr}
 pcr_fit = pcr_workflow %>% 
   fit(train_set)
 ```

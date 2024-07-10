@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Tutorials for DS course materials - Principal Component Analysis with Boston Housing Data</title>
+<title>Tutorials for DS course materials - Logistic Regression with Default data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -149,9 +149,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#load-necessary-libraries" id="toc-load-necessary-libraries" class="nav-link" data-scroll-target="#load-necessary-libraries">Load Necessary Libraries</a></li>
   <li><a href="#load-the-data" id="toc-load-the-data" class="nav-link" data-scroll-target="#load-the-data">Load the Data</a></li>
-  <li><a href="#perform-pca" id="toc-perform-pca" class="nav-link" data-scroll-target="#perform-pca">Perform PCA</a></li>
-  <li><a href="#visualize-the-pca-results" id="toc-visualize-the-pca-results" class="nav-link" data-scroll-target="#visualize-the-pca-results">Visualize the PCA Results</a></li>
-  <li><a href="#interpret-the-pca-results" id="toc-interpret-the-pca-results" class="nav-link" data-scroll-target="#interpret-the-pca-results">Interpret the PCA Results</a></li>
+  <li><a href="#fit-the-logistic-regression-model" id="toc-fit-the-logistic-regression-model" class="nav-link" data-scroll-target="#fit-the-logistic-regression-model">Fit the Logistic Regression Model</a></li>
+  <li><a href="#make-predictions" id="toc-make-predictions" class="nav-link" data-scroll-target="#make-predictions">Make Predictions</a></li>
+  <li><a href="#evaluate-the-model" id="toc-evaluate-the-model" class="nav-link" data-scroll-target="#evaluate-the-model">Evaluate the Model</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
@@ -161,7 +161,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Principal Component Analysis with <a href="../datasets/boston.html">Boston Housing Data</a></h1>
+<h1 class="title">Logistic Regression with <a href="../datasets/default.html">Default</a> data</h1>
 </div>
 
 
@@ -180,11 +180,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>In this tutorial, we’ll explore how to perform Principal Component Analysis (PCA) using the Boston housing dataset. PCA is a powerful technique for dimensionality reduction and visualization, helping us to uncover the underlying structure of the data. We’ll use the <code>tidyverse</code> for data manipulation and visualization, and <code>tidymodels</code> for applying PCA. Let’s dive in!</p>
+<p>In this tutorial, we’ll explore how to perform logistic regression using the Default dataset. Logistic regression is a statistical method for analyzing datasets with a binary outcome. This method is particularly useful for classification tasks where the relationship between features and the target variable is linear or can be approximated as such. Here, we’ll investigate how to classify default status using all available variables in the dataset.</p>
+<p>We’ll be using the <code>tidyverse</code> and <code>tidymodels</code> libraries in R for data manipulation and modeling. Let’s get started!</p>
 </section>
 <section id="load-necessary-libraries" class="level1">
 <h1>Load Necessary Libraries</h1>
-<p>First, we’ll load the required libraries. The <code>tidyverse</code> package provides tools for data manipulation and visualization, while <code>tidymodels</code> offers a suite of packages for modeling.</p>
+<p>First, we’ll load the required libraries. The <code>tidyverse</code> package provides tools for data manipulation and visualization, while <code>tidymodels</code> is a suite of packages for modeling.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -192,99 +193,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="load-the-data" class="level1">
 <h1>Load the Data</h1>
-<p>Next, we’ll load the Boston housing dataset and convert it into a tibble for easier manipulation.</p>
+<p>Next, we’ll select the relevant columns from the Default dataset. We’ll filter out any rows with missing values and ensure the <code>default</code> column is treated as a factor. Logistic regression is sensitive to the order of factor levels, so we’ll set <code>Yes</code> as the reference level. This means that the model will predict the probability of <code>Yes</code> (defaulting) over <code>No</code>.</p>
+<p>The order of levels in a factor variable determines the baseline or reference category against which other levels are compared. In binary classification with logistic regression, the model estimates the log odds of the positive class (the reference level) occurring. Here, by setting <code>Yes</code> as the reference level, the model will estimate the probability of a customer defaulting.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>boston_data <span class="ot">=</span> MASS<span class="sc">::</span>Boston</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># View the first few rows of the dataset</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>default_data <span class="ot">=</span> ISLR<span class="sc">::</span>Default <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(balance)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">default =</span> <span class="fu">factor</span>(default, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Yes"</span>, <span class="st">"No"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="fit-the-logistic-regression-model" class="level1">
+<h1>Fit the Logistic Regression Model</h1>
+<p>Now, we’ll fit a logistic regression model. Our goal is to classify default status using all available variables: <code>balance</code>, <code>income</code>, and <code>student</code>.</p>
+<p>The <code>logistic_reg()</code> function from <code>parsnip</code> is used to specify the logistic regression model. Here, we set the mode to “classification”. We then fit the model to our data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>logistic_model_fit <span class="ot">=</span> <span class="fu">logistic_reg</span>(<span class="at">mode =</span> <span class="st">"classification"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(default <span class="sc">~</span> balance <span class="sc">+</span> income <span class="sc">+</span> student, <span class="at">data =</span> default_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="make-predictions" class="level1">
+<h1>Make Predictions</h1>
+<p>Next, we’ll use our model to make predictions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">=</span> logistic_model_fit <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(default_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="evaluate-the-model" class="level1">
+<h1>Evaluate the Model</h1>
+<p>To evaluate the performance of our logistic regression model, we’ll create a confusion matrix.</p>
+<p>A confusion matrix is a table used to describe the performance of a classification model. It compares the actual values with the values predicted by the model. The confusion matrix provides the following metrics:</p>
+<ul>
+<li><strong>True Positives (TP)</strong>: The number of positive class predictions that are actually positive.</li>
+<li><strong>True Negatives (TN)</strong>: The number of negative class predictions that are actually negative.</li>
+<li><strong>False Positives (FP)</strong>: The number of negative class predictions that are actually positive.</li>
+<li><strong>False Negatives (FN)</strong>: The number of positive class predictions that are actually negative.</li>
+</ul>
+<p>These metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>default_data <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(default) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(predictions) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">conf_mat</span>(<span class="at">truth =</span> default, <span class="at">estimate =</span> .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     crim zn indus chas   nox    rm  age    dis rad tax ptratio  black lstat
-1 0.00632 18  2.31    0 0.538 6.575 65.2 4.0900   1 296    15.3 396.90  4.98
-2 0.02731  0  7.07    0 0.469 6.421 78.9 4.9671   2 242    17.8 396.90  9.14
-3 0.02729  0  7.07    0 0.469 7.185 61.1 4.9671   2 242    17.8 392.83  4.03
-4 0.03237  0  2.18    0 0.458 6.998 45.8 6.0622   3 222    18.7 394.63  2.94
-5 0.06905  0  2.18    0 0.458 7.147 54.2 6.0622   3 222    18.7 396.90  5.33
-6 0.02985  0  2.18    0 0.458 6.430 58.7 6.0622   3 222    18.7 394.12  5.21
-  medv
-1 24.0
-2 21.6
-3 34.7
-4 33.4
-5 36.2
-6 28.7</code></pre>
+<pre><code>          Truth
+Prediction   No  Yes
+       No  9625  233
+       Yes   42  100</code></pre>
 </div>
 </div>
-</section>
-<section id="perform-pca" class="level1">
-<h1>Perform PCA</h1>
-<p>PCA is sensitive to the scale of the data, so we need to standardize the variables. We’ll exclude the target variable <code>medv</code> from the standardization process by specifiyng it as target variable. We’ll use the <code>recipe</code> function from <code>tidymodels</code> to specify the PCA preprocessing steps, and then apply it using the <code>prep</code> and <code>bake</code> functions.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a PCA recipe</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pca_recipe <span class="ot">=</span> <span class="fu">recipe</span>(medv<span class="sc">~</span>., <span class="at">data =</span> boston_data) <span class="sc">%&gt;%</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_predictors</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_pca</span>(<span class="fu">all_predictors</span>(), <span class="at">num_comp =</span> <span class="dv">2</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>pca_prep <span class="ot">=</span> pca_recipe <span class="sc">%&gt;%</span> </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>()</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>pca_baked <span class="ot">=</span> pca_prep <span class="sc">%&gt;%</span> </span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data =</span> boston_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="visualize-the-pca-results" class="level1">
-<h1>Visualize the PCA Results</h1>
-<p>To understand the distribution of the data in the new principal component space, we’ll visualize the PCA results.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the PCA results</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>pca_baked <span class="sc">%&gt;%</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(PC1, PC2, <span class="at">color =</span> medv)) <span class="sc">+</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"PCA of Boston Dataset"</span>, <span class="at">x =</span> <span class="st">"Principal Component 1"</span>, <span class="at">y =</span> <span class="st">"Principal Component 2"</span>) <span class="sc">+</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="pca_files/figure-html/visualize_pca-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="interpret-the-pca-results" class="level1">
-<h1>Interpret the PCA Results</h1>
-<p>PCA transforms the original variables into new, uncorrelated variables called principal components. We’ll examine the contribution of each original variable to the principal components by looking at the loadings.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the PCA loadings</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>pca_loadings <span class="ot">=</span> pca_prep <span class="sc">%&gt;%</span> </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(<span class="dv">1</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># View the PCA loadings</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>pca_loadings</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 26 × 4
-   terms statistic    value id             
-   &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;          
- 1 crim  mean        3.61   normalize_6lxrz
- 2 zn    mean       11.4    normalize_6lxrz
- 3 indus mean       11.1    normalize_6lxrz
- 4 chas  mean        0.0692 normalize_6lxrz
- 5 nox   mean        0.555  normalize_6lxrz
- 6 rm    mean        6.28   normalize_6lxrz
- 7 age   mean       68.6    normalize_6lxrz
- 8 dis   mean        3.80   normalize_6lxrz
- 9 rad   mean        9.55   normalize_6lxrz
-10 tax   mean      408.     normalize_6lxrz
-# ℹ 16 more rows</code></pre>
-</div>
-</div>
-<p>The loadings indicate the weight of each original variable in the principal components. Higher absolute values suggest a stronger contribution to the corresponding principal component.</p>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>In this tutorial, we performed PCA on the Boston dataset using the Tidyverse and Tidymodels frameworks. We standardized the data, applied PCA, and visualized the results. PCA is a valuable technique for reducing dimensionality and uncovering patterns in high-dimensional data. By following these steps, you can apply PCA to other datasets and gain insights into the underlying structure of your data.</p>
-<p>Feel free to explore further by adjusting the number of components or applying PCA to different datasets. Happy coding!</p>
+<p>In this tutorial, we demonstrated how to perform logistic regression using the Default dataset. We went through loading the data, fitting a logistic regression model, making predictions, and evaluating the model using a confusion matrix. Logistic regression is a powerful technique for binary classification tasks and can provide insights into the relationship between predictors and the target variable.</p>
+<p>Feel free to explore further by adding more predictors or using different evaluation metrics. This method can be a valuable addition to your machine learning toolkit. Happy coding!</p>
 
 
 </section>

@@ -32,6 +32,10 @@ learn and apply concepts introduced in the course.
   - [Practice for LASSO regression](ridge_regression/ridge_regression_practice.qmd)
 
 
+- **[Principal Component Regression](principal_component_regression/principal_component_regression.qmd)**
+  - [Practice for Principal Component Regression](principal_component_regression/principal_component_regression_practice.qmd)
+
+
 
 - **[Tree regression](tree_regression/tree_regression.qmd)**
   - [Practice for Tree regression](tree_regression/tree_regression_practice.qmd)
@@ -52,6 +56,8 @@ learn and apply concepts introduced in the course.
 
 - **[KNN classification](knn_classification/knn_classification.qmd)**
   <!-- - [Exercises for KNN classification](knn_classification/knn_classification_exercise_set.qmd) -->
+  
+- **[Logistic regression classification](logistic_regression/logistic_regression.qmd)**
 
 - **[Bayes classifier simulation](bayes_classifier_simulation/bayes_classifier_simulation.qmd)**
 
