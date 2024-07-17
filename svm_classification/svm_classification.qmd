@@ -1,0 +1,98 @@
+---
+title: "SVM Classification with [Default](../datasets/default.qmd) data"
+format: html
+execute: 
+  cache: true
+---
+
+# Introduction
+
+In this tutorial, we'll explore how to perform Support Vector Machine (SVM) classification using the Default dataset. SVM classification is a powerful method that classifies data points by finding the optimal hyperplane that separates the data points of different classes. This method is particularly useful for classification tasks when the relationship between features and the target variable is complex and nonlinear. Here, we'll investigate how to classify default status using all available variables in the Default dataset.
+
+We'll be using the `tidyverse` and `tidymodels` libraries in R for data manipulation and modeling. Let's get started!
+
+# Load Necessary Libraries
+
+First, we'll load the required libraries. The `tidyverse` package provides tools for data manipulation and visualization, while `tidymodels` is a suite of packages for modeling. We will also load the `ISLR` package which contains the dataset.
+
+```{r load_libraries}
+library(tidyverse)
+library(tidymodels)
+library(ISLR)
+```
+
+# Load the Data
+
+Next, we'll use all relevant columns from the Default dataset. We'll filter out any rows with missing values and ensure the `default` column is treated as a factor.
+
+```{r load_data}
+default_data = Default %>% 
+  filter(complete.cases(.)) %>% 
+  mutate(default = factor(default))
+```
+
+# Splitting the Data
+
+We split the data into training and testing sets. The `initial_split` function ensures that the proportion of default cases is maintained in both sets. Given the imbalance in the dataset, stratified sampling ensures that the minority class (default cases) is proportionally represented in both sets.
+
+```{r split_data}
+data_split = initial_split(default_data, strata = default)
+train_set = training(data_split)
+test_set = testing(data_split)
+```
+
+# Fit the SVM Classification Model
+
+Now, we'll fit a Support Vector Machine (SVM) classification model. Our goal is to classify default status using all available variables. 
+
+First, we'll create a recipe for preprocessing the data, and then we'll define the SVM model with a radial basis function kernel. We'll use a workflow to combine the recipe and model, and then fit this workflow to our training data.
+
+```{r fit_classification}
+# Preprocess the data
+preprocess_recipe = recipe(default ~ ., data = train_set)
+
+# Define the SVM model
+svm_model = svm_rbf(mode = "classification") %>% 
+  set_engine("kernlab")
+
+# Create the workflow
+svm_workflow = workflow() %>% 
+  add_recipe(preprocess_recipe) %>% 
+  add_model(svm_model)
+
+# Fit the model
+svm_model_fit = svm_workflow %>% 
+  fit(train_set)
+```
+
+# Make Predictions
+
+Next, we'll use our model to make predictions on the test set.
+
+```{r predict}
+predictions = svm_model_fit %>% 
+  predict(test_set)
+```
+
+# Evaluate the Model
+
+To evaluate the performance of our SVM classification model, we'll create a confusion matrix. 
+
+A confusion matrix is a table used to describe the performance of a classification model. It compares the actual values with the values predicted by the model. The confusion matrix provides the following metrics:
+
+- **True Positives (TP)**: The number of positive class predictions that are actually positive.
+- **True Negatives (TN)**: The number of negative class predictions that are actually negative.
+- **False Positives (FP)**: The number of negative class predictions that are actually positive.
+- **False Negatives (FN)**: The number of positive class predictions that are actually negative.
+
+These metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.
+
+```{r confusion_matrix}
+test_set %>% 
+  bind_cols(predictions) %>% 
+  conf_mat(truth = default, estimate = .pred_class)
+```
+
+# Conclusion
+
+In this tutorial, we demonstrated how to perform SVM classification using the Default dataset. We went through loading the data, splitting it into training and testing sets, fitting an SVM classification model using all available variables, making predictions, and evaluating the model using a confusion matrix. SVM classification is a versatile technique that can capture complex relationships in data and is useful for various classification tasks.
