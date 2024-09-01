@@ -1,1 +1,18 @@
-/* css styles */
+.topic {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.topic img {
+  width: 200px;
+  height: 150px;
+  margin-right: 15px;
+}
+
+.topic a {
+  display: block;
+  width: 200px; /* Match this with the image width */
+  text-align: center;
+}

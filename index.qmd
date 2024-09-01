@@ -5,50 +5,54 @@ format:
     grid:
       sidebar-width: 300px
       body-width: 1100px
-      margin-width: 100px
-      gutter-width: 1.5rem
+      # margin-width: 50px
+      gutter-width: 1rem
+    css: styles.css
 ---
 
-
 This website contains tutorials and exercise sets on various topics to help you
-learn and apply concepts introduced in the course.
+learn and apply concepts introduced in the course. Explore the topics and start learning!
 
 ## Regression models
 
 ::: {.grid}
 
 ::: {.g-col-4}
-![](multiple_regression/multiple_reg.png)
+<div class="topic">
+  <img src="linear_regression/linear_reg.jpg" alt="Linear regression" width="200" height="150">
+  <a href="multiple_regression/multiple_regression.qmd">Linear regression</a>
+</div>
 
-[Multiple regression models](multiple_regression/multiple_regression.qmd)
-
-![](multiple_regression/multiple_reg.png)
-
-[Multiple regression models](multiple_regression/multiple_regression.qmd)
+<div class="topic">
+  <img src="multiple_regression/multiple_reg.jpg" alt="Multiple regression" width="200" height="150">
+  <a href="multiple_regression/multiple_regression.qmd">Multiple regression</a>
+</div>
 :::
 
 ::: {.g-col-4}
-![](multiple_regression/multiple_reg.png)
+<div class="topic">
+  <img src="knn_regression/knn_regression.jpg" alt="KNN regression" width="200" height="150">
+  <a href="multiple_regression/multiple_regression.qmd">KNN regression</a>
+</div>
 
-[Multiple regression models](multiple_regression/multiple_regression.qmd)
-
-![](multiple_regression/multiple_reg.png)
-
-[Multiple regression models](multiple_regression/multiple_regression.qmd)
+<div class="topic">
+  <img src="lasso_regression/lasso_reg.jpg" alt="LASSO regression" width="200" height="150">
+  <a href="multiple_regression/multiple_regression.qmd">LASSO regression</a>
+</div>
 :::
 
 ::: {.g-col-4}
-![](multiple_regression/multiple_reg.png)
+<div class="topic">
+  <img src="ridge_regression/ridge_reg.jpg" alt="Ridge regression" width="200" height="150">
+  <a href="multiple_regression/multiple_regression.qmd">Ridge regression</a>
+</div>
 
-[Multiple regression models](multiple_regression/multiple_regression.qmd)
-
-![](multiple_regression/multiple_reg.png)
-
-[Multiple regression models](multiple_regression/multiple_regression.qmd)
+<div class="topic">
+  <img src="tree_regression/tree_reg.jpg" alt="Tree regression" width="200" height="150">
+  <a href="multiple_regression/multiple_regression.qmd">Tree regression</a>
+</div>
 :::
 
 :::
 
 
-
-Explore the topics and start learning!
