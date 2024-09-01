@@ -1,84 +1,54 @@
 ---
 title: "Welcome to BOI DS course tutorials"
-format: html
+format:
+  html: 
+    grid:
+      sidebar-width: 300px
+      body-width: 1100px
+      margin-width: 100px
+      gutter-width: 1.5rem
 ---
 
 
 This website contains tutorials and exercise sets on various topics to help you
 learn and apply concepts introduced in the course.
 
-# Data Wrangling
-
-- **[Data Wrangling with dplyr](dplyr/dplyr.qmd)**
-  - [Exercises for "Data Wrangling with dplyr"](dplyr/dplyr_exercises.qmd)
-
-
 ## Regression models
 
+::: {.grid}
 
-- **[Simple linear regression](simple_regression/simple_regression.qmd)**
-  <!-- - [Exercises for Simple linear regression](simple_regression/simple_regression_exercise_set.qmd) -->
+::: {.g-col-4}
+![](multiple_regression/multiple_reg.png)
 
-- **[Multiple linear regression](multiple_regression/multiple_regression.qmd)**
-  <!-- - [Exercises for Multiple linear regression](multiple_regression/multiple_regression_exercise_set.qmd) -->
-  
-- **[KNN regression](knn_regression/knn_regression.qmd)**
-  <!-- - [Exercises for KNN regression](knn_regression/knn_regression_exercise_set.qmd) -->
-  
-- **[Ridge regression](ridge_regression/ridge_regression.qmd)**
-  - [Practice for Ridge regression](ridge_regression/ridge_regression_practice.qmd)
-  
-- **[LASSO regression](lasso_regression/lasso_regression.qmd)**
-  - [Practice for LASSO regression](ridge_regression/ridge_regression_practice.qmd)
+[Multiple regression models](multiple_regression/multiple_regression.qmd)
 
+![](multiple_regression/multiple_reg.png)
 
-- **[Principal Component Regression](principal_component_regression/principal_component_regression.qmd)**
-  - [Practice for Principal Component Regression](principal_component_regression/principal_component_regression_practice.qmd)
+[Multiple regression models](multiple_regression/multiple_regression.qmd)
+:::
 
+::: {.g-col-4}
+![](multiple_regression/multiple_reg.png)
 
+[Multiple regression models](multiple_regression/multiple_regression.qmd)
 
-- **[Tree regression](tree_regression/tree_regression.qmd)**
-  - [Practice for Tree regression](tree_regression/tree_regression_practice.qmd)
-  <!-- - [Exercises for Tree regression](tree_regression/tree_regression_exercise_set.qmd) -->
+![](multiple_regression/multiple_reg.png)
 
-- **[Random Forest](random_forest/random_forest.qmd)**
-  - [Practice for Random Forest](random_forest/random_forest_practice.qmd)
-  <!-- - [Exercises for Random Forest](tree_classification/tree_classification_exercise_set.qmd) -->
+[Multiple regression models](multiple_regression/multiple_regression.qmd)
+:::
 
-- **[Boosted trees](boosting/boosting.qmd)**
-  - [Practice for Boosted trees](boosting/boosting_practice.qmd)
+::: {.g-col-4}
+![](multiple_regression/multiple_reg.png)
 
+[Multiple regression models](multiple_regression/multiple_regression.qmd)
 
+![](multiple_regression/multiple_reg.png)
 
+[Multiple regression models](multiple_regression/multiple_regression.qmd)
+:::
 
-## Classification models
+:::
 
 
-- **[KNN classification](knn_classification/knn_classification.qmd)**
-  <!-- - [Exercises for KNN classification](knn_classification/knn_classification_exercise_set.qmd) -->
-  
-- **[Logistic regression classification](logistic_regression/logistic_regression.qmd)**
-
-- **[Bayes classifier simulation](bayes_classifier_simulation/bayes_classifier_simulation.qmd)**
-
-
-- **[Tree classification](tree_classification/tree_classification.qmd)**
-  - [Practice for Tree classification](tree_classification/tree_classification_practice.qmd)
-  <!-- - [Exercises for Tree classification](tree_classification/tree_classification_exercise_set.qmd) -->
-
-
-## Dimension reduction
-
-- **[Principal Component Analysis](pca/pca.qmd)**
-
-## Cross validation
-
-- **Cross validation**
-
-## Data
-
-- **Data sets**
-  - [Boston dataset](datasets/boston.qmd)
-  - [Default dataset](datasets/default.qmd)
 
 Explore the topics and start learning!
