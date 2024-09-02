@@ -18,7 +18,6 @@ website:
 
 format:
   html:
-    page-layout: article
     theme: cosmo
     css: styles.css
     toc: true
