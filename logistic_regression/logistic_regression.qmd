@@ -1,0 +1,79 @@
+---
+title: "Logistic Regression with [Default](../datasets/default.qmd) data"
+format: html
+execute: 
+  cache: true
+---
+
+# Introduction
+
+In this tutorial, we'll explore how to perform logistic regression using the Default dataset. Logistic regression is a statistical method for analyzing datasets with a binary outcome. This method is particularly useful for classification tasks where the relationship between features and the target variable is linear or can be approximated as such. Here, we'll investigate how to classify default status using all available variables in the dataset.
+
+We'll be using the `tidyverse` and `tidymodels` libraries in R for data manipulation and modeling. Let's get started!
+
+# Load Necessary Libraries
+
+First, we'll load the required libraries. The `tidyverse` package provides tools for data manipulation and visualization, while `tidymodels` is a suite of packages for modeling.
+
+```{r load_libraries}
+library(tidyverse)
+library(tidymodels)
+```
+
+# Load the Data
+
+Next, we'll select the relevant columns from the Default dataset. We'll filter out any rows with missing values and ensure the `default` column is treated as a factor. Logistic regression is sensitive to the order of factor levels, so we'll set `Yes` as the reference level. This means that the model will predict the probability of `Yes` (defaulting) over `No`.
+
+The order of levels in a factor variable determines the baseline or reference category against which other levels are compared. In binary classification with logistic regression, the model estimates the log odds of the positive class (the reference level) occurring. Here, by setting `Yes` as the reference level, the model will estimate the probability of a customer defaulting.
+
+```{r load_data}
+default_data = ISLR::Default %>% 
+  filter(!is.na(balance)) %>% 
+  mutate(default = factor(default, levels = c("Yes", "No")))
+```
+
+# Fit the Logistic Regression Model
+
+Now, we'll fit a logistic regression model. Our goal is to classify default status using all available variables: `balance`, `income`, and `student`.
+
+The `logistic_reg()` function from `parsnip` is used to specify the logistic regression model. Here, we set the mode to "classification". We then fit the model to our data.
+
+```{r fit_classification}
+logistic_model_fit = logistic_reg(mode = "classification") %>% 
+  fit(default ~ balance + income + student, data = default_data)
+```
+
+# Make Predictions
+
+Next, we'll use our model to make predictions.
+
+```{r predict}
+predictions = logistic_model_fit %>% 
+  predict(default_data)
+```
+
+# Evaluate the Model
+
+To evaluate the performance of our logistic regression model, we'll create a confusion matrix.
+
+A confusion matrix is a table used to describe the performance of a classification model. It compares the actual values with the values predicted by the model. The confusion matrix provides the following metrics:
+
+- **True Positives (TP)**: The number of positive class predictions that are actually positive.
+- **True Negatives (TN)**: The number of negative class predictions that are actually negative.
+- **False Positives (FP)**: The number of negative class predictions that are actually positive.
+- **False Negatives (FN)**: The number of positive class predictions that are actually negative.
+
+These metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.
+
+```{r confusion_matrix}
+default_data %>% 
+  select(default) %>% 
+  bind_cols(predictions) %>% 
+  conf_mat(truth = default, estimate = .pred_class)
+```
+
+# Conclusion
+
+In this tutorial, we demonstrated how to perform logistic regression using the Default dataset. We went through loading the data, fitting a logistic regression model, making predictions, and evaluating the model using a confusion matrix. Logistic regression is a powerful technique for binary classification tasks and can provide insights into the relationship between predictors and the target variable.
+
+Feel free to explore further by adding more predictors or using different evaluation metrics. This method can be a valuable addition to your machine learning toolkit. Happy coding!

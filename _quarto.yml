@@ -8,7 +8,7 @@ execute:
 
   
 website:
-  title: "Tutorials for DS course materials"
+  title: "BOI DS course materials"
   navbar:
     left:
       - href: index.qmd

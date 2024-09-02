@@ -21,11 +21,13 @@ learn and apply concepts introduced in the course. Explore the topics and start 
 <div class="topic">
   <img src="linear_regression/linear_reg.jpg" alt="Linear regression" width="200" height="150">
   <a href="multiple_regression/multiple_regression.qmd">Linear regression</a>
+  <a href="multiple_regression/multiple_regression_exercise_set.qmd">Exercise set</a>
 </div>
 
 <div class="topic">
   <img src="multiple_regression/multiple_reg.jpg" alt="Multiple regression" width="200" height="150">
   <a href="multiple_regression/multiple_regression.qmd">Multiple regression</a>
+  <a href="multiple_regression/multiple_regression_exercise_set.qmd">Exercise set</a>
 </div>
 :::
 
@@ -33,11 +35,13 @@ learn and apply concepts introduced in the course. Explore the topics and start 
 <div class="topic">
   <img src="knn_regression/knn_regression.jpg" alt="KNN regression" width="200" height="150">
   <a href="knn_regression/knn_regression.qmd">KNN regression</a>
+  <a href="knn_regression/knn_regression_exercise_set.qmd">Exercise set</a>
 </div>
 
 <div class="topic">
   <img src="lasso_regression/lasso_reg.jpg" alt="LASSO regression" width="200" height="150">
   <a href="lasso_regression/lasso_regression.qmd">LASSO regression</a>
+  <a href="lasso_regression/lasso_regression_practice.qmd">Exercise set</a>
 </div>
 :::
 
@@ -45,14 +49,54 @@ learn and apply concepts introduced in the course. Explore the topics and start 
 <div class="topic">
   <img src="ridge_regression/ridge_reg.jpg" alt="Ridge regression" width="200" height="150">
   <a href="ridge_regression/ridge_regression.qmd">Ridge regression</a>
+  <a href="ridge_regression/ridge_regression_practice.qmd">Exercise set</a>
 </div>
 
 <div class="topic">
   <img src="tree_regression/tree_reg.jpg" alt="Tree regression" width="200" height="150">
   <a href="tree_regression/tree_regression.qmd">Tree regression</a>
+  <a href="tree_regression/tree_regression_practice.qmd">Exercise set</a>
 </div>
 :::
 
 :::
 
 
+## Classification models
+
+::: {.grid}
+
+::: {.g-col-4}
+<div class="topic">
+  <img src="logistic_regression/logistic_reg.jpg" alt="Logistic_regression" width="200" height="150">
+  <a href="logistic_regression/logistic_regression.qmd">Logistic regression</a>
+  <a >Exercise set</a>
+</div>
+
+<div class="topic">
+  <img src="tree_regression/tree_reg.jpg" alt="Tree classification" width="200" height="150">
+  <a href="tree_regression/tree_regression.qmd">Tree classification</a>
+  <a >Exercise set</a>
+</div>
+
+:::
+
+::: {.g-col-4}
+<div class="topic">
+  <img src="knn_classification/knn_classification.jpg" alt="KNN classification" width="200" height="150">
+  <a href="knn_classification/knn_classification">KNN classification</a>
+  <a >Exercise set</a>
+</div>
+
+:::
+
+::: {.g-col-4}
+
+<div class="topic">
+  <img src="svm_classification/svm_classification.jpg" alt="SVM classification" width="200" height="150">
+  <a href="svm_classification/svm_classification.qmd">SVM classification</a>
+  <a href="svm_classification/svm_classification_exercise_set.qmd">Exercise set</a>
+</div>
+:::
+
+:::

@@ -345,16 +345,16 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Welcome to BOI DS course tutorials",
+    "title": "BOI DS course",
     "section": "",
     "text": "This website contains tutorials and exercise sets on various topics to help you learn and apply concepts introduced in the course. Explore the topics and start learning!"
   },
   {
     "objectID": "index.html#regression-models",
     "href": "index.html#regression-models",
-    "title": "Welcome to BOI DS course tutorials",
+    "title": "BOI DS course",
     "section": "Regression models",
-    "text": "Regression models\n\n\n\n Linear regression\n\n\n Multiple regression\n\n\n\n\n KNN regression\n\n\n LASSO regression\n\n\n\n\n Ridge regression\n\n\n Tree regression"
+    "text": "Regression models\n\n\n\n Linear regression Exercise set\n\n\n Multiple regression Exercise set\n\n\n\n\n KNN regression Exercise set\n\n\n LASSO regression Exercise set\n\n\n\n\n Ridge regression Exercise set\n\n\n Tree regression Exercise set"
   },
   {
     "objectID": "knn_regression/knn_regression_exercise_set.html",
@@ -614,5 +614,19 @@
     "title": "KNN Regression with Boston Housing Data - Exercise Set",
     "section": "",
     "text": "Task: Use the fitted model to make predictions.\n\n\nShow the code\npredictions = knn_model_fit %&gt;% \n  predict(boston_data)"
+  },
+  {
+    "objectID": "index.html#classification-models",
+    "href": "index.html#classification-models",
+    "title": "BOI DS course",
+    "section": "Classification models",
+    "text": "Classification models\n\n\n\n Logistic regression Exercise set\n\n\n Tree classification Exercise set\n\n\n\n\n KNN classification Exercise set\n\n\n\n\n SVM classification Exercise set"
+  },
+  {
+    "objectID": "svm_classification/svm_classification.html",
+    "href": "svm_classification/svm_classification.html",
+    "title": "SVM Classification with Default data",
+    "section": "",
+    "text": "Introduction\nIn this tutorial, we’ll explore how to perform Support Vector Machine (SVM) classification using the Default dataset. SVM classification is a powerful method that classifies data points by finding the optimal hyperplane that separates the data points of different classes. This method is particularly useful for classification tasks when the relationship between features and the target variable is complex and nonlinear. Here, we’ll investigate how to classify default status using all available variables in the Default dataset.\nWe’ll be using the tidyverse and tidymodels libraries in R for data manipulation and modeling. Let’s get started!\n\n\nLoad Necessary Libraries\nFirst, we’ll load the required libraries. The tidyverse package provides tools for data manipulation and visualization, while tidymodels is a suite of packages for modeling. We will also load the ISLR package which contains the dataset.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(ISLR)\n\n\n\nLoad the Data\nNext, we’ll use all relevant columns from the Default dataset. We’ll filter out any rows with missing values and ensure the default column is treated as a factor.\n\ndefault_data = Default %&gt;% \n  filter(complete.cases(.)) %&gt;% \n  mutate(default = factor(default))\n\n\n\nSplitting the Data\nWe split the data into training and testing sets. The initial_split function ensures that the proportion of default cases is maintained in both sets. Given the imbalance in the dataset, stratified sampling ensures that the minority class (default cases) is proportionally represented in both sets.\n\ndata_split = initial_split(default_data, strata = default)\ntrain_set = training(data_split)\ntest_set = testing(data_split)\n\n\n\nFit the SVM Classification Model\nNow, we’ll fit a Support Vector Machine (SVM) classification model. Our goal is to classify default status using all available variables.\nFirst, we’ll create a recipe for preprocessing the data, and then we’ll define the SVM model with a radial basis function kernel. We’ll use a workflow to combine the recipe and model, and then fit this workflow to our training data.\n\n# Preprocess the data\npreprocess_recipe = recipe(default ~ ., data = train_set)\n\n# Define the SVM model\nsvm_model = svm_rbf(mode = \"classification\") %&gt;% \n  set_engine(\"kernlab\")\n\n# Create the workflow\nsvm_workflow = workflow() %&gt;% \n  add_recipe(preprocess_recipe) %&gt;% \n  add_model(svm_model)\n\n# Fit the model\nsvm_model_fit = svm_workflow %&gt;% \n  fit(train_set)\n\n\n\nMake Predictions\nNext, we’ll use our model to make predictions on the test set.\n\npredictions = svm_model_fit %&gt;% \n  predict(test_set)\n\n\n\nEvaluate the Model\nTo evaluate the performance of our SVM classification model, we’ll create a confusion matrix.\nA confusion matrix is a table used to describe the performance of a classification model. It compares the actual values with the values predicted by the model. The confusion matrix provides the following metrics:\n\nTrue Positives (TP): The number of positive class predictions that are actually positive.\nTrue Negatives (TN): The number of negative class predictions that are actually negative.\nFalse Positives (FP): The number of negative class predictions that are actually positive.\nFalse Negatives (FN): The number of positive class predictions that are actually negative.\n\nThese metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.\n\ntest_set %&gt;% \n  bind_cols(predictions) %&gt;% \n  conf_mat(truth = default, estimate = .pred_class)\n\n          Truth\nPrediction   No  Yes\n       No  2411   68\n       Yes    3   18\n\n\n\n\nConclusion\nIn this tutorial, we demonstrated how to perform SVM classification using the Default dataset. We went through loading the data, splitting it into training and testing sets, fitting an SVM classification model using all available variables, making predictions, and evaluating the model using a confusion matrix. SVM classification is a versatile technique that can capture complex relationships in data and is useful for various classification tasks."
   }
 ]

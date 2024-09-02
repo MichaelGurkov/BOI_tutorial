@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>BOI DS course materials - BOI DS course</title>
+<title>BOI DS course materials - Logistic Regression with Default data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,25 +20,59 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,7 +102,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -78,7 +112,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">BOI DS course materials</span>
     </a>
   </div>
@@ -89,11 +123,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Practice</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./theory_topics_index.html"> 
+    <a class="nav-link" href="../theory_topics_index.html"> 
 <span class="menu-text">Theory</span></a>
   </li>  
 </ul>
@@ -112,8 +146,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#regression-models" id="toc-regression-models" class="nav-link active" data-scroll-target="#regression-models">Regression models</a></li>
-  <li><a href="#classification-models" id="toc-classification-models" class="nav-link" data-scroll-target="#classification-models">Classification models</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#load-necessary-libraries" id="toc-load-necessary-libraries" class="nav-link" data-scroll-target="#load-necessary-libraries">Load Necessary Libraries</a></li>
+  <li><a href="#load-the-data" id="toc-load-the-data" class="nav-link" data-scroll-target="#load-the-data">Load the Data</a></li>
+  <li><a href="#fit-the-logistic-regression-model" id="toc-fit-the-logistic-regression-model" class="nav-link" data-scroll-target="#fit-the-logistic-regression-model">Fit the Logistic Regression Model</a></li>
+  <li><a href="#make-predictions" id="toc-make-predictions" class="nav-link" data-scroll-target="#make-predictions">Make Predictions</a></li>
+  <li><a href="#evaluate-the-model" id="toc-evaluate-the-model" class="nav-link" data-scroll-target="#evaluate-the-model">Evaluate the Model</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
     </div>
@@ -122,7 +161,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">BOI DS course</h1>
+<h1 class="title">Logistic Regression with <a href="../datasets/default.html">Default</a> data</h1>
 </div>
 
 
@@ -139,58 +178,74 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This website contains tutorials and exercise sets on various topics to help you learn and apply concepts introduced in the course. Explore the topics and start learning!</p>
-<section id="regression-models" class="level2">
-<h2 class="anchored" data-anchor-id="regression-models">Regression models</h2>
-<div class="grid">
-<div class="g-col-4">
-<div class="topic">
-<p><img src="linear_regression/linear_reg.jpg" alt="Linear regression" width="200" height="150"> <a href="./multiple_regression/multiple_regression.html">Linear regression</a> <a href="./multiple_regression/multiple_regression_exercise_set.html">Exercise set</a></p>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>In this tutorial, we’ll explore how to perform logistic regression using the Default dataset. Logistic regression is a statistical method for analyzing datasets with a binary outcome. This method is particularly useful for classification tasks where the relationship between features and the target variable is linear or can be approximated as such. Here, we’ll investigate how to classify default status using all available variables in the dataset.</p>
+<p>We’ll be using the <code>tidyverse</code> and <code>tidymodels</code> libraries in R for data manipulation and modeling. Let’s get started!</p>
+</section>
+<section id="load-necessary-libraries" class="level1">
+<h1>Load Necessary Libraries</h1>
+<p>First, we’ll load the required libraries. The <code>tidyverse</code> package provides tools for data manipulation and visualization, while <code>tidymodels</code> is a suite of packages for modeling.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="topic">
-<p><img src="multiple_regression/multiple_reg.jpg" alt="Multiple regression" width="200" height="150"> <a href="./multiple_regression/multiple_regression.html">Multiple regression</a> <a href="./multiple_regression/multiple_regression_exercise_set.html">Exercise set</a></p>
+</section>
+<section id="load-the-data" class="level1">
+<h1>Load the Data</h1>
+<p>Next, we’ll select the relevant columns from the Default dataset. We’ll filter out any rows with missing values and ensure the <code>default</code> column is treated as a factor. Logistic regression is sensitive to the order of factor levels, so we’ll set <code>Yes</code> as the reference level. This means that the model will predict the probability of <code>Yes</code> (defaulting) over <code>No</code>.</p>
+<p>The order of levels in a factor variable determines the baseline or reference category against which other levels are compared. In binary classification with logistic regression, the model estimates the log odds of the positive class (the reference level) occurring. Here, by setting <code>Yes</code> as the reference level, the model will estimate the probability of a customer defaulting.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>default_data <span class="ot">=</span> ISLR<span class="sc">::</span>Default <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(balance)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">default =</span> <span class="fu">factor</span>(default, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Yes"</span>, <span class="st">"No"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="fit-the-logistic-regression-model" class="level1">
+<h1>Fit the Logistic Regression Model</h1>
+<p>Now, we’ll fit a logistic regression model. Our goal is to classify default status using all available variables: <code>balance</code>, <code>income</code>, and <code>student</code>.</p>
+<p>The <code>logistic_reg()</code> function from <code>parsnip</code> is used to specify the logistic regression model. Here, we set the mode to “classification”. We then fit the model to our data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>logistic_model_fit <span class="ot">=</span> <span class="fu">logistic_reg</span>(<span class="at">mode =</span> <span class="st">"classification"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(default <span class="sc">~</span> balance <span class="sc">+</span> income <span class="sc">+</span> student, <span class="at">data =</span> default_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="g-col-4">
-<div class="topic">
-<p><img src="knn_regression/knn_regression.jpg" alt="KNN regression" width="200" height="150"> <a href="./knn_regression/knn_regression.html">KNN regression</a> <a href="./knn_regression/knn_regression_exercise_set.html">Exercise set</a></p>
+</section>
+<section id="make-predictions" class="level1">
+<h1>Make Predictions</h1>
+<p>Next, we’ll use our model to make predictions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">=</span> logistic_model_fit <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(default_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="topic">
-<p><img src="lasso_regression/lasso_reg.jpg" alt="LASSO regression" width="200" height="150"> <a href="./lasso_regression/lasso_regression.html">LASSO regression</a> <a href="./lasso_regression/lasso_regression_practice.html">Exercise set</a></p>
-</div>
-</div>
-<div class="g-col-4">
-<div class="topic">
-<p><img src="ridge_regression/ridge_reg.jpg" alt="Ridge regression" width="200" height="150"> <a href="./ridge_regression/ridge_regression.html">Ridge regression</a> <a href="./ridge_regression/ridge_regression_practice.html">Exercise set</a></p>
-</div>
-<div class="topic">
-<p><img src="tree_regression/tree_reg.jpg" alt="Tree regression" width="200" height="150"> <a href="./tree_regression/tree_regression.html">Tree regression</a> <a href="./tree_regression/tree_regression_practice.html">Exercise set</a></p>
-</div>
+</section>
+<section id="evaluate-the-model" class="level1">
+<h1>Evaluate the Model</h1>
+<p>To evaluate the performance of our logistic regression model, we’ll create a confusion matrix.</p>
+<p>A confusion matrix is a table used to describe the performance of a classification model. It compares the actual values with the values predicted by the model. The confusion matrix provides the following metrics:</p>
+<ul>
+<li><strong>True Positives (TP)</strong>: The number of positive class predictions that are actually positive.</li>
+<li><strong>True Negatives (TN)</strong>: The number of negative class predictions that are actually negative.</li>
+<li><strong>False Positives (FP)</strong>: The number of negative class predictions that are actually positive.</li>
+<li><strong>False Negatives (FN)</strong>: The number of positive class predictions that are actually negative.</li>
+</ul>
+<p>These metrics help us understand the accuracy, precision, recall, and overall performance of the classification model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>default_data <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(default) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(predictions) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">conf_mat</span>(<span class="at">truth =</span> default, <span class="at">estimate =</span> .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Truth
+Prediction   No  Yes
+       No  9625  233
+       Yes   42  100</code></pre>
 </div>
 </div>
 </section>
-<section id="classification-models" class="level2">
-<h2 class="anchored" data-anchor-id="classification-models">Classification models</h2>
-<div class="grid">
-<div class="g-col-4">
-<div class="topic">
-<p><img src="logistic_regression/logistic_reg.jpg" alt="Logistic_regression" width="200" height="150"> <a href="./logistic_regression/logistic_regression.html">Logistic regression</a> <a>Exercise set</a></p>
-</div>
-<div class="topic">
-<p><img src="tree_regression/tree_reg.jpg" alt="Tree classification" width="200" height="150"> <a href="./tree_regression/tree_regression.html">Tree classification</a> <a>Exercise set</a></p>
-</div>
-</div>
-<div class="g-col-4">
-<div class="topic">
-<p><img src="knn_classification/knn_classification.jpg" alt="KNN classification" width="200" height="150"> <a href="knn_classification/knn_classification">KNN classification</a> <a>Exercise set</a></p>
-</div>
-</div>
-<div class="g-col-4">
-<div class="topic">
-<p><img src="svm_classification/svm_classification.jpg" alt="SVM classification" width="200" height="150"> <a href="./svm_classification/svm_classification.html">SVM classification</a> <a href="svm_classification/svm_classification_exercise_set.qmd">Exercise set</a></p>
-</div>
-</div>
-</div>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>In this tutorial, we demonstrated how to perform logistic regression using the Default dataset. We went through loading the data, fitting a logistic regression model, making predictions, and evaluating the model using a confusion matrix. Logistic regression is a powerful technique for binary classification tasks and can provide insights into the relationship between predictors and the target variable.</p>
+<p>Feel free to explore further by adding more predictors or using different evaluation metrics. This method can be a valuable addition to your machine learning toolkit. Happy coding!</p>
 
 
 </section>
