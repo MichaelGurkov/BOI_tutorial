@@ -1,5 +1,5 @@
 ---
-title: "Welcome to BOI DS course tutorials"
+title: "BOI DS course"
 format:
   html: 
     grid:
